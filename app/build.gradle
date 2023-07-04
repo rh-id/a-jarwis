@@ -1,0 +1,63 @@
+plugins {
+    id 'com.android.application'
+}
+
+def keyStoreFile = File.createTempFile("key", null)
+keyStoreFile.deleteOnExit()
+
+if (System.getenv("SIGNING_KEY") != null) {
+    println 'key exist'
+    keyStoreFile.bytes = Base64.decoder.decode(System.getenv("SIGNING_KEY"))
+} else {
+    println 'key NOT exist'
+}
+
+android {
+    namespace 'm.co.rh.id.a_jarwis'
+    compileSdk 33
+
+    signingConfigs {
+        release {
+            storeFile keyStoreFile
+            storePassword System.getenv("KEY_STORE_PASSWORD")
+            keyAlias System.getenv("ALIAS")
+            keyPassword System.getenv("KEY_PASSWORD")
+        }
+    }
+    defaultConfig {
+        applicationId "m.co.rh.id.a_jarwis"
+        minSdk 26
+        targetSdk 33
+        versionCode 1
+        versionName "1.0.0"
+        buildConfigField 'int', 'VERSION_CODE', "${versionCode}"
+        buildConfigField 'String', 'VERSION_NAME', "\"${versionName}\""
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            ndk {
+                abiFilters 'armeabi-v7a','arm64-v8a'
+            }
+            if (System.getenv("SIGNING_KEY") != null) {
+                signingConfig signingConfigs.release
+            }
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation project(":base")
+    implementation project(":settings")
+    implementation project(":ml-engine")
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+}

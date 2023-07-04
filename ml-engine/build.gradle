@@ -1,0 +1,41 @@
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    namespace 'm.co.rh.id.a_jarwis.ml_engine'
+    compileSdk 33
+
+    defaultConfig {
+        minSdk 26
+        targetSdk 33
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    buildFeatures {
+        mlModelBinding true
+    }
+}
+
+dependencies {
+    implementation project(":base")
+    implementation 'io.github.hokofly:hoko-blur:1.4.0'
+    implementation platform("ai.djl:bom:0.22.1")
+    implementation "ai.djl:api"
+    implementation "ai.djl.android:core"
+    runtimeOnly "ai.djl.pytorch:pytorch-engine"
+    runtimeOnly "ai.djl.android:pytorch-native"
+    runtimeOnly "ai.djl.android:onnxruntime"
+}

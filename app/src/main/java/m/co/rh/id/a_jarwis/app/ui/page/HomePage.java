@@ -1,0 +1,205 @@
+package m.co.rh.id.a_jarwis.app.ui.page;
+
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+
+import java.util.concurrent.ExecutorService;
+
+import io.reactivex.rxjava3.schedulers.Schedulers;
+import m.co.rh.id.a_jarwis.R;
+import m.co.rh.id.a_jarwis.app.provider.command.BlurFaceCommand;
+import m.co.rh.id.a_jarwis.base.constants.Routes;
+import m.co.rh.id.a_jarwis.base.provider.IStatefulViewProvider;
+import m.co.rh.id.a_jarwis.base.provider.component.helper.FileHelper;
+import m.co.rh.id.a_jarwis.base.provider.component.helper.MediaHelper;
+import m.co.rh.id.a_jarwis.base.rx.RxDisposer;
+import m.co.rh.id.a_jarwis.base.ui.component.AppBarSV;
+import m.co.rh.id.alogger.ILogger;
+import m.co.rh.id.anavigator.StatefulView;
+import m.co.rh.id.anavigator.annotation.NavInject;
+import m.co.rh.id.anavigator.component.INavigator;
+import m.co.rh.id.anavigator.component.NavOnActivityResult;
+import m.co.rh.id.anavigator.component.NavOnBackPressed;
+import m.co.rh.id.anavigator.component.NavOnRequestPermissionResult;
+import m.co.rh.id.anavigator.component.RequireComponent;
+import m.co.rh.id.aprovider.Provider;
+
+public class HomePage extends StatefulView<Activity> implements RequireComponent<Provider>, NavOnBackPressed<Activity>, NavOnActivityResult<Activity>, NavOnRequestPermissionResult, DrawerLayout.DrawerListener, View.OnClickListener {
+    private static final String TAG = "HomePage";
+
+    private static final int REQUEST_CODE_IMAGE_AUTO_BLUR_FACE = 1;
+
+    @NavInject
+    private transient INavigator mNavigator;
+    @NavInject
+    private AppBarSV mAppBarSV;
+    private boolean mIsDrawerOpen;
+    private transient long mLastBackPressMilis;
+
+    // component
+    private transient Provider mSvProvider;
+    private transient ILogger mLogger;
+    private transient ExecutorService mExecutorService;
+    private transient RxDisposer mRxDisposer;
+    private transient FileHelper mFileHelper;
+    private transient MediaHelper mMediaHelper;
+    private transient BlurFaceCommand mBlurFaceCommand;
+
+    // View related
+    private transient DrawerLayout mDrawerLayout;
+    private transient View.OnClickListener mOnNavigationClicked;
+
+    public HomePage() {
+        mAppBarSV = new AppBarSV();
+    }
+
+    @Override
+    public void provideComponent(Provider provider) {
+        mSvProvider = provider.get(IStatefulViewProvider.class);
+        mLogger = mSvProvider.get(ILogger.class);
+        mExecutorService = mSvProvider.get(ExecutorService.class);
+        mRxDisposer = mSvProvider.get(RxDisposer.class);
+        mFileHelper = mSvProvider.get(FileHelper.class);
+        mMediaHelper = mSvProvider.get(MediaHelper.class);
+        mBlurFaceCommand = mSvProvider.get(BlurFaceCommand.class);
+        mOnNavigationClicked = view -> {
+            if (!mDrawerLayout.isOpen()) {
+                mDrawerLayout.open();
+            }
+        };
+    }
+
+    @Override
+    protected View createView(Activity activity, ViewGroup container) {
+        View rootLayout = activity.getLayoutInflater().inflate(R.layout.page_home, container, false);
+        View menuSettings = rootLayout.findViewById(R.id.menu_settings);
+        menuSettings.setOnClickListener(this);
+        View menuDonation = rootLayout.findViewById(R.id.menu_donation);
+        menuDonation.setOnClickListener(this);
+        mDrawerLayout = rootLayout.findViewById(R.id.drawer);
+        mDrawerLayout.addDrawerListener(this);
+        mAppBarSV.setTitle(activity.getString(m.co.rh.id.a_jarwis.base.R.string.home));
+        mAppBarSV.setNavigationOnClick(mOnNavigationClicked);
+        if (mIsDrawerOpen) {
+            mDrawerLayout.open();
+        }
+        Button autoBlurButton = rootLayout.findViewById(R.id.button_auto_blur_face);
+        autoBlurButton.setOnClickListener(this);
+        ViewGroup containerAppBar = rootLayout.findViewById(R.id.container_app_bar);
+        containerAppBar.addView(mAppBarSV.buildView(activity, container));
+        return rootLayout;
+    }
+
+    @Override
+    public void dispose(Activity activity) {
+        super.dispose(activity);
+        mAppBarSV.dispose(activity);
+        mAppBarSV = null;
+        if (mSvProvider != null) {
+            mSvProvider.dispose();
+            mSvProvider = null;
+        }
+        mDrawerLayout = null;
+        mOnNavigationClicked = null;
+    }
+
+    @Override
+    public void onBackPressed(View currentView, Activity activity, INavigator navigator) {
+        if (mDrawerLayout.isOpen()) {
+            mDrawerLayout.close();
+        } else {
+            long currentMilis = System.currentTimeMillis();
+            if ((currentMilis - mLastBackPressMilis) < 1000) {
+                navigator.finishActivity(null);
+            } else {
+                mLastBackPressMilis = currentMilis;
+                mSvProvider.get(ILogger.class).i(TAG,
+                        activity.getString(m.co.rh.id.a_jarwis.base.R.string.toast_back_press_exit));
+            }
+        }
+    }
+
+    @Override
+    public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
+        // Leave blank
+    }
+
+    @Override
+    public void onDrawerOpened(@NonNull View drawerView) {
+        mIsDrawerOpen = true;
+    }
+
+    @Override
+    public void onDrawerClosed(@NonNull View drawerView) {
+        mIsDrawerOpen = false;
+    }
+
+    @Override
+    public void onDrawerStateChanged(int newState) {
+        // Leave blank
+    }
+
+    @Override
+    public void onClick(View view) {
+        int id = view.getId();
+        if (id == R.id.menu_settings) {
+            mNavigator.push(Routes.SETTINGS_PAGE);
+        } else if (id == R.id.menu_donation) {
+            mNavigator.push(Routes.DONATIONS_PAGE);
+        } else if (id == R.id.button_auto_blur_face) {
+            Activity activity = mNavigator.getActivity();
+            if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE_IMAGE_AUTO_BLUR_FACE);
+            } else {
+                pickImage(activity, REQUEST_CODE_IMAGE_AUTO_BLUR_FACE);
+            }
+        }
+    }
+
+    private void pickImage(Activity activity, int requestCode) {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        activity.startActivityForResult(intent, requestCode);
+    }
+
+    @SuppressLint("MissingPermission")
+    @Override
+    public void onActivityResult(View currentView, Activity activity, INavigator INavigator, int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CODE_IMAGE_AUTO_BLUR_FACE && resultCode == Activity.RESULT_OK) {
+            Uri fullPhotoUri = data.getData();
+            mRxDisposer.add("onActivityResult_blurFace",
+                    mBlurFaceCommand.execute(fullPhotoUri)
+                            .subscribeOn(Schedulers.from(mExecutorService))
+                            .subscribe((file, throwable) -> {
+                                if (throwable != null) {
+                                    mLogger.e(TAG, throwable.getMessage(), throwable);
+                                } else {
+                                    mLogger.i(TAG, mSvProvider.getContext()
+                                            .getString(m.co.rh.id.a_jarwis.base.R.string.processing_,
+                                                    file.getName()));
+                                }
+                            }));
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(View currentView, Activity activity, INavigator INavigator, int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == REQUEST_CODE_IMAGE_AUTO_BLUR_FACE
+                && grantResults.length > 0 &&
+                grantResults[0] == PackageManager.PERMISSION_GRANTED
+        ) {
+            pickImage(activity, requestCode);
+        }
+    }
+}
