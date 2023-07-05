@@ -1,4 +1,4 @@
-# a-jarwis
+# Jarwis
 
 ![Languages](https://img.shields.io/github/languages/top/rh-id/a-jarwis)
 ![Downloads](https://img.shields.io/github/downloads/rh-id/a-jarwis/total)
@@ -12,7 +12,9 @@ The power of AI in the palm of my hands!
 This is AI utility app for Android device, it basically uses AI model directly on-device to help on performing some tasks.  
 
 Current features:
-1. For image files: Detect and add blur effect on people face and export the image to gallery
+<ul>
+  <li>For image files: Detect and add blur effect on people face and export the image to gallery</li>
+</ul>
 
 
 ## Project Structure
@@ -21,6 +23,10 @@ The app uses a-navigator framework as navigator and StatefulView as base structu
 combined with a-provider library for service locator,
 and finally RxAndroid to handle UI use cases.
 
+## Screenshots
+<img src="https://github.com/rh-id/a-jarwis/blob/master/fastlane/metadata/android/en-US/images/featureGraphic.png" width="1024"/>
+
+<img src="https://github.com/rh-id/a-jarwis/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" height="512"/>
 
 ## Support this project
 Consider donation to support this project

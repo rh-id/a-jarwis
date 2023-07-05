@@ -2,14 +2,14 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="512"
+   width="1024"
    height="512"
-   viewBox="0 0 135.46666 135.46667"
+   viewBox="0 0 270.93332 135.46667"
    version="1.1"
    id="svg5"
    inkscape:version="1.2.2 (732a01da63, 2022-12-09, custom)"
-   sodipodi:docname="launcher.svg"
-   inkscape:export-filename="../6ac38b2e/icon.png"
+   sodipodi:docname="featureGraphic.svg"
+   inkscape:export-filename="../ec5b394c/featureGraphic.png"
    inkscape:export-xdpi="96"
    inkscape:export-ydpi="96"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
@@ -28,8 +28,8 @@
      inkscape:document-units="mm"
      showgrid="false"
      inkscape:zoom="0.4609375"
-     inkscape:cx="256"
-     inkscape:cy="434.98305"
+     inkscape:cx="-266.84746"
+     inkscape:cy="437.15254"
      inkscape:window-width="1308"
      inkscape:window-height="704"
      inkscape:window-x="0"
@@ -47,7 +47,7 @@
        id="rect3113"
        width="3.0171201"
        height="43.335011"
-       x="23.93989"
+       x="90.614952"
        y="27.249521"
        rx="0"
        ry="0" />
@@ -56,52 +56,52 @@
        id="rect3113-2"
        width="3.0171201"
        height="43.335011"
-       x="106.6685"
+       x="173.34283"
        y="25.719395"
        rx="0"
        ry="0" />
     <path
        id="rect2264"
        style="fill:#ffaaaa;stroke:#e00000;stroke-width:2.23895;stroke-dasharray:none;stroke-opacity:1"
-       d="m 94.232828,57.072308 a 39.396822,38.129731 0 0 1 7.708922,22.653356 39.396822,38.129731 0 0 1 -10.626494,26.023696 h 22.641394 c 3.64572,0 6.5806,-10.855023 6.5806,-24.338469 0,-13.48352 -2.93488,-24.338583 -6.5806,-24.338583 z" />
+       d="m 160.90821,57.072308 a 39.396822,38.129731 0 0 1 7.70896,22.653356 39.396822,38.129731 0 0 1 -10.62655,26.023696 h 22.64145 c 3.64572,0 6.5806,-10.855023 6.5806,-24.338469 0,-13.48352 -2.93488,-24.338583 -6.5806,-24.338583 z" />
     <path
        id="rect2264-5"
        style="fill:#ffaaaa;stroke:#e00000;stroke-width:2.23895;stroke-dasharray:none;stroke-opacity:1"
-       d="M 39.713197,57.282289 A 39.396822,38.129731 0 0 0 32.004323,79.935644 39.396822,38.129731 0 0 0 42.630754,105.95935 H 19.989488 c -3.645703,0 -6.580566,-10.855026 -6.580566,-24.338479 0,-13.48352 2.934863,-24.338582 6.580566,-24.338582 z" />
+       d="M 106.38827,57.282289 A 39.396822,38.129731 0 0 0 98.679365,79.935644 39.396822,38.129731 0 0 0 109.30585,105.95935 H 86.66453 c -3.645703,0 -6.580566,-10.855026 -6.580566,-24.338479 0,-13.48352 2.934863,-24.338582 6.580566,-24.338582 z" />
     <rect
        style="fill:#ffffff;stroke:#e00000;stroke-width:2.15741"
        id="rect233"
        width="76.543907"
        height="65.337044"
-       x="28.446144"
+       x="95.121208"
        y="48.093388"
        rx="17.334873"
        ry="14.975151" />
     <ellipse
        style="fill:none;stroke:#e00000;stroke-width:1.99174;stroke-dasharray:none;stroke-opacity:1"
        id="path165-3"
-       cx="50.733837"
+       cx="117.40884"
        cy="67.695992"
        rx="7.2823877"
        ry="7.0481696" />
     <ellipse
        style="fill:none;stroke:#e00000;stroke-width:1.99174;stroke-dasharray:none;stroke-opacity:1"
        id="path165-3-3"
-       cx="81.491211"
+       cx="148.16594"
        cy="67.695992"
        rx="7.2823877"
        ry="7.0481696" />
     <ellipse
        style="fill:#e00000;stroke:none;stroke-width:1.1034;stroke-dasharray:none;stroke-opacity:1"
        id="path165-3-5"
-       cx="25.461725"
+       cx="92.136787"
        cy="23.771564"
        rx="7.2823877"
        ry="7.0481696" />
     <ellipse
        style="fill:#e00000;stroke:none;stroke-width:1.1034;stroke-dasharray:none;stroke-opacity:1"
        id="path165-3-5-6"
-       cx="108.01107"
+       cx="174.68539"
        cy="23.771564"
        rx="7.2823877"
        ry="7.0481696" />
@@ -110,7 +110,7 @@
        id="rect3142"
        width="40.135338"
        height="12.214525"
-       x="46.923435"
+       x="113.59849"
        y="88.992493"
        ry="6.1072626"
        rx="9.3733196" />

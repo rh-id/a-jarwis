@@ -30,8 +30,6 @@ android {
         targetSdk 33
         versionCode 1
         versionName "1.0.0"
-        buildConfigField 'int', 'VERSION_CODE', "${versionCode}"
-        buildConfigField 'String', 'VERSION_NAME', "\"${versionName}\""
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -60,4 +58,17 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+}
+
+project.afterEvaluate {
+    def versionCode = android.defaultConfig.versionCode
+    File changeLogTxt = new File(project.rootDir, "fastlane/metadata/android/en-US/changelogs/" + versionCode + ".txt")
+    if (changeLogTxt.exists()) {
+        File outputChangeLog = new File(project.buildDir, "changelog.txt")
+        if (!outputChangeLog.exists()) {
+            outputChangeLog.parentFile.mkdirs()
+            outputChangeLog.createNewFile()
+        }
+        outputChangeLog.bytes = changeLogTxt.bytes
+    }
 }

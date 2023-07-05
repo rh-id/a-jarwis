@@ -1,0 +1,2 @@
+The power of AI in the palm of my hands!
+This is AI utility app for Android device, it basically uses AI model directly on-device to help on performing some tasks.
