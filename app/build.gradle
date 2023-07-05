@@ -37,9 +37,6 @@ android {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            ndk {
-                abiFilters 'armeabi-v7a','arm64-v8a'
-            }
             if (System.getenv("SIGNING_KEY") != null) {
                 signingConfig signingConfigs.release
             }
