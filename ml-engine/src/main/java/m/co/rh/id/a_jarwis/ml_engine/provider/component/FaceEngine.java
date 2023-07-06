@@ -1,6 +1,5 @@
 package m.co.rh.id.a_jarwis.ml_engine.provider.component;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -31,26 +30,24 @@ import m.co.rh.id.aprovider.Provider;
 
 public class FaceEngine {
     private static final String TAG = "FaceEngine";
-    private Context mAppContext;
-    private ILogger mLogger;
-    private WorkManager mWorkManager;
-    private ExecutorService mExecutorService;
-    private MLEngineInstance mEngineInstance;
-    private BlurProcessor mBlurProcessor;
+    private final ILogger mLogger;
+    private final WorkManager mWorkManager;
+    private final ExecutorService mExecutorService;
+    private final MLEngineInstance mEngineInstance;
+    private final BlurProcessor mBlurProcessor;
 
     public FaceEngine(Provider provider) {
-        mAppContext = provider.getContext().getApplicationContext();
         mLogger = provider.get(ILogger.class);
         mWorkManager = provider.get(WorkManager.class);
         mExecutorService = provider.get(ExecutorService.class);
         mEngineInstance = provider.get(MLEngineInstance.class);
-        mBlurProcessor = HokoBlur.with(mAppContext)
+        mBlurProcessor = HokoBlur.with(provider.getContext().getApplicationContext())
                 .scheme(HokoBlur.SCHEME_NATIVE) //different implementation, RenderScript、OpenGL、Native(default) and Java
                 .mode(HokoBlur.MODE_GAUSSIAN) //blur algorithms，Gaussian、Stack(default) and Box
-                .radius(15) //blur radius，max=25，default=5
-                .sampleFactor(2.0f) //scale factor，if factor=2，the width and height of a originalBitmap will be scale to 1/2 sizes，default=5
+                .radius(25) //blur radius，max=25，default=5
+                .sampleFactor(5f) //scale factor，if factor=2，the width and height of a originalBitmap will be scale to 1/2 sizes，default=5
                 .forceCopy(false) //If scale factor=1.0f，the origin originalBitmap will be modified. You could set forceCopy=true to avoid it. default=false
-                .needUpscale(true) //After blurring，the originalBitmap will be upscaled to origin sizes，default=true
+                .needUpscale(false) //After blurring，the originalBitmap will be upscaled to origin sizes，default=true
                 .translateX(0)//add x axis offset when blurring
                 .translateY(0)//add y axis offset when blurring
                 .processor(); //build a blur processor
