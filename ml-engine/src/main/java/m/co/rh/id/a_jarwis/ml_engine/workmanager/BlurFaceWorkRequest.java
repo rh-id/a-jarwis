@@ -20,8 +20,6 @@ import m.co.rh.id.aprovider.Provider;
 public class BlurFaceWorkRequest extends Worker {
     private static final String TAG = "BlurFaceWorkRequest";
 
-    private static final String RELATIVE_PATH = "a-jarwis/face_blur";
-
     public BlurFaceWorkRequest(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
     }
@@ -38,11 +36,15 @@ public class BlurFaceWorkRequest extends Worker {
         try {
             Bitmap face = BitmapFactory.decodeFile(inputFile.getAbsolutePath());
             Bitmap blurredFace = faceEngine.blurFace(face);
+            String fileName = inputFile.getName();
             if (blurredFace != null) {
-                mediaHelper.insertImage(blurredFace, inputFile.getName(), inputFile.getName());
+                mediaHelper.insertImage(blurredFace, fileName, fileName);
                 face.recycle();
                 blurredFace.recycle();
             }
+            logger.i(TAG, getApplicationContext()
+                    .getString(m.co.rh.id.a_jarwis.base.R.string.done_processing_, fileName)
+            );
         } catch (Exception e) {
             logger.e(TAG, e.getMessage(), e);
             return Result.failure();
