@@ -3,6 +3,7 @@ package m.co.rh.id.a_jarwis.app.ui.page;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ClipData;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -14,15 +15,18 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.functions.BiConsumer;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import m.co.rh.id.a_jarwis.R;
 import m.co.rh.id.a_jarwis.app.provider.command.BlurFaceCommand;
 import m.co.rh.id.a_jarwis.base.constants.Routes;
 import m.co.rh.id.a_jarwis.base.provider.IStatefulViewProvider;
-import m.co.rh.id.a_jarwis.base.provider.component.helper.FileHelper;
-import m.co.rh.id.a_jarwis.base.provider.component.helper.MediaHelper;
 import m.co.rh.id.a_jarwis.base.rx.RxDisposer;
 import m.co.rh.id.a_jarwis.base.ui.component.AppBarSV;
 import m.co.rh.id.alogger.ILogger;
@@ -35,7 +39,7 @@ import m.co.rh.id.anavigator.component.NavOnRequestPermissionResult;
 import m.co.rh.id.anavigator.component.RequireComponent;
 import m.co.rh.id.aprovider.Provider;
 
-public class HomePage extends StatefulView<Activity> implements RequireComponent<Provider>, NavOnBackPressed<Activity>, NavOnActivityResult<Activity>, NavOnRequestPermissionResult, DrawerLayout.DrawerListener, View.OnClickListener {
+public class HomePage extends StatefulView<Activity> implements RequireComponent<Provider>, NavOnBackPressed<Activity>, NavOnActivityResult<Activity>, NavOnRequestPermissionResult<Activity>, DrawerLayout.DrawerListener, View.OnClickListener {
     private static final String TAG = "HomePage";
 
     private static final int REQUEST_CODE_IMAGE_AUTO_BLUR_FACE = 1;
@@ -52,8 +56,6 @@ public class HomePage extends StatefulView<Activity> implements RequireComponent
     private transient ILogger mLogger;
     private transient ExecutorService mExecutorService;
     private transient RxDisposer mRxDisposer;
-    private transient FileHelper mFileHelper;
-    private transient MediaHelper mMediaHelper;
     private transient BlurFaceCommand mBlurFaceCommand;
 
     // View related
@@ -70,8 +72,6 @@ public class HomePage extends StatefulView<Activity> implements RequireComponent
         mLogger = mSvProvider.get(ILogger.class);
         mExecutorService = mSvProvider.get(ExecutorService.class);
         mRxDisposer = mSvProvider.get(RxDisposer.class);
-        mFileHelper = mSvProvider.get(FileHelper.class);
-        mMediaHelper = mSvProvider.get(MediaHelper.class);
         mBlurFaceCommand = mSvProvider.get(BlurFaceCommand.class);
         mOnNavigationClicked = view -> {
             if (!mDrawerLayout.isOpen()) {
@@ -170,6 +170,7 @@ public class HomePage extends StatefulView<Activity> implements RequireComponent
     private void pickImage(Activity activity, int requestCode) {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         activity.startActivityForResult(intent, requestCode);
     }
 
@@ -177,19 +178,38 @@ public class HomePage extends StatefulView<Activity> implements RequireComponent
     @Override
     public void onActivityResult(View currentView, Activity activity, INavigator INavigator, int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE_IMAGE_AUTO_BLUR_FACE && resultCode == Activity.RESULT_OK) {
+            ClipData listPhoto = data.getClipData();
             Uri fullPhotoUri = data.getData();
-            mRxDisposer.add("onActivityResult_blurFace",
-                    mBlurFaceCommand.execute(fullPhotoUri)
-                            .subscribeOn(Schedulers.from(mExecutorService))
-                            .subscribe((file, throwable) -> {
-                                if (throwable != null) {
-                                    mLogger.e(TAG, throwable.getMessage(), throwable);
-                                } else {
-                                    mLogger.i(TAG, mSvProvider.getContext()
-                                            .getString(m.co.rh.id.a_jarwis.base.R.string.processing_,
-                                                    file.getName()));
-                                }
-                            }));
+            BiConsumer<File, Throwable> consumeFile = (file, throwable) -> {
+                if (throwable != null) {
+                    mLogger.e(TAG, throwable.getMessage(), throwable);
+                } else {
+                    mLogger.i(TAG, mSvProvider.getContext()
+                            .getString(m.co.rh.id.a_jarwis.base.R.string.processing_,
+                                    file.getName()));
+                }
+            };
+            if (listPhoto != null) {
+                int count = listPhoto.getItemCount();
+                List<Uri> uriList = new ArrayList<>();
+                for (int i = 0; i < count; i++) {
+                    uriList.add(listPhoto.getItemAt(i).getUri());
+                }
+                if (!uriList.isEmpty()) {
+                    mRxDisposer.add("onActivityResult_blurFace_multiple",
+                            Flowable.fromIterable(uriList)
+                                    .map(uri -> mBlurFaceCommand.execute(uri).blockingGet())
+                                    .subscribeOn(Schedulers.from(mExecutorService))
+                                    .doOnError(throwable -> consumeFile.accept(null, throwable))
+                                    .subscribe(file -> consumeFile.accept(file, null))
+                    );
+                }
+            } else {
+                mRxDisposer.add("onActivityResult_blurFace",
+                        mBlurFaceCommand.execute(fullPhotoUri)
+                                .subscribeOn(Schedulers.from(mExecutorService))
+                                .subscribe(consumeFile));
+            }
         }
     }
 
