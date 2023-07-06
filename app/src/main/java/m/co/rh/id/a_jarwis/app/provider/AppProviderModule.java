@@ -6,7 +6,7 @@ import m.co.rh.id.a_jarwis.app.provider.command.CommandProviderModule;
 import m.co.rh.id.a_jarwis.base.provider.BaseProviderModule;
 import m.co.rh.id.a_jarwis.base.provider.IStatefulViewProvider;
 import m.co.rh.id.a_jarwis.base.provider.RxProviderModule;
-import m.co.rh.id.a_jarwis.ml_engine.provider.MlEngineProviderModule;
+import m.co.rh.id.a_jarwis.ml_engine.provider.MLEngineProviderModule;
 import m.co.rh.id.a_jarwis.settings.provider.SettingsProviderModule;
 import m.co.rh.id.aprovider.Provider;
 import m.co.rh.id.aprovider.ProviderModule;
@@ -26,7 +26,7 @@ public class AppProviderModule implements ProviderModule {
         providerRegistry.registerModule(new CommandProviderModule());
         providerRegistry.registerModule(new RxProviderModule());
         providerRegistry.registerModule(new SettingsProviderModule());
-        providerRegistry.registerModule(new MlEngineProviderModule());
+        providerRegistry.registerModule(new MLEngineProviderModule());
 
         providerRegistry.registerPool(IStatefulViewProvider.class, () -> new StatefulViewProvider(provider));
         // it is safer to register navigator last in case it needs dependency from all above, provider can be passed here
