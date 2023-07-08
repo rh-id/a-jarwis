@@ -11,4 +11,5 @@
     <string name="buy_developer_a_coffee">Buy developer a coffee</string>
     <string name="processing_">Processing %s</string>
     <string name="done_processing_">Done processing: %s</string>
+    <string name="no_image_detected_">No image detected: %s</string>
 </resources>

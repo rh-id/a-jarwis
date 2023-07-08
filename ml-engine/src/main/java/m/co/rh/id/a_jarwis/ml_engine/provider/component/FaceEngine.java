@@ -11,18 +11,17 @@ import androidx.work.WorkManager;
 import com.hoko.blur.HokoBlur;
 import com.hoko.blur.processor.BlurProcessor;
 
+import org.opencv.android.Utils;
+import org.opencv.core.Mat;
+import org.opencv.imgproc.Imgproc;
+import org.opencv.objdetect.FaceDetectorYN;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-import ai.djl.android.core.BitmapImageFactory;
-import ai.djl.inference.Predictor;
-import ai.djl.modality.cv.Image;
-import ai.djl.modality.cv.output.BoundingBox;
-import ai.djl.modality.cv.output.Rectangle;
-import m.co.rh.id.a_jarwis.ml_engine.model.FaceDetectedObjects;
 import m.co.rh.id.a_jarwis.ml_engine.workmanager.BlurFaceWorkRequest;
 import m.co.rh.id.a_jarwis.ml_engine.workmanager.Params;
 import m.co.rh.id.alogger.ILogger;
@@ -58,33 +57,26 @@ public class FaceEngine {
      */
     public List<Rect> detectFace(Bitmap bitmap) {
         List<Rect> rectList = new ArrayList<>();
-        FaceDetectedObjects faceDetectedObjects = null;
-        try (Predictor<Image, FaceDetectedObjects> predictor = mEngineInstance.getFaceDetectModel().newPredictor()) {
-            faceDetectedObjects = predictor.predict(fromBitmap(bitmap));
-        } catch (Exception e) {
-            mLogger.e(TAG, e.getMessage(), e);
+        int imgWidth = bitmap.getWidth();
+        int imgHeight = bitmap.getHeight();
+        Bitmap resized = Bitmap.createScaledBitmap(bitmap, MLEngineInstance.FACE_DETECT_WIDTH,
+                MLEngineInstance.FACE_DETECT_HEIGHT, false);
+        Mat faceInput = new Mat();
+        Utils.bitmapToMat(resized, faceInput);
+        Imgproc.cvtColor(faceInput, faceInput, Imgproc.COLOR_BGR2RGB);
+        FaceDetectorYN faceDetectorYN = mEngineInstance.getFaceDetectModel();
+        Mat faceOutput = new Mat();
+        faceDetectorYN.detect(faceInput, faceOutput);
+        int totalFace = faceOutput.rows();
+        for (int i = 0; i < totalFace; i++) {
+            int x = (int) ((faceOutput.get(i, 0)[0] / MLEngineInstance.FACE_DETECT_WIDTH) * imgWidth);
+            int y = (int) ((faceOutput.get(i, 1)[0] / MLEngineInstance.FACE_DETECT_HEIGHT)* imgHeight);
+            int w = (int) ((faceOutput.get(i, 2)[0] / MLEngineInstance.FACE_DETECT_WIDTH) * imgWidth);
+            int h = (int) ((faceOutput.get(i, 3)[0] / MLEngineInstance.FACE_DETECT_HEIGHT) * imgHeight);
+            double score = faceOutput.get(i, 14)[0];
+            mLogger.d(TAG, "face_" + i + ": " + x + "," + y + "," + w + "," + h + ";" + score);
+            rectList.add(new Rect(x, y, x + w, y + h));
         }
-        if (faceDetectedObjects != null) {
-            int faces = faceDetectedObjects.getNumberOfObjects();
-            if (faces > 0) {
-                List<BoundingBox> boundingBoxes = faceDetectedObjects.getBoundingBoxes();
-                for (int i = 0; i < faces; i++) {
-                    BoundingBox boundingBox = boundingBoxes.get(i);
-                    Rectangle rectangle = boundingBox.getBounds();
-                    double x = rectangle.getX();
-                    double y = rectangle.getY();
-                    double rightD = x + rectangle.getWidth();
-                    double bottomD = y + rectangle.getHeight();
-                    int left = (int) x;
-                    int top = (int) y;
-                    int right = (int) rightD;
-                    int bottom = (int) bottomD;
-                    rectList.add(new Rect(left, top, right, bottom));
-                    mLogger.d(TAG, "rect:" + left + "," + top + "," + right + "," + bottom);
-                }
-            }
-        }
-
         return rectList;
     }
 
@@ -145,15 +137,7 @@ public class FaceEngine {
         mWorkManager.enqueue(oneTimeWorkRequest);
     }
 
-    public void compareFaces(File imageFile1, File imageFile2) {
-        // TODO
-    }
-
     private Bitmap cropBitmap(final Bitmap originalBmp, Rect dest) {
         return Bitmap.createBitmap(originalBmp, dest.left, dest.top, dest.width(), dest.height());
-    }
-
-    private Image fromBitmap(Bitmap bitmap) {
-        return BitmapImageFactory.getInstance().fromImage(bitmap);
     }
 }

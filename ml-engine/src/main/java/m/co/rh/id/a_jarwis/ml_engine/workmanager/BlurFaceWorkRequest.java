@@ -41,13 +41,17 @@ public class BlurFaceWorkRequest extends Worker {
                 mediaHelper.insertImage(blurredFace, fileName, fileName);
                 face.recycle();
                 blurredFace.recycle();
+                logger.i(TAG, getApplicationContext()
+                        .getString(m.co.rh.id.a_jarwis.base.R.string.done_processing_, fileName));
+            } else {
+                logger.i(TAG, getApplicationContext()
+                        .getString(m.co.rh.id.a_jarwis.base.R.string.no_image_detected_, fileName));
             }
-            logger.i(TAG, getApplicationContext()
-                    .getString(m.co.rh.id.a_jarwis.base.R.string.done_processing_, fileName)
-            );
         } catch (Exception e) {
             logger.e(TAG, e.getMessage(), e);
             return Result.failure();
+        } finally {
+            inputFile.delete();
         }
         return Result.success();
     }

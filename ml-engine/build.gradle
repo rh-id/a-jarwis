@@ -7,7 +7,7 @@ android {
     compileSdk 33
 
     defaultConfig {
-        minSdk 26
+        minSdk 21
         targetSdk 33
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -16,11 +16,11 @@ android {
 
     buildTypes {
         debug {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -31,15 +31,11 @@ android {
     buildFeatures {
         mlModelBinding true
     }
+    ndkVersion '25.2.9519653'
 }
 
 dependencies {
     implementation project(":base")
+    implementation project(":opencv")
     implementation 'io.github.hokofly:hoko-blur:1.4.0'
-    implementation platform("ai.djl:bom:0.22.1")
-    implementation "ai.djl:api"
-    implementation "ai.djl.android:core"
-    runtimeOnly "ai.djl.pytorch:pytorch-engine"
-    runtimeOnly "ai.djl.android:pytorch-native"
-    runtimeOnly "ai.djl.android:onnxruntime"
 }
