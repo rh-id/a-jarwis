@@ -58,6 +58,6 @@ public class MLEngineInstance {
             }
         }
         return FaceDetectorYN.create(faceDetectFile.getAbsolutePath(), "", new Size(FACE_DETECT_WIDTH, FACE_DETECT_HEIGHT),
-                0.4f, 0.5f);
+                0.6f, 0.5f);
     }
 }
