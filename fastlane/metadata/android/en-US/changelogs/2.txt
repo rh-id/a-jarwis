@@ -1,0 +1,6 @@
+Release 1.0.1+2
+
+Features:
+* Replace machine learning engine with OpenCV
+* Allow multiple image selection for auto blur face
+* Notify when processing done
