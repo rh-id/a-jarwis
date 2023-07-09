@@ -26,20 +26,21 @@ import m.co.rh.id.a_jarwis.ml_engine.workmanager.BlurFaceWorkRequest;
 import m.co.rh.id.a_jarwis.ml_engine.workmanager.Params;
 import m.co.rh.id.alogger.ILogger;
 import m.co.rh.id.aprovider.Provider;
+import m.co.rh.id.aprovider.ProviderValue;
 
 public class FaceEngine {
     private static final String TAG = "FaceEngine";
     private final ILogger mLogger;
     private final WorkManager mWorkManager;
     private final ExecutorService mExecutorService;
-    private final MLEngineInstance mEngineInstance;
+    private final ProviderValue<MLEngineInstance> mEngineInstance;
     private final BlurProcessor mBlurProcessor;
 
     public FaceEngine(Provider provider) {
         mLogger = provider.get(ILogger.class);
         mWorkManager = provider.get(WorkManager.class);
         mExecutorService = provider.get(ExecutorService.class);
-        mEngineInstance = provider.get(MLEngineInstance.class);
+        mEngineInstance = provider.lazyGet(MLEngineInstance.class);
         mBlurProcessor = HokoBlur.with(provider.getContext().getApplicationContext())
                 .scheme(HokoBlur.SCHEME_NATIVE) //different implementation, RenderScript、OpenGL、Native(default) and Java
                 .mode(HokoBlur.MODE_GAUSSIAN) //blur algorithms，Gaussian、Stack(default) and Box
@@ -64,7 +65,7 @@ public class FaceEngine {
         Mat faceInput = new Mat();
         Utils.bitmapToMat(resized, faceInput);
         Imgproc.cvtColor(faceInput, faceInput, Imgproc.COLOR_BGR2RGB);
-        FaceDetectorYN faceDetectorYN = mEngineInstance.getFaceDetectModel();
+        FaceDetectorYN faceDetectorYN = mEngineInstance.get().getFaceDetectModel();
         Mat faceOutput = new Mat();
         faceDetectorYN.detect(faceInput, faceOutput);
         int totalFace = faceOutput.rows();
