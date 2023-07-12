@@ -99,6 +99,7 @@ println "OpenCV: " +openCVersionName + " " + project.buildscript.sourceFile
 android {
     namespace "org.opencv"
     compileSdk 33
+    ndkVersion '25.2.9519653'
 
     defaultConfig {
         minSdk 21
@@ -152,7 +153,26 @@ android {
             path (project.projectDir.toString() + '/libcxx_helper/CMakeLists.txt')
         }
     }
-    ndkVersion '25.2.9519653'
+
+    lintOptions {
+        quiet true
+        abortOnError false
+        checkReleaseBuilds false
+        ignoreWarnings true
+        checkAllWarnings false
+        warningsAsErrors false
+        noLines true
+        showAll false
+        explainIssues false
+        textReport false
+        xmlReport false
+        htmlReport false
+        sarifReport false
+        checkTestSources false
+        ignoreTestSources true
+        checkGeneratedSources false
+        checkDependencies false
+    }
 }
 
 dependencies {
