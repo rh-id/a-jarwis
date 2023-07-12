@@ -403,12 +403,6 @@
   license: The Apache Software License, Version 2.0
   licenseUrl: https://www.apache.org/licenses/LICENSE-2.0.txt
   url: https://github.com/square/leakcanary/
-- artifact: io.github.hokofly:hoko-blur:+
-  name: hoko-blur
-  copyrightHolder: HokoFly
-  license: The Apache Software License, Version 2.0
-  licenseUrl: http://www.apache.org/licenses/LICENSE-2.0.txt
-  url: https://github.com/HokoFly/HokoBlur
 - artifact: io.reactivex.rxjava3:rxandroid:+
   name: rxandroid
   copyrightHolder: RxAndroid authors

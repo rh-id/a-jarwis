@@ -8,9 +8,6 @@ import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
-import com.hoko.blur.HokoBlur;
-import com.hoko.blur.processor.BlurProcessor;
-
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
@@ -33,22 +30,11 @@ public class FaceEngine {
     private final ILogger mLogger;
     private final WorkManager mWorkManager;
     private final ProviderValue<MLEngineInstance> mEngineInstance;
-    private final BlurProcessor mBlurProcessor;
 
     public FaceEngine(Provider provider) {
         mLogger = provider.get(ILogger.class);
         mWorkManager = provider.get(WorkManager.class);
         mEngineInstance = provider.lazyGet(MLEngineInstance.class);
-        mBlurProcessor = HokoBlur.with(provider.getContext().getApplicationContext())
-                .scheme(HokoBlur.SCHEME_NATIVE) //different implementation, RenderScript、OpenGL、Native(default) and Java
-                .mode(HokoBlur.MODE_GAUSSIAN) //blur algorithms，Gaussian、Stack(default) and Box
-                .radius(25) //blur radius，max=25，default=5
-                .sampleFactor(5f) //scale factor，if factor=2，the width and height of a originalBitmap will be scale to 1/2 sizes，default=5
-                .forceCopy(false) //If scale factor=1.0f，the origin originalBitmap will be modified. You could set forceCopy=true to avoid it. default=false
-                .needUpscale(false) //After blurring，the originalBitmap will be upscaled to origin sizes，default=true
-                .translateX(0)//add x axis offset when blurring
-                .translateY(0)//add y axis offset when blurring
-                .processor(); //build a blur processor
     }
 
     /**
@@ -106,7 +92,11 @@ public class FaceEngine {
             canvas.drawBitmap(originalBitmap, 0, 0, null);
             for (Rect rect : rectList) {
                 Bitmap faceCrop = cropBitmap(originalBitmap, rect);
-                Bitmap blurredFace = mBlurProcessor.blur(faceCrop);
+                Mat faceCropRaw = new Mat();
+                Utils.bitmapToMat(faceCrop, faceCropRaw);
+                Imgproc.GaussianBlur(faceCropRaw, faceCropRaw, new Size(201, 201), 100);
+                Bitmap blurredFace = Bitmap.createBitmap(faceCropRaw.cols(), faceCropRaw.rows(), Bitmap.Config.ARGB_8888);
+                Utils.matToBitmap(faceCropRaw, blurredFace);
                 canvas.drawBitmap(blurredFace, null, rect, null);
                 faceCrop.recycle();
                 blurredFace.recycle();

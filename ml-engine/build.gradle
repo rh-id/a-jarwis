@@ -37,7 +37,6 @@ android {
 dependencies {
     implementation project(":base")
     implementation project(":opencv")
-    implementation 'io.github.hokofly:hoko-blur:1.4.0'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
