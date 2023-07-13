@@ -53,12 +53,13 @@ public class FaceEngine {
         Mat imageSearch = detectFaceRaw(imageToBeSearch);
         int rowSize = imageSearch.rows();
         if (rowSize > 0) {
+            faceLoc = faceLoc.row(0);
             for (int i = 0; i < rowSize; i++) {
                 Mat detectedFace = imageSearch.row(i);
                 boolean faceSimilar = isFaceSimilar(faceImage, imageToBeSearch,
                         faceLoc, detectedFace);
                 if (faceSimilar) {
-                    resultList.add(toRect(detectedFace));
+                    resultList.add(faceDetectToRect(detectedFace));
                 }
             }
         }
@@ -73,7 +74,7 @@ public class FaceEngine {
         Mat faceOutput = detectFaceRaw(bitmap);
         int totalFace = faceOutput.rows();
         for (int i = 0; i < totalFace; i++) {
-            rectList.add(toRect(faceOutput.row(i)));
+            rectList.add(faceDetectToRect(faceOutput.row(i)));
         }
         return rectList;
     }
@@ -133,8 +134,8 @@ public class FaceEngine {
         Mat image2 = new Mat();
         Utils.bitmapToMat(image1Src, image1);
         Utils.bitmapToMat(image2Src, image2);
-        Imgproc.cvtColor(image1, image1, Imgproc.COLOR_BGR2RGB);
-        Imgproc.cvtColor(image2, image2, Imgproc.COLOR_BGR2RGB);
+        Imgproc.cvtColor(image1, image1, Imgproc.COLOR_RGBA2RGB);
+        Imgproc.cvtColor(image2, image2, Imgproc.COLOR_RGBA2RGB);
         Mat alignedF1 = new Mat();
         Mat alignedF2 = new Mat();
         faceRecognizerSF.alignCrop(image1, face1Loc, alignedF1);
@@ -142,7 +143,9 @@ public class FaceEngine {
         Mat feature1 = new Mat();
         Mat feature2 = new Mat();
         faceRecognizerSF.feature(alignedF1, feature1);
+        feature1 = feature1.clone();
         faceRecognizerSF.feature(alignedF2, feature2);
+        feature2 = feature2.clone();
         double cosScore = faceRecognizerSF.match(feature1, feature2, FaceRecognizerSF.FR_COSINE);
         double L2Score = faceRecognizerSF.match(feature1, feature2, FaceRecognizerSF.FR_NORM_L2);
         /*
@@ -153,7 +156,7 @@ public class FaceEngine {
         return cosScore >= 0.363 || L2Score <= 1.128;
     }
 
-    private Rect toRect(Mat detectedFace) {
+    private Rect faceDetectToRect(Mat detectedFace) {
         int x = (int) detectedFace.get(0, 0)[0];
         int y = (int) detectedFace.get(0, 1)[0];
         int w = (int) detectedFace.get(0, 2)[0];
@@ -166,7 +169,7 @@ public class FaceEngine {
         faceDetectorYN.setInputSize(new Size(bitmap.getWidth(), bitmap.getHeight()));
         Mat faceInput = new Mat();
         Utils.bitmapToMat(bitmap, faceInput);
-        Imgproc.cvtColor(faceInput, faceInput, Imgproc.COLOR_BGR2RGB);
+        Imgproc.cvtColor(faceInput, faceInput, Imgproc.COLOR_RGBA2RGB);
         Mat faceOutput = new Mat();
         faceDetectorYN.detect(faceInput, faceOutput);
         return faceOutput;
