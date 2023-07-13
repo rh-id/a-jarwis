@@ -71,6 +71,13 @@ public class FaceEngineTest {
 
         List<Rect> faceSimilar = mFaceEngine.searchFace(face1, face2);
         assertEquals(1, faceSimilar.size());
+
+        Rect face1Rect = face1List.get(0);
+        Rect face2Rect = face2List.get(0);
+        faceSimilar = mFaceEngine.searchFace(
+                Bitmap.createBitmap(face1, face1Rect.left, face1Rect.top, face1Rect.width(), face1Rect.height()),
+                Bitmap.createBitmap(face2, face2Rect.left, face2Rect.top, face2Rect.width(), face2Rect.height()));
+        assertEquals(1, faceSimilar.size());
     }
 
     @Test
@@ -86,7 +93,6 @@ public class FaceEngineTest {
         List<Rect> face2List = mFaceEngine.detectFace(face2);
         assertEquals(1, face2List.size());
 
-        // TODO why fail?
         List<Rect> faceSimilar = mFaceEngine.searchFace(face1, face2);
         assertEquals(0, faceSimilar.size());
     }
