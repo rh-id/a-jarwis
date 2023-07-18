@@ -17,8 +17,11 @@ import org.opencv.objdetect.FaceRecognizerSF;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import m.co.rh.id.a_jarwis.base.util.BitmapUtils;
+import m.co.rh.id.a_jarwis.base.util.SerializeUtils;
 import m.co.rh.id.a_jarwis.ml_engine.workmanager.BlurFaceWorkRequest;
 import m.co.rh.id.a_jarwis.ml_engine.workmanager.Params;
 import m.co.rh.id.alogger.ILogger;
@@ -84,15 +87,29 @@ public class FaceEngine {
      *
      * @return blurred image or null if face is not detected
      */
-    public Bitmap blurFace(Bitmap originalBitmap) {
+    public Bitmap blurFace(Bitmap originalBitmap, Collection<Bitmap> excludedFaces) {
         Bitmap result = null;
         List<Rect> rectList = detectFace(originalBitmap);
         if (!rectList.isEmpty()) {
             result = Bitmap.createBitmap(originalBitmap.getWidth(), originalBitmap.getHeight(), Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(result);
             canvas.drawBitmap(originalBitmap, 0, 0, null);
+            boolean excludedFaceEmpty = excludedFaces == null || excludedFaces.isEmpty();
             for (Rect rect : rectList) {
                 Bitmap faceCrop = cropBitmap(originalBitmap, rect);
+                if (!excludedFaceEmpty) {
+                    boolean excludeBlur = false;
+                    for (Bitmap bitmap : excludedFaces) {
+                        List<Rect> rectList1 = searchFace(faceCrop, bitmap);
+                        if (!rectList1.isEmpty()) {
+                            excludeBlur = true;
+                            break;
+                        }
+                    }
+                    if (excludeBlur) {
+                        continue;
+                    }
+                }
                 Mat faceCropRaw = new Mat();
                 Utils.bitmapToMat(faceCrop, faceCropRaw);
                 Imgproc.GaussianBlur(faceCropRaw, faceCropRaw, new Size(201, 201), 100);
@@ -106,18 +123,15 @@ public class FaceEngine {
         return result;
     }
 
-    /**
-     * Enqueue blur face to be executed in workmanager
-     *
-     * @param file image file to be executed
-     */
-    public void enqueueBlurFace(File file) {
+    public void enqueueBlurFace(File file, Collection<File> excludedFiles) {
+        Data.Builder inputBuilder = new Data.Builder();
+        inputBuilder.putByteArray(Params.FILE, SerializeUtils.serialize(file));
+        if (excludedFiles != null && !excludedFiles.isEmpty()) {
+            inputBuilder.putByteArray(Params.FILE_ARRAYLIST,
+                    SerializeUtils.serialize(new ArrayList<>(excludedFiles)));
+        }
         OneTimeWorkRequest oneTimeWorkRequest = new OneTimeWorkRequest.Builder(BlurFaceWorkRequest.class)
-                .setInputData(
-                        new Data.Builder()
-                                .putString(Params.ARGS_FILE_PATH, file.getAbsolutePath())
-                                .build()
-                )
+                .setInputData(inputBuilder.build())
                 .build();
         mWorkManager.enqueue(oneTimeWorkRequest);
     }
@@ -176,6 +190,6 @@ public class FaceEngine {
     }
 
     private Bitmap cropBitmap(final Bitmap originalBmp, Rect dest) {
-        return Bitmap.createBitmap(originalBmp, dest.left, dest.top, dest.width(), dest.height());
+        return BitmapUtils.cropBitmap(originalBmp, dest);
     }
 }

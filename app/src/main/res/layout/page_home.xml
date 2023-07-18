@@ -30,6 +30,17 @@
                 android:gravity="center"
                 android:text="@string/title_auto_blur_face"
                 app:icon="@drawable/ic_face_black" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_exclude_blur_face"
+                style="@style/Theme.Asnapblur.HomeMenuButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:gravity="center"
+                android:text="@string/title_exclude_blur_face"
+                app:icon="@drawable/ic_face_black" />
         </GridLayout>
     </LinearLayout>
 

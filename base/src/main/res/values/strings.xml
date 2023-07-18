@@ -7,9 +7,15 @@
     <string name="donation_thank_you">Thank you for your support</string>
     <string name="home">Home</string>
     <string name="title_auto_blur_face">Auto Blur Face</string>
+    <string name="title_exclude_blur_face">Exclude Blur Face</string>
     <string name="toast_back_press_exit">Press BACK again to exit</string>
     <string name="buy_developer_a_coffee">Buy developer a coffee</string>
     <string name="processing_">Processing %s</string>
     <string name="done_processing_">Done processing: %s</string>
     <string name="no_image_detected_">No image detected: %s</string>
+    <string name="back">Back</string>
+    <string name="next">Next</string>
+    <string name="tap_to_select_image">Tap to select image</string>
+    <string name="title_what_to_do">What to do?</string>
+    <string name="pick_image_to_be_excluded_from_blur">Pick Image to be excluded from blur first and then select image from gallery</string>
 </resources>

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 
 import io.reactivex.rxjava3.core.Single;
@@ -29,12 +30,16 @@ public class BlurFaceCommand {
     }
 
     public Single<File> execute(Uri uriFile) {
+        return execute(uriFile, null);
+    }
+
+    public Single<File> execute(Uri uriFile, Collection<File> excludeFiles) {
         return Single.fromFuture(mExecutorService.submit(() -> {
             String fullPath = uriFile.getPath();
             int cut = fullPath.lastIndexOf("/");
             File result = mFileHelper
                     .createTempFile(fullPath.substring(cut + 1), uriFile);
-            mFaceEngine.enqueueBlurFace(result);
+            mFaceEngine.enqueueBlurFace(result, excludeFiles);
             return result;
         }));
     }

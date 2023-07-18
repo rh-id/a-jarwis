@@ -10,9 +10,12 @@ import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.util.ArrayList;
 
 import m.co.rh.id.a_jarwis.base.BaseApplication;
 import m.co.rh.id.a_jarwis.base.provider.component.helper.MediaHelper;
+import m.co.rh.id.a_jarwis.base.util.SerializeUtils;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.FaceEngine;
 import m.co.rh.id.alogger.ILogger;
 import m.co.rh.id.aprovider.Provider;
@@ -28,14 +31,23 @@ public class BlurFaceWorkRequest extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        File inputFile = new File(getInputData().getString(Params.ARGS_FILE_PATH));
+        byte[] fileBytes = getInputData().getByteArray(Params.FILE);
+        byte[] fileExcludeBytes = getInputData().getByteArray(Params.FILE_ARRAYLIST);
+        File inputFile = SerializeUtils.deserialize(fileBytes);
+        ArrayList<File> fileArrayList = SerializeUtils.deserialize(fileExcludeBytes);
         Provider provider = BaseApplication.of(getApplicationContext()).getProvider();
         ILogger logger = provider.get(ILogger.class);
         MediaHelper mediaHelper = provider.get(MediaHelper.class);
         FaceEngine faceEngine = provider.get(FaceEngine.class);
         try {
+            ArrayList<Bitmap> bitmaps = new ArrayList<>();
+            if (!fileArrayList.isEmpty()) {
+                for (File file : fileArrayList) {
+                    bitmaps.add(BitmapFactory.decodeStream(new FileInputStream(file)));
+                }
+            }
             Bitmap face = BitmapFactory.decodeFile(inputFile.getAbsolutePath());
-            Bitmap blurredFace = faceEngine.blurFace(face);
+            Bitmap blurredFace = faceEngine.blurFace(face, bitmaps);
             String fileName = inputFile.getName();
             if (blurredFace != null) {
                 mediaHelper.insertImage(blurredFace, fileName, fileName);
