@@ -34,7 +34,8 @@ public class BlurFaceWorkRequest extends Worker {
         byte[] fileBytes = getInputData().getByteArray(Params.FILE);
         byte[] fileExcludeBytes = getInputData().getByteArray(Params.FILE_ARRAYLIST);
         File inputFile = SerializeUtils.deserialize(fileBytes);
-        ArrayList<File> fileArrayList = SerializeUtils.deserialize(fileExcludeBytes);
+        ArrayList<File> fileArrayList = fileExcludeBytes == null ? new ArrayList<>() :
+                SerializeUtils.deserialize(fileExcludeBytes);
         Provider provider = BaseApplication.of(getApplicationContext()).getProvider();
         ILogger logger = provider.get(ILogger.class);
         MediaHelper mediaHelper = provider.get(MediaHelper.class);
