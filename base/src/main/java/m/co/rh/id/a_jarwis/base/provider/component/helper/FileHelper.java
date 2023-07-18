@@ -80,7 +80,7 @@ public class FileHelper {
 
             FileOutputStream fileOutputStream = new FileOutputStream(tmpFile);
             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
-            byte[] buff = new byte[2048];
+            byte[] buff = new byte[102800];
             int b = bufferedInputStream.read(buff);
             while (b != -1) {
                 bufferedOutputStream.write(buff);
