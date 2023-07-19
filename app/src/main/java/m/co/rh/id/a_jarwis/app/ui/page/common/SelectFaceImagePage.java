@@ -62,10 +62,12 @@ public class SelectFaceImagePage extends StatefulView<Activity> implements NavOn
     private SerialBehaviorSubject<File> mImageViewFile;
 
     private SerialBehaviorSubject<ArrayList<ImageItem>> mImageItemList;
+    private SerialBehaviorSubject<Boolean> mIsLoading;
 
     public SelectFaceImagePage() {
         mImageViewFile = new SerialBehaviorSubject<>();
-        mImageItemList = new SerialBehaviorSubject<>();
+        mImageItemList = new SerialBehaviorSubject<>(new ArrayList<>());
+        mIsLoading = new SerialBehaviorSubject<>(false);
     }
 
     @Override
@@ -86,6 +88,7 @@ public class SelectFaceImagePage extends StatefulView<Activity> implements NavOn
     @Override
     protected View createView(Activity activity, ViewGroup container) {
         View rootView = activity.getLayoutInflater().inflate(R.layout.page_select_face_image, container, false);
+        View containerProgressBar = rootView.findViewById(R.id.container_progressBar);
         RecyclerView listView = rootView.findViewById(R.id.listView);
         listView.setAdapter(mImageListAdapter);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(activity,
@@ -112,8 +115,23 @@ public class SelectFaceImagePage extends StatefulView<Activity> implements NavOn
         );
         mRxDisposer.add("createView_onImageItemListChanged", mImageItemList.getSubject()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(mImageListAdapter::submitList
+                .subscribe(imageItems -> {
+                            mImageListAdapter.submitList(imageItems);
+                            nextButton.setEnabled(!imageItems.isEmpty());
+                        }
                 ));
+        mRxDisposer.add("createView_onLoading", mIsLoading.getSubject()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(aBoolean -> {
+                    if (aBoolean) {
+                        rootView.setEnabled(false);
+                        containerProgressBar.setVisibility(View.VISIBLE);
+                    } else {
+                        rootView.setEnabled(true);
+                        containerProgressBar.setVisibility(View.GONE);
+                    }
+                })
+        );
         return rootView;
     }
 
@@ -138,36 +156,49 @@ public class SelectFaceImagePage extends StatefulView<Activity> implements NavOn
             view.setEnabled(false);
             mNavigator.pop();
         } else if (id == R.id.button_next) {
-            view.setEnabled(false);
-            mRxDisposer.add("onClick_next",
-                    Single.fromCallable(() -> {
-                                        ArrayList<ImageItem> imageItems = mImageItemList.getValue();
-                                        ArrayList<File> selectedFile = new ArrayList<>();
-                                        if (!imageItems.isEmpty()) {
-                                            int size = imageItems.size();
-                                            for (int i = 0; i < size; i++) {
-                                                ImageItem imageItem = imageItems.get(i);
-                                                if (imageItem.isSelected()) {
-                                                    File file = mFileHelper.createTempFile("face_" + i + ".jpg");
-                                                    Bitmap bitmap = imageItem.getImage();
-                                                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, new FileOutputStream(file));
-                                                    selectedFile.add(file);
+            mIsLoading.onNext(true);
+            boolean faceSelected = false;
+            ArrayList<ImageItem> imageItems = mImageItemList.getValue();
+            for (ImageItem imageItem : imageItems) {
+                if (imageItem.isSelected()) {
+                    faceSelected = true;
+                    break;
+                }
+            }
+            if (!faceSelected) {
+                mLogger.i(TAG, mNavigator.getActivity().getString(m.co.rh.id.a_jarwis.base.R.string.no_face_selected));
+                mIsLoading.onNext(false);
+            } else {
+                mRxDisposer.add("onClick_next",
+                        Single.fromCallable(() -> {
+                                            ArrayList<File> selectedFile = new ArrayList<>();
+                                            if (!imageItems.isEmpty()) {
+                                                int size = imageItems.size();
+                                                for (int i = 0; i < size; i++) {
+                                                    ImageItem imageItem = imageItems.get(i);
+                                                    if (imageItem.isSelected()) {
+                                                        File file = mFileHelper.createTempFile("face_" + i + ".jpg");
+                                                        Bitmap bitmap = imageItem.getImage();
+                                                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, new FileOutputStream(file));
+                                                        selectedFile.add(file);
+                                                    }
+                                                    imageItem.getImage().recycle();
                                                 }
-                                                imageItem.getImage().recycle();
                                             }
+                                            return selectedFile;
                                         }
-                                        return selectedFile;
+                                )
+                                .subscribeOn(Schedulers.from(mExecutorService))
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe((files, throwable) -> {
+                                    if (throwable != null) {
+                                        mLogger.e(TAG, throwable.getMessage(), throwable);
+                                        mIsLoading.onNext(false);
+                                    } else {
+                                        mNavigator.pop(new FileList(files));
                                     }
-                            )
-                            .subscribeOn(Schedulers.from(mExecutorService))
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe((files, throwable) -> {
-                                if (throwable != null) {
-                                    mLogger.e(TAG, throwable.getMessage(), throwable);
-                                } else {
-                                    mNavigator.pop(new FileList(files));
-                                }
-                            }));
+                                }));
+            }
         } else if (id == R.id.imageView) {
             pickImage(activity);
         }
@@ -176,6 +207,7 @@ public class SelectFaceImagePage extends StatefulView<Activity> implements NavOn
     @Override
     public void onActivityResult(View currentView, Activity activity, INavigator INavigator, int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE_PICK_IMAGE && resultCode == Activity.RESULT_OK) {
+            mIsLoading.onNext(true);
             Uri fullPhotoUri = data.getData();
             mRxDisposer.add("onActivityResult_pickImage",
                     Single.fromCallable(() -> mFileHelper.createImageTempFile(fullPhotoUri))
@@ -197,6 +229,7 @@ public class SelectFaceImagePage extends StatefulView<Activity> implements NavOn
                                     mLogger.d(TAG, "totalFace:" + imageItems.size());
                                     mImageItemList.onNext(imageItems);
                                     mImageViewFile.onNext(file);
+                                    mIsLoading.onNext(false);
                                 }
                             })
             );

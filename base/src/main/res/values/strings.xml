@@ -18,4 +18,5 @@
     <string name="tap_to_select_image">Tap to select image</string>
     <string name="title_what_to_do">What to do?</string>
     <string name="pick_image_to_be_excluded_from_blur">Pick Image to be excluded from blur first and then select image from gallery</string>
+    <string name="no_face_selected">No face selected</string>
 </resources>
