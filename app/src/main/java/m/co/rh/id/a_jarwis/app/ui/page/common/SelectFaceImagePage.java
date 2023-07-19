@@ -88,6 +88,7 @@ public class SelectFaceImagePage extends StatefulView<Activity> implements NavOn
     @Override
     protected View createView(Activity activity, ViewGroup container) {
         View rootView = activity.getLayoutInflater().inflate(R.layout.page_select_face_image, container, false);
+        View noRecordView = rootView.findViewById(R.id.text_no_face);
         View containerProgressBar = rootView.findViewById(R.id.container_progressBar);
         RecyclerView listView = rootView.findViewById(R.id.listView);
         listView.setAdapter(mImageListAdapter);
@@ -117,7 +118,13 @@ public class SelectFaceImagePage extends StatefulView<Activity> implements NavOn
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(imageItems -> {
                             mImageListAdapter.submitList(imageItems);
-                            nextButton.setEnabled(!imageItems.isEmpty());
+                            boolean isEmpty = imageItems.isEmpty();
+                            nextButton.setEnabled(!isEmpty);
+                            if (isEmpty) {
+                                noRecordView.setVisibility(View.VISIBLE);
+                            } else {
+                                noRecordView.setVisibility(View.GONE);
+                            }
                         }
                 ));
         mRxDisposer.add("createView_onLoading", mIsLoading.getSubject()
