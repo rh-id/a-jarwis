@@ -46,7 +46,7 @@ public class BlurFaceWorkRequest extends Worker {
             ois = new ObjectInputStream(new FileInputStream(serialFile));
             BlurFaceSerialFile blurFaceSerialFile = (BlurFaceSerialFile) ois.readObject();
             inputFile = blurFaceSerialFile.getInputFile();
-            ArrayList<File> fileArrayList = blurFaceSerialFile.getExcludeFiles();
+            ArrayList<File> fileArrayList = blurFaceSerialFile.getFaces();
 
             ArrayList<Bitmap> bitmaps = new ArrayList<>();
             if (fileArrayList != null && !fileArrayList.isEmpty()) {
@@ -55,7 +55,7 @@ public class BlurFaceWorkRequest extends Worker {
                 }
             }
             Bitmap face = BitmapFactory.decodeFile(inputFile.getAbsolutePath());
-            Bitmap blurredFace = faceEngine.blurFace(face, bitmaps);
+            Bitmap blurredFace = faceEngine.blurFace(face, bitmaps, blurFaceSerialFile.isExclude());
             String fileName = inputFile.getName();
             if (blurredFace != null) {
                 mediaHelper.insertImage(blurredFace, fileName, fileName);

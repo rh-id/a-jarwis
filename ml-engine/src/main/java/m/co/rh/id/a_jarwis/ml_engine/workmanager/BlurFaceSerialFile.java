@@ -6,25 +6,30 @@ import java.util.ArrayList;
 
 public class BlurFaceSerialFile implements Serializable {
     private File inputFile;
-    private ArrayList<File> excludeFiles;
+    private ArrayList<File> faces;
+    private boolean exclude;
 
     public BlurFaceSerialFile(File inputFile) {
         this.inputFile = inputFile;
+    }
+
+    public boolean isExclude() {
+        return exclude;
+    }
+
+    public void setExclude(boolean exclude) {
+        this.exclude = exclude;
     }
 
     public File getInputFile() {
         return inputFile;
     }
 
-    public void setInputFile(File inputFile) {
-        this.inputFile = inputFile;
+    public ArrayList<File> getFaces() {
+        return faces;
     }
 
-    public ArrayList<File> getExcludeFiles() {
-        return excludeFiles;
-    }
-
-    public void setExcludeFiles(ArrayList<File> excludeFiles) {
-        this.excludeFiles = excludeFiles;
+    public void setFaces(ArrayList<File> faces) {
+        this.faces = faces;
     }
 }

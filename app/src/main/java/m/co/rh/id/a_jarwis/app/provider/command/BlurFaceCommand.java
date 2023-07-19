@@ -34,12 +34,16 @@ public class BlurFaceCommand {
     }
 
     public Single<File> execute(Uri uriFile, Collection<File> excludeFiles) {
+        return execute(uriFile, excludeFiles, true);
+    }
+
+    public Single<File> execute(Uri uriFile, Collection<File> faces, boolean isExclude) {
         return Single.fromFuture(mExecutorService.submit(() -> {
             String fullPath = uriFile.getPath();
             int cut = fullPath.lastIndexOf("/");
             File result = mFileHelper
                     .createTempFile(fullPath.substring(cut + 1), uriFile);
-            mFaceEngine.enqueueBlurFace(result, excludeFiles);
+            mFaceEngine.enqueueBlurFace(result, faces, isExclude);
             return result;
         }));
     }

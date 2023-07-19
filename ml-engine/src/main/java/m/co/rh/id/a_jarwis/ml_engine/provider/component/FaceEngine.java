@@ -94,31 +94,38 @@ public class FaceEngine {
      *
      * @return blurred image or null if face is not detected
      */
-    public Bitmap blurFace(Bitmap originalBitmap, Collection<Bitmap> excludedFaces) {
+    public Bitmap blurFace(Bitmap originalBitmap, Collection<Bitmap> faces, boolean isExclude) {
         Bitmap result = null;
         Mat rectList = detectFaceRaw(originalBitmap);
         if (rectList.rows() > 0) {
             result = Bitmap.createBitmap(originalBitmap.getWidth(), originalBitmap.getHeight(), Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(result);
             canvas.drawBitmap(originalBitmap, 0, 0, null);
-            boolean excludedFaceEmpty = excludedFaces == null || excludedFaces.isEmpty();
+            boolean excludedFaceEmpty = faces == null || faces.isEmpty();
             int size = rectList.rows();
             for (int i = 0; i < size; i++) {
                 Mat faceLoc = rectList.row(i);
                 if (!excludedFaceEmpty) {
-                    boolean excludeBlur = false;
-                    for (Bitmap bitmap : excludedFaces) {
+                    boolean skipBlur = false;
+                    for (Bitmap bitmap : faces) {
                         Mat excludeFaceMat = detectFaceRaw(bitmap);
                         boolean faceSimilar = isFaceSimilar(originalBitmap, bitmap,
                                 faceLoc,
                                 excludeFaceMat.row(0)
                         );
                         if (faceSimilar) {
-                            excludeBlur = true;
-                            break;
+                            if (isExclude) {
+                                skipBlur = true;
+                                break;
+                            }
+                        } else {
+                            if (!isExclude) {
+                                skipBlur = true;
+                                break;
+                            }
                         }
                     }
-                    if (excludeBlur) {
+                    if (skipBlur) {
                         continue;
                     }
                 }
@@ -137,14 +144,15 @@ public class FaceEngine {
         return result;
     }
 
-    public void enqueueBlurFace(File file, Collection<File> excludedFiles) {
+    public void enqueueBlurFace(File file, Collection<File> faces, boolean isExclude) {
         ObjectOutputStream oos = null;
         try {
             File serialFile = mFileHelper.createTempFile();
             oos = new ObjectOutputStream(new FileOutputStream(serialFile));
             BlurFaceSerialFile blurFaceSerialFile = new BlurFaceSerialFile(file);
-            if (excludedFiles != null && !excludedFiles.isEmpty()) {
-                blurFaceSerialFile.setExcludeFiles(new ArrayList<>(excludedFiles));
+            blurFaceSerialFile.setExclude(isExclude);
+            if (faces != null && !faces.isEmpty()) {
+                blurFaceSerialFile.setFaces(new ArrayList<>(faces));
             }
             oos.writeObject(blurFaceSerialFile);
             oos.close();

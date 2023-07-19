@@ -8,6 +8,7 @@
     <string name="home">Home</string>
     <string name="title_auto_blur_face">Auto Blur Face</string>
     <string name="title_exclude_blur_face">Exclude Blur Face</string>
+    <string name="title_selective_blur_face">Selective Blur Face</string>
     <string name="toast_back_press_exit">Press BACK again to exit</string>
     <string name="buy_developer_a_coffee">Buy developer a coffee</string>
     <string name="processing_">Processing %s</string>
@@ -17,7 +18,8 @@
     <string name="next">Next</string>
     <string name="tap_to_select_image">Tap to select image</string>
     <string name="title_what_to_do">What to do?</string>
-    <string name="pick_image_to_be_excluded_from_blur">Pick Image to be excluded from blur first and then select image from gallery</string>
+    <string name="pick_image_to_be_excluded_from_blur">Pick image with face(s) to be excluded from blur and then select image(s) from gallery that you want to blur the face(s)</string>
+    <string name="pick_image_for_selective_blur">Pick image with face(s) to select the face(s) to be blurred and then select image(s) from gallery on which the face(s) to be blurred</string>
     <string name="no_face_selected">No face selected</string>
     <string name="title_no_face">No Face</string>
 </resources>

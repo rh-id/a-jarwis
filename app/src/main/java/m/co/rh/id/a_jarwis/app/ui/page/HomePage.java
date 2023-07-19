@@ -49,6 +49,7 @@ public class HomePage extends StatefulView<Activity> implements RequireComponent
 
     private static final int REQUEST_CODE_IMAGE_AUTO_BLUR_FACE = 1;
     private static final int REQUEST_CODE_IMAGE_EXCLUDE_BLUR_FACE = 2;
+    private static final int REQUEST_CODE_IMAGE_SELECTIVE_BLUR_FACE = 3;
 
     @NavInject
     private transient INavigator mNavigator;
@@ -68,7 +69,7 @@ public class HomePage extends StatefulView<Activity> implements RequireComponent
     private transient DrawerLayout mDrawerLayout;
     private transient View.OnClickListener mOnNavigationClicked;
 
-    private ArrayList<File> mExcludeFacesList;
+    private ArrayList<File> mfacesList;
 
     public HomePage() {
         mAppBarSV = new AppBarSV();
@@ -106,6 +107,8 @@ public class HomePage extends StatefulView<Activity> implements RequireComponent
         autoBlurButton.setOnClickListener(this);
         Button excludeBlurButton = rootLayout.findViewById(R.id.button_exclude_blur_face);
         excludeBlurButton.setOnClickListener(this);
+        Button selectiveBlurButton = rootLayout.findViewById(R.id.button_selective_blur_face);
+        selectiveBlurButton.setOnClickListener(this);
         ViewGroup containerAppBar = rootLayout.findViewById(R.id.container_app_bar);
         containerAppBar.addView(mAppBarSV.buildView(activity, container));
         return rootLayout;
@@ -181,6 +184,43 @@ public class HomePage extends StatefulView<Activity> implements RequireComponent
             } else {
                 startExcludeAutoBlur();
             }
+        } else if (id == R.id.button_selective_blur_face) {
+            Activity activity = mNavigator.getActivity();
+            if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE_IMAGE_EXCLUDE_BLUR_FACE);
+            } else {
+                startSelectiveAutoBlur();
+            }
+        }
+    }
+
+    private void startSelectiveAutoBlur() {
+        int title = m.co.rh.id.a_jarwis.base.R.string.title_what_to_do;
+        int body = m.co.rh.id.a_jarwis.base.R.string.pick_image_for_selective_blur;
+        mNavigator.push(Routes.SHOW_MESSAGE_PAGE, new MessageText(title, body, true)
+                , (navigator, navRoute, activity1, currentView) ->
+                        startSelectiveAutoBlur_processFirstRespond(navRoute));
+    }
+
+    private void startSelectiveAutoBlur_processFirstRespond(NavRoute navRoute) {
+        Serializable serializable = navRoute.getRouteResult();
+        if (serializable instanceof SelectedChoice) {
+            int selectedChoice = ((SelectedChoice) serializable).getSelectedChoice();
+            if (SelectedChoice.POSITIVE == selectedChoice) {
+                mNavigator.push(Routes.SELECT_FACE_IMAGE_PAGE, (navigator, navRoute1, activity1, currentView) ->
+                        startSelectiveAutoBlur_processSecondRespond(activity1, navRoute1));
+            }
+        }
+    }
+
+    private void startSelectiveAutoBlur_processSecondRespond(Activity activity, NavRoute navRoute) {
+        Serializable serializable = navRoute.getRouteResult();
+        if (serializable instanceof FileList) {
+            ArrayList<File> fileList = ((FileList) serializable).getFiles();
+            if (!fileList.isEmpty()) {
+                mfacesList = fileList;
+                pickImage(activity, REQUEST_CODE_IMAGE_SELECTIVE_BLUR_FACE);
+            }
         }
     }
 
@@ -208,7 +248,7 @@ public class HomePage extends StatefulView<Activity> implements RequireComponent
         if (serializable instanceof FileList) {
             ArrayList<File> fileList = ((FileList) serializable).getFiles();
             if (!fileList.isEmpty()) {
-                mExcludeFacesList = fileList;
+                mfacesList = fileList;
                 pickImage(activity, REQUEST_CODE_IMAGE_EXCLUDE_BLUR_FACE);
             }
         }
@@ -278,7 +318,7 @@ public class HomePage extends StatefulView<Activity> implements RequireComponent
                 if (!uriList.isEmpty()) {
                     mRxDisposer.add("onActivityResult_excludeAutoBlurFace_multiple",
                             Flowable.fromIterable(uriList)
-                                    .map(uri -> mBlurFaceCommand.execute(uri, mExcludeFacesList).blockingGet())
+                                    .map(uri -> mBlurFaceCommand.execute(uri, mfacesList).blockingGet())
                                     .subscribeOn(Schedulers.from(mExecutorService))
                                     .doOnError(throwable -> consumeFile.accept(null, throwable))
                                     .subscribe(file -> consumeFile.accept(file, null))
@@ -286,7 +326,40 @@ public class HomePage extends StatefulView<Activity> implements RequireComponent
                 }
             } else {
                 mRxDisposer.add("onActivityResult_excludeAutoBlurFace",
-                        mBlurFaceCommand.execute(fullPhotoUri, mExcludeFacesList)
+                        mBlurFaceCommand.execute(fullPhotoUri, mfacesList)
+                                .subscribeOn(Schedulers.from(mExecutorService))
+                                .subscribe(consumeFile));
+            }
+        } else if (requestCode == REQUEST_CODE_IMAGE_SELECTIVE_BLUR_FACE && resultCode == Activity.RESULT_OK) {
+            ClipData listPhoto = data.getClipData();
+            Uri fullPhotoUri = data.getData();
+            BiConsumer<File, Throwable> consumeFile = (file, throwable) -> {
+                if (throwable != null) {
+                    mLogger.e(TAG, throwable.getMessage(), throwable);
+                } else {
+                    mLogger.i(TAG, mSvProvider.getContext()
+                            .getString(m.co.rh.id.a_jarwis.base.R.string.processing_,
+                                    file.getName()));
+                }
+            };
+            if (listPhoto != null) {
+                int count = listPhoto.getItemCount();
+                List<Uri> uriList = new ArrayList<>();
+                for (int i = 0; i < count; i++) {
+                    uriList.add(listPhoto.getItemAt(i).getUri());
+                }
+                if (!uriList.isEmpty()) {
+                    mRxDisposer.add("onActivityResult_selectiveAutoBlurFace_multiple",
+                            Flowable.fromIterable(uriList)
+                                    .map(uri -> mBlurFaceCommand.execute(uri, mfacesList, false).blockingGet())
+                                    .subscribeOn(Schedulers.from(mExecutorService))
+                                    .doOnError(throwable -> consumeFile.accept(null, throwable))
+                                    .subscribe(file -> consumeFile.accept(file, null))
+                    );
+                }
+            } else {
+                mRxDisposer.add("onActivityResult_selectiveAutoBlurFace",
+                        mBlurFaceCommand.execute(fullPhotoUri, mfacesList, false)
                                 .subscribeOn(Schedulers.from(mExecutorService))
                                 .subscribe(consumeFile));
             }
