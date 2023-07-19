@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
@@ -92,7 +91,6 @@ public class SelectFaceImagePage extends StatefulView<Activity> implements NavOn
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(activity,
                 DividerItemDecoration.VERTICAL);
         listView.addItemDecoration(dividerItemDecoration);
-        TextView titleTextView = rootView.findViewById(R.id.title_pick_image);
         ImageView imageView = rootView.findViewById(R.id.imageView);
         imageView.setOnClickListener(this);
         Button backButton = rootView.findViewById(R.id.button_back);
@@ -180,11 +178,7 @@ public class SelectFaceImagePage extends StatefulView<Activity> implements NavOn
         if (requestCode == REQUEST_CODE_PICK_IMAGE && resultCode == Activity.RESULT_OK) {
             Uri fullPhotoUri = data.getData();
             mRxDisposer.add("onActivityResult_pickImage",
-                    Single.fromCallable(() -> {
-                                String fileName = fullPhotoUri.getPath();
-                                return mFileHelper.createTempFile(
-                                        fileName.substring(fileName.lastIndexOf("/")) + ".jpg", fullPhotoUri);
-                            })
+                    Single.fromCallable(() -> mFileHelper.createImageTempFile(fullPhotoUri))
                             .subscribeOn(Schedulers.from(mExecutorService))
                             .observeOn(Schedulers.from(mExecutorService))
                             .subscribe((file, throwable) -> {
