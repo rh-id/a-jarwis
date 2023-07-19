@@ -113,7 +113,7 @@ public class FaceEngine {
                                 faceLoc,
                                 excludeFaceMat.row(0)
                         );
-                        if (!faceSimilar) {
+                        if (faceSimilar) {
                             excludeBlur = true;
                             break;
                         }
