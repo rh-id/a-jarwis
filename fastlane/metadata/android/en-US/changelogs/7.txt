@@ -1,0 +1,4 @@
+Release 1.2.0+7
+
+Feature:
+* Add selective blur face to allow blurring specific face on multiple images
