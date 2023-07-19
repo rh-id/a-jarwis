@@ -2,6 +2,7 @@ package m.co.rh.id.a_jarwis.ml_engine.provider.component;
 
 import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -15,6 +16,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opencv.core.Mat;
 
 import java.util.List;
 
@@ -81,7 +83,7 @@ public class FaceEngineTest {
     }
 
     @Test
-    public void faceEngineRecognize_faceNotSimilar(){
+    public void faceEngineRecognize_faceNotSimilar() {
         Context context = mMLEngineProvider.getContext();
         Bitmap face1 = BitmapFactory.decodeStream(context.getResources().
                 openRawResource(R.raw.abel_pacheco_0001));
@@ -95,5 +97,26 @@ public class FaceEngineTest {
 
         List<Rect> faceSimilar = mFaceEngine.searchFace(face1, face2);
         assertEquals(0, faceSimilar.size());
+    }
+
+    @Test
+    public void faceEngine_isFaceSimilar() {
+        Context context = mMLEngineProvider.getContext();
+        Bitmap face1 = BitmapFactory.decodeStream(context.getResources().
+                openRawResource(R.raw.abel_pacheco_0001));
+        Mat face1List = mFaceEngine.detectFaceRaw(face1);
+        assertEquals(1, face1List.rows());
+
+        Bitmap face2 = BitmapFactory.decodeStream(context.getResources().
+                openRawResource(R.raw.abel_pacheco_0002));
+        Mat face2List = mFaceEngine.detectFaceRaw(face2);
+        assertEquals(1, face2List.rows());
+
+        boolean faceSimilar = mFaceEngine.isFaceSimilar(
+                face1, face2,
+                face1List.row(0),
+                face2List.row(0)
+        );
+        assertTrue(faceSimilar);
     }
 }

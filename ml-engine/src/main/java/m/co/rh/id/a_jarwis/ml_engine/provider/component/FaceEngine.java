@@ -57,7 +57,7 @@ public class FaceEngine {
     public List<Rect> searchFace(Bitmap faceImage, Bitmap imageToBeSearch) {
         List<Rect> resultList = new ArrayList<>();
         Mat faceLoc = detectFaceRaw(faceImage);
-        if (faceLoc.rows() > 1) {
+        if (faceLoc.rows() > 1 || faceLoc.rows() < 1) {
             throw new IllegalArgumentException("Face to be searched must be one only");
         }
         Mat imageSearch = detectFaceRaw(imageToBeSearch);
@@ -96,19 +96,24 @@ public class FaceEngine {
      */
     public Bitmap blurFace(Bitmap originalBitmap, Collection<Bitmap> excludedFaces) {
         Bitmap result = null;
-        List<Rect> rectList = detectFace(originalBitmap);
-        if (!rectList.isEmpty()) {
+        Mat rectList = detectFaceRaw(originalBitmap);
+        if (rectList.rows() > 0) {
             result = Bitmap.createBitmap(originalBitmap.getWidth(), originalBitmap.getHeight(), Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(result);
             canvas.drawBitmap(originalBitmap, 0, 0, null);
             boolean excludedFaceEmpty = excludedFaces == null || excludedFaces.isEmpty();
-            for (Rect rect : rectList) {
-                Bitmap faceCrop = cropBitmap(originalBitmap, rect);
+            int size = rectList.rows();
+            for (int i = 0; i < size; i++) {
+                Mat faceLoc = rectList.row(i);
                 if (!excludedFaceEmpty) {
                     boolean excludeBlur = false;
                     for (Bitmap bitmap : excludedFaces) {
-                        List<Rect> rectList1 = searchFace(faceCrop, bitmap);
-                        if (!rectList1.isEmpty()) {
+                        Mat excludeFaceMat = detectFaceRaw(bitmap);
+                        boolean faceSimilar = isFaceSimilar(originalBitmap, bitmap,
+                                faceLoc,
+                                excludeFaceMat.row(0)
+                        );
+                        if (!faceSimilar) {
                             excludeBlur = true;
                             break;
                         }
@@ -117,12 +122,14 @@ public class FaceEngine {
                         continue;
                     }
                 }
+                Rect faceLocRect = faceDetectToRect(faceLoc);
+                Bitmap faceCrop = cropBitmap(originalBitmap, faceLocRect);
                 Mat faceCropRaw = new Mat();
                 Utils.bitmapToMat(faceCrop, faceCropRaw);
                 Imgproc.GaussianBlur(faceCropRaw, faceCropRaw, new Size(201, 201), 100);
                 Bitmap blurredFace = Bitmap.createBitmap(faceCropRaw.cols(), faceCropRaw.rows(), Bitmap.Config.ARGB_8888);
                 Utils.matToBitmap(faceCropRaw, blurredFace);
-                canvas.drawBitmap(blurredFace, null, rect, null);
+                canvas.drawBitmap(blurredFace, null, faceLocRect, null);
                 faceCrop.recycle();
                 blurredFace.recycle();
             }
@@ -166,8 +173,8 @@ public class FaceEngine {
      *
      * @return true if similar, otherwise false
      */
-    private boolean isFaceSimilar(Bitmap image1Src, Bitmap image2Src,
-                                  Mat face1Loc, Mat face2Loc) {
+    protected boolean isFaceSimilar(Bitmap image1Src, Bitmap image2Src,
+                                    Mat face1Loc, Mat face2Loc) {
         FaceRecognizerSF faceRecognizerSF = mEngineInstance.get().getFaceRecognizerModel();
         Mat image1 = new Mat();
         Mat image2 = new Mat();
@@ -194,7 +201,7 @@ public class FaceEngine {
         return cosScore >= 0.363;
     }
 
-    private Rect faceDetectToRect(Mat detectedFace) {
+    protected Rect faceDetectToRect(Mat detectedFace) {
         int x = (int) detectedFace.get(0, 0)[0];
         int y = (int) detectedFace.get(0, 1)[0];
         int w = (int) detectedFace.get(0, 2)[0];
@@ -202,7 +209,7 @@ public class FaceEngine {
         return new Rect(x, y, x + w, y + h);
     }
 
-    private Mat detectFaceRaw(Bitmap bitmap) {
+    protected Mat detectFaceRaw(Bitmap bitmap) {
         FaceDetectorYN faceDetectorYN = mEngineInstance.get().getFaceDetectModel();
         faceDetectorYN.setInputSize(new Size(bitmap.getWidth(), bitmap.getHeight()));
         Mat faceInput = new Mat();

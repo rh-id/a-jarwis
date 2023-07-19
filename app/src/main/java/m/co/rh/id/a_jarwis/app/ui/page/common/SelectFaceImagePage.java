@@ -223,7 +223,13 @@ public class SelectFaceImagePage extends StatefulView<Activity> implements NavOn
                                     if (!rectList.isEmpty()) {
                                         for (Rect rect : rectList) {
                                             Bitmap cropFace = BitmapUtils.cropBitmap(imageBitmap, rect);
-                                            imageItems.add(new ImageItem(cropFace, true));
+                                            /* Try to detect the cropped face,
+                                             if unable to detect again then it cant be used
+                                             */
+                                            List<Rect> croppedFaceList = mFaceEngine.detectFace(cropFace);
+                                            if (croppedFaceList.size() == 1) {
+                                                imageItems.add(new ImageItem(cropFace, true));
+                                            }
                                         }
                                     }
                                     mLogger.d(TAG, "totalFace:" + imageItems.size());
