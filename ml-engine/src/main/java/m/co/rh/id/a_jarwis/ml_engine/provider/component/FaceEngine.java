@@ -16,12 +16,17 @@ import org.opencv.objdetect.FaceDetectorYN;
 import org.opencv.objdetect.FaceRecognizerSF;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import m.co.rh.id.a_jarwis.base.provider.component.helper.FileHelper;
 import m.co.rh.id.a_jarwis.base.util.BitmapUtils;
 import m.co.rh.id.a_jarwis.base.util.SerializeUtils;
+import m.co.rh.id.a_jarwis.ml_engine.workmanager.BlurFaceSerialFile;
 import m.co.rh.id.a_jarwis.ml_engine.workmanager.BlurFaceWorkRequest;
 import m.co.rh.id.a_jarwis.ml_engine.workmanager.Params;
 import m.co.rh.id.alogger.ILogger;
@@ -32,11 +37,13 @@ public class FaceEngine {
     private static final String TAG = "FaceEngine";
     private final ILogger mLogger;
     private final WorkManager mWorkManager;
+    private final FileHelper mFileHelper;
     private final ProviderValue<MLEngineInstance> mEngineInstance;
 
     public FaceEngine(Provider provider) {
         mLogger = provider.get(ILogger.class);
         mWorkManager = provider.get(WorkManager.class);
+        mFileHelper = provider.get(FileHelper.class);
         mEngineInstance = provider.lazyGet(MLEngineInstance.class);
     }
 
@@ -124,16 +131,34 @@ public class FaceEngine {
     }
 
     public void enqueueBlurFace(File file, Collection<File> excludedFiles) {
-        Data.Builder inputBuilder = new Data.Builder();
-        inputBuilder.putByteArray(Params.FILE, SerializeUtils.serialize(file));
-        if (excludedFiles != null && !excludedFiles.isEmpty()) {
-            inputBuilder.putByteArray(Params.FILE_ARRAYLIST,
-                    SerializeUtils.serialize(new ArrayList<>(excludedFiles)));
+        ObjectOutputStream oos = null;
+        try {
+            File serialFile = mFileHelper.createTempFile();
+            oos = new ObjectOutputStream(new FileOutputStream(serialFile));
+            BlurFaceSerialFile blurFaceSerialFile = new BlurFaceSerialFile(file);
+            if (excludedFiles != null && !excludedFiles.isEmpty()) {
+                blurFaceSerialFile.setExcludeFiles(new ArrayList<>(excludedFiles));
+            }
+            oos.writeObject(blurFaceSerialFile);
+            oos.close();
+            Data.Builder inputBuilder = new Data.Builder();
+            inputBuilder.putByteArray(Params.SERIAL_FILE, SerializeUtils.serialize(serialFile));
+            OneTimeWorkRequest oneTimeWorkRequest = new OneTimeWorkRequest.Builder(BlurFaceWorkRequest.class)
+                    .setInputData(inputBuilder.build())
+                    .build();
+            mWorkManager.enqueue(oneTimeWorkRequest);
+        } catch (Exception e) {
+            mLogger.e(TAG, e.getMessage(), e);
+            throw new RuntimeException(e);
+        } finally {
+            if (oos != null) {
+                try {
+                    oos.close();
+                } catch (IOException e) {
+                    mLogger.e(TAG, e.getMessage(), e);
+                }
+            }
         }
-        OneTimeWorkRequest oneTimeWorkRequest = new OneTimeWorkRequest.Builder(BlurFaceWorkRequest.class)
-                .setInputData(inputBuilder.build())
-                .build();
-        mWorkManager.enqueue(oneTimeWorkRequest);
     }
 
     /**

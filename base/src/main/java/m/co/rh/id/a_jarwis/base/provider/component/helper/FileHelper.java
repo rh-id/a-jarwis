@@ -59,6 +59,10 @@ public class FileHelper {
         }
     }
 
+    public File createTempFile() throws IOException {
+        return createTempFile(UUID.randomUUID().toString(), null);
+    }
+
     public File createTempFile(String fileName) throws IOException {
         return createTempFile(fileName, null);
     }

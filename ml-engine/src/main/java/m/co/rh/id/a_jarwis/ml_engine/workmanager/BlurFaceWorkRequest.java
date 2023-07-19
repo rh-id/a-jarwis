@@ -11,6 +11,8 @@ import androidx.work.WorkerParameters;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 
 import m.co.rh.id.a_jarwis.base.BaseApplication;
@@ -31,18 +33,23 @@ public class BlurFaceWorkRequest extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        byte[] fileBytes = getInputData().getByteArray(Params.FILE);
-        byte[] fileExcludeBytes = getInputData().getByteArray(Params.FILE_ARRAYLIST);
-        File inputFile = SerializeUtils.deserialize(fileBytes);
-        ArrayList<File> fileArrayList = fileExcludeBytes == null ? new ArrayList<>() :
-                SerializeUtils.deserialize(fileExcludeBytes);
         Provider provider = BaseApplication.of(getApplicationContext()).getProvider();
         ILogger logger = provider.get(ILogger.class);
         MediaHelper mediaHelper = provider.get(MediaHelper.class);
         FaceEngine faceEngine = provider.get(FaceEngine.class);
+
+        File inputFile = null;
+        ObjectInputStream ois = null;
         try {
+            byte[] serialFileB = getInputData().getByteArray(Params.SERIAL_FILE);
+            File serialFile = SerializeUtils.deserialize(serialFileB);
+            ois = new ObjectInputStream(new FileInputStream(serialFile));
+            BlurFaceSerialFile blurFaceSerialFile = (BlurFaceSerialFile) ois.readObject();
+            inputFile = blurFaceSerialFile.getInputFile();
+            ArrayList<File> fileArrayList = blurFaceSerialFile.getExcludeFiles();
+
             ArrayList<Bitmap> bitmaps = new ArrayList<>();
-            if (!fileArrayList.isEmpty()) {
+            if (fileArrayList != null && !fileArrayList.isEmpty()) {
                 for (File file : fileArrayList) {
                     bitmaps.add(BitmapFactory.decodeStream(new FileInputStream(file)));
                 }
@@ -64,7 +71,16 @@ public class BlurFaceWorkRequest extends Worker {
             logger.e(TAG, e.getMessage(), e);
             return Result.failure();
         } finally {
-            inputFile.delete();
+            if (inputFile != null) {
+                inputFile.delete();
+            }
+            if (ois != null) {
+                try {
+                    ois.close();
+                } catch (IOException e) {
+                    // Leave blank
+                }
+            }
         }
         return Result.success();
     }
