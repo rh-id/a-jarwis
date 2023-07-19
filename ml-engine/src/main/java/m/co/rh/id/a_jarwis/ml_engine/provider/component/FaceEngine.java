@@ -161,13 +161,12 @@ public class FaceEngine {
         faceRecognizerSF.feature(alignedF2, feature2);
         feature2 = feature2.clone();
         double cosScore = faceRecognizerSF.match(feature1, feature2, FaceRecognizerSF.FR_COSINE);
-        double L2Score = faceRecognizerSF.match(feature1, feature2, FaceRecognizerSF.FR_NORM_L2);
         /*
             two faces have same identity if the cosine distance is greater than or equal to 0.363,
             or the normL2 distance is less than or equal to 1.128.
          */
-        mLogger.d(TAG, "score:" + cosScore + ";" + L2Score);
-        return cosScore >= 0.363 || L2Score <= 1.128;
+        mLogger.d(TAG, "score:" + cosScore);
+        return cosScore >= 0.363;
     }
 
     private Rect faceDetectToRect(Mat detectedFace) {
