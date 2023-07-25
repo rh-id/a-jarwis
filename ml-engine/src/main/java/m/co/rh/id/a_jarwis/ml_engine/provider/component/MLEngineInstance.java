@@ -33,6 +33,7 @@ public class MLEngineInstance {
     public static final String NST_CANDY_FILE = "nst_candy_9.onnx";
     public static final String NST_RAIN_PRINCESS_FILE = "nst_rain_princess_9.onnx";
     public static final String NST_UDNIE_FILE = "nst_udnie_9.onnx";
+    public static final String NST_POINTILISM_FILE = "nst_pointilism_9.onnx";
     private final Context mAppContext;
     private final ILogger mLogger;
     private final FileHelper mFileHelper;
@@ -54,6 +55,33 @@ public class MLEngineInstance {
         initNSTUdnie();
     }
 
+    public NSTProcessor getNSTPointilism() {
+        return loadNSTPointilism();
+    }
+
+    private NSTProcessor loadNSTPointilism() {
+        File NSTFile = initNSTPointilism();
+        return new NSTProcessor(NSTFile.getAbsolutePath(), mLogger);
+    }
+
+    @NonNull
+    private File initNSTPointilism() {
+        File nstParent = new File(mAppContext.getFilesDir(), NEURAL_STYLE_TRANSFER_PATH);
+        File file = new File(nstParent, "/" + NST_POINTILISM_FILE);
+        if (!file.exists()) {
+            try {
+                nstParent.mkdirs();
+                file.createNewFile();
+                mFileHelper
+                        .copyRawtoFile(R.raw.nst_pointilism_9, file);
+            } catch (IOException e) {
+                mLogger.e(TAG, "Failed loading NST Pointilism: " + e.getMessage(), e);
+                throw new RuntimeException(e);
+            }
+        }
+        return file;
+    }
+
     public NSTProcessor getNSTUdnie() {
         return loadNSTUdnie();
     }
@@ -66,19 +94,19 @@ public class MLEngineInstance {
     @NonNull
     private File initNSTUdnie() {
         File nstParent = new File(mAppContext.getFilesDir(), NEURAL_STYLE_TRANSFER_PATH);
-        File udnieFile = new File(nstParent, "/" + NST_UDNIE_FILE);
-        if (!udnieFile.exists()) {
+        File file = new File(nstParent, "/" + NST_UDNIE_FILE);
+        if (!file.exists()) {
             try {
                 nstParent.mkdirs();
-                udnieFile.createNewFile();
+                file.createNewFile();
                 mFileHelper
-                        .copyRawtoFile(R.raw.nst_udnie_9, udnieFile);
+                        .copyRawtoFile(R.raw.nst_udnie_9, file);
             } catch (IOException e) {
                 mLogger.e(TAG, "Failed loading NST Udnie: " + e.getMessage(), e);
                 throw new RuntimeException(e);
             }
         }
-        return udnieFile;
+        return file;
     }
 
     public NSTProcessor getNSTRainPrincess() {
@@ -93,19 +121,19 @@ public class MLEngineInstance {
     @NonNull
     private File initNSTRainPrincess() {
         File nstParent = new File(mAppContext.getFilesDir(), NEURAL_STYLE_TRANSFER_PATH);
-        File rainPrincessFile = new File(nstParent, "/" + NST_RAIN_PRINCESS_FILE);
-        if (!rainPrincessFile.exists()) {
+        File file = new File(nstParent, "/" + NST_RAIN_PRINCESS_FILE);
+        if (!file.exists()) {
             try {
                 nstParent.mkdirs();
-                rainPrincessFile.createNewFile();
+                file.createNewFile();
                 mFileHelper
-                        .copyRawtoFile(R.raw.nst_rain_princess_9, rainPrincessFile);
+                        .copyRawtoFile(R.raw.nst_rain_princess_9, file);
             } catch (IOException e) {
                 mLogger.e(TAG, "Failed loading NST Rain Princess: " + e.getMessage(), e);
                 throw new RuntimeException(e);
             }
         }
-        return rainPrincessFile;
+        return file;
     }
 
     public NSTProcessor getNSTCandy() {
@@ -120,19 +148,19 @@ public class MLEngineInstance {
     @NonNull
     private File initNSTCandy() {
         File nstParent = new File(mAppContext.getFilesDir(), NEURAL_STYLE_TRANSFER_PATH);
-        File candyFile = new File(nstParent, "/" + NST_CANDY_FILE);
-        if (!candyFile.exists()) {
+        File file = new File(nstParent, "/" + NST_CANDY_FILE);
+        if (!file.exists()) {
             try {
                 nstParent.mkdirs();
-                candyFile.createNewFile();
+                file.createNewFile();
                 mFileHelper
-                        .copyRawtoFile(R.raw.nst_candy_9, candyFile);
+                        .copyRawtoFile(R.raw.nst_candy_9, file);
             } catch (IOException e) {
                 mLogger.e(TAG, "Failed loading NST Candy: " + e.getMessage(), e);
                 throw new RuntimeException(e);
             }
         }
-        return candyFile;
+        return file;
     }
 
     public NSTProcessor getNSTMosaic() {
@@ -147,19 +175,19 @@ public class MLEngineInstance {
     @NonNull
     private File initNSTMosaic() {
         File nstParent = new File(mAppContext.getFilesDir(), NEURAL_STYLE_TRANSFER_PATH);
-        File mosaicFile = new File(nstParent, "/" + NST_MOSAIC_FILE);
-        if (!mosaicFile.exists()) {
+        File file = new File(nstParent, "/" + NST_MOSAIC_FILE);
+        if (!file.exists()) {
             try {
                 nstParent.mkdirs();
-                mosaicFile.createNewFile();
+                file.createNewFile();
                 mFileHelper
-                        .copyRawtoFile(R.raw.nst_mosaic_9, mosaicFile);
+                        .copyRawtoFile(R.raw.nst_mosaic_9, file);
             } catch (IOException e) {
                 mLogger.e(TAG, "Failed loading NST Mosaic: " + e.getMessage(), e);
                 throw new RuntimeException(e);
             }
         }
-        return mosaicFile;
+        return file;
     }
 
     public FaceRecognizerSF getFaceRecognizerModel() {

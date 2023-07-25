@@ -28,4 +28,8 @@ public class NSTEngine {
     public Bitmap applyUdnie(Bitmap bitmap) {
         return mlEngine.get().getNSTUdnie().process(bitmap);
     }
+
+    public Bitmap applyPointilism(Bitmap bitmap) {
+        return mlEngine.get().getNSTPointilism().process(bitmap);
+    }
 }
