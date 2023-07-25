@@ -31,6 +31,7 @@ public class MLEngineInstance {
     public static final String NEURAL_STYLE_TRANSFER_PATH = BASE_PATH + "/neural-style-transfer";
     public static final String MOSAIC_FILE = "nst_mosaic_9.onnx";
     public static final String CANDY_FILE = "nst_candy_9.onnx";
+    public static final String RAIN_PRINCESS_FILE = "nst_rain_princess_9.onnx";
     private final Context mAppContext;
     private final ILogger mLogger;
     private final FileHelper mFileHelper;
@@ -48,6 +49,34 @@ public class MLEngineInstance {
         initFaceRecognizer();
         initNSTMosaic();
         initNSTCandy();
+        initNSTRainPrincess();
+    }
+
+    public NSTProcessor getNSTRainPrincess() {
+        return loadNSTRainPrincess();
+    }
+
+    private NSTProcessor loadNSTRainPrincess() {
+        File NSTFile = initNSTRainPrincess();
+        return new NSTProcessor(NSTFile.getAbsolutePath(), mLogger);
+    }
+
+    @NonNull
+    private File initNSTRainPrincess() {
+        File nstParent = new File(mAppContext.getFilesDir(), NEURAL_STYLE_TRANSFER_PATH);
+        File rainPrincessFile = new File(nstParent, "/" + RAIN_PRINCESS_FILE);
+        if (!rainPrincessFile.exists()) {
+            try {
+                nstParent.mkdirs();
+                rainPrincessFile.createNewFile();
+                mFileHelper
+                        .copyRawtoFile(R.raw.nst_rain_princess_9, rainPrincessFile);
+            } catch (IOException e) {
+                mLogger.e(TAG, "Failed loading NST Rain Princess: " + e.getMessage(), e);
+                throw new RuntimeException(e);
+            }
+        }
+        return rainPrincessFile;
     }
 
     public NSTProcessor getNSTCandy() {
@@ -55,8 +84,8 @@ public class MLEngineInstance {
     }
 
     private NSTProcessor loadNSTCandy() {
-        File NSTCandyFile = initNSTCandy();
-        return new NSTProcessor(NSTCandyFile.getAbsolutePath(), mLogger);
+        File NSTFile = initNSTCandy();
+        return new NSTProcessor(NSTFile.getAbsolutePath(), mLogger);
     }
 
     @NonNull
@@ -82,8 +111,8 @@ public class MLEngineInstance {
     }
 
     private NSTProcessor loadNSTMosaic() {
-        File NSTMosaicFile = initNSTMosaic();
-        return new NSTProcessor(NSTMosaicFile.getAbsolutePath(), mLogger);
+        File NSTFile = initNSTMosaic();
+        return new NSTProcessor(NSTFile.getAbsolutePath(), mLogger);
     }
 
     @NonNull

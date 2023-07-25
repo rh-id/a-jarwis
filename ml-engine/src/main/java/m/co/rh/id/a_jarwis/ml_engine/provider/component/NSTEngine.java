@@ -20,4 +20,8 @@ public class NSTEngine {
     public Bitmap applyCandy(Bitmap bitmap) {
         return mlEngine.get().getNSTCandy().process(bitmap);
     }
+
+    public Bitmap applyRainPrincess(Bitmap bitmap) {
+        return mlEngine.get().getNSTRainPrincess().process(bitmap);
+    }
 }

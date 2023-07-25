@@ -69,4 +69,16 @@ public class NSTEngineTest {
         bitmap1.compress(Bitmap.CompressFormat.JPEG, 100, new FileOutputStream(tempFile));
         bitmap1.recycle();
     }
+
+    @Test
+    public void applyRainPrincess() throws IOException {
+        Context context = mMLEngineProvider.getContext();
+        Bitmap bitmap = BitmapFactory.decodeStream(context.getResources().
+                openRawResource(R.raw.amber));
+        Bitmap bitmap1 = mNSTEngine.applyRainPrincess(bitmap);
+        File tempFile = mMLEngineProvider.get(FileHelper.class).createTempFile("NSTEngineTest_applyRainPrincess.jpg");
+        bitmap1.compress(Bitmap.CompressFormat.JPEG, 100, new FileOutputStream(tempFile));
+        bitmap1.recycle();
+    }
+
 }
