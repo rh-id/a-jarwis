@@ -14,7 +14,10 @@ public class NSTEngine {
     }
 
     public Bitmap applyMosaic(Bitmap bitmap) {
-        NSTProcessor nstMosaic = mlEngine.get().getNSTMosaic();
-        return nstMosaic.process(bitmap);
+        return mlEngine.get().getNSTMosaic().process(bitmap);
+    }
+
+    public Bitmap applyCandy(Bitmap bitmap) {
+        return mlEngine.get().getNSTCandy().process(bitmap);
     }
 }

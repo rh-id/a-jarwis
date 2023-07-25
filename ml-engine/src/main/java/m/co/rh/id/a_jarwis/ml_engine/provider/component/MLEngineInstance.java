@@ -30,6 +30,7 @@ public class MLEngineInstance {
     public static final String FACE_RECOGNIZER_FILE = "face_recognition_sface_2021dec_int8.onnx";
     public static final String NEURAL_STYLE_TRANSFER_PATH = BASE_PATH + "/neural-style-transfer";
     public static final String MOSAIC_FILE = "nst_mosaic_9.onnx";
+    public static final String CANDY_FILE = "nst_candy_9.onnx";
     private final Context mAppContext;
     private final ILogger mLogger;
     private final FileHelper mFileHelper;
@@ -46,6 +47,34 @@ public class MLEngineInstance {
         initFaceDetector();
         initFaceRecognizer();
         initNSTMosaic();
+        initNSTCandy();
+    }
+
+    public NSTProcessor getNSTCandy() {
+        return loadNSTCandy();
+    }
+
+    private NSTProcessor loadNSTCandy() {
+        File NSTCandyFile = initNSTCandy();
+        return new NSTProcessor(NSTCandyFile.getAbsolutePath(), mLogger);
+    }
+
+    @NonNull
+    private File initNSTCandy() {
+        File nstParent = new File(mAppContext.getFilesDir(), NEURAL_STYLE_TRANSFER_PATH);
+        File candyFile = new File(nstParent, "/" + CANDY_FILE);
+        if (!candyFile.exists()) {
+            try {
+                nstParent.mkdirs();
+                candyFile.createNewFile();
+                mFileHelper
+                        .copyRawtoFile(R.raw.nst_candy_9, candyFile);
+            } catch (IOException e) {
+                mLogger.e(TAG, "Failed loading NST Candy: " + e.getMessage(), e);
+                throw new RuntimeException(e);
+            }
+        }
+        return candyFile;
     }
 
     public NSTProcessor getNSTMosaic() {
