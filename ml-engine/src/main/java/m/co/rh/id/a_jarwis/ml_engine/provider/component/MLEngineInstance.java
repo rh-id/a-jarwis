@@ -29,9 +29,10 @@ public class MLEngineInstance {
     public static final String FACE_RECOGNIZER_PATH = FACE_PATH + "/recognizer";
     public static final String FACE_RECOGNIZER_FILE = "face_recognition_sface_2021dec_int8.onnx";
     public static final String NEURAL_STYLE_TRANSFER_PATH = BASE_PATH + "/neural-style-transfer";
-    public static final String MOSAIC_FILE = "nst_mosaic_9.onnx";
-    public static final String CANDY_FILE = "nst_candy_9.onnx";
-    public static final String RAIN_PRINCESS_FILE = "nst_rain_princess_9.onnx";
+    public static final String NST_MOSAIC_FILE = "nst_mosaic_9.onnx";
+    public static final String NST_CANDY_FILE = "nst_candy_9.onnx";
+    public static final String NST_RAIN_PRINCESS_FILE = "nst_rain_princess_9.onnx";
+    public static final String NST_UDNIE_FILE = "nst_udnie_9.onnx";
     private final Context mAppContext;
     private final ILogger mLogger;
     private final FileHelper mFileHelper;
@@ -50,6 +51,34 @@ public class MLEngineInstance {
         initNSTMosaic();
         initNSTCandy();
         initNSTRainPrincess();
+        initNSTUdnie();
+    }
+
+    public NSTProcessor getNSTUdnie() {
+        return loadNSTUdnie();
+    }
+
+    private NSTProcessor loadNSTUdnie() {
+        File NSTFile = initNSTUdnie();
+        return new NSTProcessor(NSTFile.getAbsolutePath(), mLogger);
+    }
+
+    @NonNull
+    private File initNSTUdnie() {
+        File nstParent = new File(mAppContext.getFilesDir(), NEURAL_STYLE_TRANSFER_PATH);
+        File udnieFile = new File(nstParent, "/" + NST_UDNIE_FILE);
+        if (!udnieFile.exists()) {
+            try {
+                nstParent.mkdirs();
+                udnieFile.createNewFile();
+                mFileHelper
+                        .copyRawtoFile(R.raw.nst_udnie_9, udnieFile);
+            } catch (IOException e) {
+                mLogger.e(TAG, "Failed loading NST Udnie: " + e.getMessage(), e);
+                throw new RuntimeException(e);
+            }
+        }
+        return udnieFile;
     }
 
     public NSTProcessor getNSTRainPrincess() {
@@ -64,7 +93,7 @@ public class MLEngineInstance {
     @NonNull
     private File initNSTRainPrincess() {
         File nstParent = new File(mAppContext.getFilesDir(), NEURAL_STYLE_TRANSFER_PATH);
-        File rainPrincessFile = new File(nstParent, "/" + RAIN_PRINCESS_FILE);
+        File rainPrincessFile = new File(nstParent, "/" + NST_RAIN_PRINCESS_FILE);
         if (!rainPrincessFile.exists()) {
             try {
                 nstParent.mkdirs();
@@ -91,7 +120,7 @@ public class MLEngineInstance {
     @NonNull
     private File initNSTCandy() {
         File nstParent = new File(mAppContext.getFilesDir(), NEURAL_STYLE_TRANSFER_PATH);
-        File candyFile = new File(nstParent, "/" + CANDY_FILE);
+        File candyFile = new File(nstParent, "/" + NST_CANDY_FILE);
         if (!candyFile.exists()) {
             try {
                 nstParent.mkdirs();
@@ -118,7 +147,7 @@ public class MLEngineInstance {
     @NonNull
     private File initNSTMosaic() {
         File nstParent = new File(mAppContext.getFilesDir(), NEURAL_STYLE_TRANSFER_PATH);
-        File mosaicFile = new File(nstParent, "/" + MOSAIC_FILE);
+        File mosaicFile = new File(nstParent, "/" + NST_MOSAIC_FILE);
         if (!mosaicFile.exists()) {
             try {
                 nstParent.mkdirs();

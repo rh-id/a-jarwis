@@ -24,4 +24,8 @@ public class NSTEngine {
     public Bitmap applyRainPrincess(Bitmap bitmap) {
         return mlEngine.get().getNSTRainPrincess().process(bitmap);
     }
+
+    public Bitmap applyUdnie(Bitmap bitmap) {
+        return mlEngine.get().getNSTUdnie().process(bitmap);
+    }
 }

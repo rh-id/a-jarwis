@@ -81,4 +81,14 @@ public class NSTEngineTest {
         bitmap1.recycle();
     }
 
+    @Test
+    public void applyUdnie() throws IOException {
+        Context context = mMLEngineProvider.getContext();
+        Bitmap bitmap = BitmapFactory.decodeStream(context.getResources().
+                openRawResource(R.raw.amber));
+        Bitmap bitmap1 = mNSTEngine.applyUdnie(bitmap);
+        File tempFile = mMLEngineProvider.get(FileHelper.class).createTempFile("NSTEngineTest_applyUdnie.jpg");
+        bitmap1.compress(Bitmap.CompressFormat.JPEG, 100, new FileOutputStream(tempFile));
+        bitmap1.recycle();
+    }
 }
