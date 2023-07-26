@@ -1,0 +1,12 @@
+Release 1.3.1+9
+
+Fixes:
+* Incorrect file name when generating NST
+* Update NST label button
+
+--------------------------------------------------------------------------------
+Release 1.3.0+8
+
+Feature:
+* Add Neural Style Transfer feature to artistically modify your image
+
