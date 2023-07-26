@@ -30,10 +30,10 @@ import m.co.rh.id.aprovider.ProviderValue;
 public class FileHelper {
     private static final String TAG = FileHelper.class.getName();
 
-    private Context mAppContext;
-    private ProviderValue<ILogger> mLogger;
-    private File mLogFile;
-    private File mTempFileRoot;
+    private final Context mAppContext;
+    private final ProviderValue<ILogger> mLogger;
+    private final File mLogFile;
+    private final File mTempFileRoot;
 
     public FileHelper(Provider provider) {
         mAppContext = provider.getContext().getApplicationContext();
@@ -122,15 +122,23 @@ public class FileHelper {
     }
 
     public File createImageTempFile() throws IOException {
+        return createImageTempFile(UUID.randomUUID().toString());
+    }
+
+    public File createImageTempFile(String fileName) throws IOException {
         File parent = new File(mTempFileRoot, UUID.randomUUID().toString());
         parent.mkdirs();
-        File tmpFile = new File(parent, UUID.randomUUID().toString() + ".jpg");
+        File tmpFile = new File(parent, fileName + ".jpg");
         tmpFile.createNewFile();
         return tmpFile;
     }
 
     public File createImageTempFile(Uri content) throws IOException {
-        File outFile = createImageTempFile();
+        return createImageTempFile(UUID.randomUUID().toString(), content);
+    }
+
+    public File createImageTempFile(String fileName, Uri content) throws IOException {
+        File outFile = createImageTempFile(fileName);
         try {
             copyImage(content, outFile);
             return outFile;

@@ -9,4 +9,5 @@
     <dimen name="text_nav_menu">18sp</dimen>
     <dimen name="label_text_padding">6sp</dimen>
     <dimen name="large_body_text">50sp</dimen>
+    <dimen name="medium_body_text">25sp</dimen>
 </resources>

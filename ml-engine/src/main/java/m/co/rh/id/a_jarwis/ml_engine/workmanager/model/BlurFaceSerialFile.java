@@ -1,4 +1,4 @@
-package m.co.rh.id.a_jarwis.ml_engine.workmanager;
+package m.co.rh.id.a_jarwis.ml_engine.workmanager.model;
 
 import java.io.File;
 import java.io.Serializable;

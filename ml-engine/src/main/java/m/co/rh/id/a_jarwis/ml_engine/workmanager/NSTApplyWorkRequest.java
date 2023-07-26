@@ -13,20 +13,19 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.util.ArrayList;
 
 import m.co.rh.id.a_jarwis.base.BaseApplication;
 import m.co.rh.id.a_jarwis.base.provider.component.helper.MediaHelper;
 import m.co.rh.id.a_jarwis.base.util.SerializeUtils;
-import m.co.rh.id.a_jarwis.ml_engine.provider.component.FaceEngine;
-import m.co.rh.id.a_jarwis.ml_engine.workmanager.model.BlurFaceSerialFile;
+import m.co.rh.id.a_jarwis.ml_engine.provider.component.NSTEngine;
+import m.co.rh.id.a_jarwis.ml_engine.workmanager.model.NSTApplySerialFile;
 import m.co.rh.id.alogger.ILogger;
 import m.co.rh.id.aprovider.Provider;
 
-public class BlurFaceWorkRequest extends Worker {
-    private static final String TAG = "BlurFaceWorkRequest";
+public class NSTApplyWorkRequest extends Worker {
+    private static final String TAG = "NSTApplyWorkRequest";
 
-    public BlurFaceWorkRequest(@NonNull Context context, @NonNull WorkerParameters workerParams) {
+    public NSTApplyWorkRequest(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
     }
 
@@ -37,7 +36,7 @@ public class BlurFaceWorkRequest extends Worker {
         Provider provider = BaseApplication.of(getApplicationContext()).getProvider();
         ILogger logger = provider.get(ILogger.class);
         MediaHelper mediaHelper = provider.get(MediaHelper.class);
-        FaceEngine faceEngine = provider.get(FaceEngine.class);
+        NSTEngine nstEngine = provider.get(NSTEngine.class);
 
         File inputFile = null;
         ObjectInputStream ois = null;
@@ -45,28 +44,19 @@ public class BlurFaceWorkRequest extends Worker {
             byte[] serialFileB = getInputData().getByteArray(Params.SERIAL_FILE);
             File serialFile = SerializeUtils.deserialize(serialFileB);
             ois = new ObjectInputStream(new FileInputStream(serialFile));
-            BlurFaceSerialFile blurFaceSerialFile = (BlurFaceSerialFile) ois.readObject();
-            inputFile = blurFaceSerialFile.getInputFile();
-            ArrayList<File> fileArrayList = blurFaceSerialFile.getFaces();
+            NSTApplySerialFile nstApplySerialFile = (NSTApplySerialFile) ois.readObject();
+            inputFile = nstApplySerialFile.getInputFile();
+            int theme = nstApplySerialFile.getTheme();
 
-            ArrayList<Bitmap> bitmaps = new ArrayList<>();
-            if (fileArrayList != null && !fileArrayList.isEmpty()) {
-                for (File file : fileArrayList) {
-                    bitmaps.add(BitmapFactory.decodeStream(new FileInputStream(file)));
-                }
-            }
-            Bitmap face = BitmapFactory.decodeFile(inputFile.getAbsolutePath());
-            Bitmap blurredFace = faceEngine.blurFace(face, bitmaps, blurFaceSerialFile.isExclude());
+            Bitmap input = BitmapFactory.decodeFile(inputFile.getAbsolutePath());
+            Bitmap applied = nstEngine.apply(input, theme);
             String fileName = inputFile.getName();
-            if (blurredFace != null) {
-                mediaHelper.insertImage(blurredFace, fileName, fileName);
-                face.recycle();
-                blurredFace.recycle();
+            if (applied != null) {
+                mediaHelper.insertImage(applied, fileName, fileName);
+                applied.recycle();
+                input.recycle();
                 logger.i(TAG, getApplicationContext()
                         .getString(m.co.rh.id.a_jarwis.base.R.string.done_processing_, fileName));
-            } else {
-                logger.i(TAG, getApplicationContext()
-                        .getString(m.co.rh.id.a_jarwis.base.R.string.no_face_detected_, fileName));
             }
         } catch (Exception e) {
             logger.e(TAG, e.getMessage(), e);

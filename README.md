@@ -11,9 +11,17 @@ The power of AI in the palm of my hands!
 
 This is AI utility app for Android device, it basically uses AI model directly on-device to help on performing some tasks.  
 
+## Features
+### Face Detection & Recognition
+<ul>
+    <li>Detect and add blur effect on people face and export the result to gallery</li>
+    <li>Detect and select which face to be blurred and export the result to gallery</li>
+</ul>
+
+### Neural Style Transfer
 Current features:
 <ul>
-  <li>For image files: Detect and add blur effect on people face and export the image to gallery</li>
+  <li>Select neural style transfer theme to apply to the image(s) and export the result to gallery</li>
 </ul>
 
 

@@ -7,6 +7,7 @@
     <color name="light_blue_300">#00E0E0</color>
     <color name="magenta_600">#E00070</color>
     <color name="orange_800">#E07000</color>
+    <color name="transparent_gray_700">#99616161</color>
     <color name="daynight_white_black">@color/white</color>
     <color name="daynight_gray_700_white">@color/gray_700</color>
     <color name="daynight_black_white">@color/black</color>
