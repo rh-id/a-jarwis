@@ -19,9 +19,10 @@ This is AI utility app for Android device, it basically uses AI model directly o
 </ul>
 
 ### Neural Style Transfer
-Current features:
 <ul>
-  <li>Select neural style transfer theme to apply to the image(s) and export the result to gallery</li>
+    <li>Select neural style transfer theme to apply to the image(s) and export the result to gallery.
+        (Themes: Mosaic,Candy,Rain Princess,Udnie,Pointilism)
+    </li>
 </ul>
 
 
@@ -32,9 +33,8 @@ combined with a-provider library for service locator,
 and finally RxAndroid to handle UI use cases.
 
 ## Screenshots
-<img src="https://github.com/rh-id/a-jarwis/blob/master/fastlane/metadata/android/en-US/images/featureGraphic.png" width="1024"/>
-
 <img src="https://github.com/rh-id/a-jarwis/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" height="512"/>
+<img src="https://github.com/rh-id/a-jarwis/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" height="512"/>
 
 ## Support this project
 Consider donation to support this project
