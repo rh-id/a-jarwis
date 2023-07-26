@@ -9,7 +9,7 @@
     <string name="title_auto_blur_face">Auto Blur Face</string>
     <string name="title_exclude_blur_face">Exclude Blur Face</string>
     <string name="title_selective_blur_face">Selective Blur Face</string>
-    <string name="title_nst_apply_picture">Apply Neural Style Transfer to Picture</string>
+    <string name="title_nst_apply_image">Apply Neural Style Transfer</string>
     <string name="toast_back_press_exit">Press BACK again to exit</string>
     <string name="buy_developer_a_coffee">Buy developer a coffee</string>
     <string name="processing_">Processing %s</string>

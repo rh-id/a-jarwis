@@ -128,13 +128,13 @@ public class FileHelper {
     public File createImageTempFile(String fileName) throws IOException {
         File parent = new File(mTempFileRoot, UUID.randomUUID().toString());
         parent.mkdirs();
-        File tmpFile = new File(parent, fileName + ".jpg");
+        File tmpFile = new File(parent, fileName);
         tmpFile.createNewFile();
         return tmpFile;
     }
 
     public File createImageTempFile(Uri content) throws IOException {
-        return createImageTempFile(UUID.randomUUID().toString(), content);
+        return createImageTempFile(UUID.randomUUID().toString() + ".jpg", content);
     }
 
     public File createImageTempFile(String fileName, Uri content) throws IOException {

@@ -25,8 +25,14 @@ public class NSTApplyCommand {
         return Single.fromFuture(mExecutorService.submit(() -> {
             String fullPath = uriFile.getPath();
             int cut = fullPath.lastIndexOf("/");
+            String fileNameWithExt = fullPath.substring(cut + 1);
+            int lastDot = fileNameWithExt.lastIndexOf(".jpg");
+            String fileName = fileNameWithExt;
+            if (lastDot == -1) {
+                fileName = fileNameWithExt + ".jpg";
+            }
             File result = mFileHelper
-                    .createImageTempFile(fullPath.substring(cut + 1), uriFile);
+                    .createImageTempFile(fileName, uriFile);
             mNSTEngine.enqueueNsT(result, theme);
             return result;
         }));

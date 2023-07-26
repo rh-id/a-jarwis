@@ -61,7 +61,7 @@
                 android:layout_columnWeight="1"
                 android:layout_gravity="fill"
                 android:gravity="center"
-                android:text="@string/title_nst_apply_picture"
+                android:text="@string/title_nst_apply_image"
                 app:icon="@drawable/ic_palette_black" />
         </GridLayout>
     </LinearLayout>
