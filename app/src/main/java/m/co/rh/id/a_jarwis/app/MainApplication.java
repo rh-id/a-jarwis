@@ -48,12 +48,10 @@ public class MainApplication extends BaseApplication implements Configuration.Pr
     @NonNull
     @Override
     public Configuration getWorkManagerConfiguration() {
-        ExecutorService executorService = mProvider.get(ScheduledExecutorService.class);
-
         return new Configuration.Builder()
                 .setMinimumLoggingLevel(android.util.Log.INFO)
-                .setExecutor(executorService)
-                .setTaskExecutor(executorService)
+                .setExecutor(mProvider.get(ScheduledExecutorService.class))
+                .setTaskExecutor(mProvider.get(ExecutorService.class))
                 .build();
     }
 }
