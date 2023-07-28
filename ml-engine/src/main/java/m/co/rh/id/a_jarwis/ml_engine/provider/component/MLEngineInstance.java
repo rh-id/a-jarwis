@@ -55,13 +55,13 @@ public class MLEngineInstance {
         initNSTUdnie();
     }
 
-    public NSTProcessor getNSTPointilism() {
+    public STProcessor getNSTPointilism() {
         return loadNSTPointilism();
     }
 
-    private NSTProcessor loadNSTPointilism() {
+    private STProcessor loadNSTPointilism() {
         File NSTFile = initNSTPointilism();
-        return new NSTProcessor(NSTFile.getAbsolutePath(), mLogger);
+        return new STProcessor(NSTFile.getAbsolutePath(), mLogger);
     }
 
     @NonNull
@@ -82,13 +82,13 @@ public class MLEngineInstance {
         return file;
     }
 
-    public NSTProcessor getNSTUdnie() {
+    public STProcessor getNSTUdnie() {
         return loadNSTUdnie();
     }
 
-    private NSTProcessor loadNSTUdnie() {
+    private STProcessor loadNSTUdnie() {
         File NSTFile = initNSTUdnie();
-        return new NSTProcessor(NSTFile.getAbsolutePath(), mLogger);
+        return new STProcessor(NSTFile.getAbsolutePath(), mLogger);
     }
 
     @NonNull
@@ -109,13 +109,13 @@ public class MLEngineInstance {
         return file;
     }
 
-    public NSTProcessor getNSTRainPrincess() {
+    public STProcessor getNSTRainPrincess() {
         return loadNSTRainPrincess();
     }
 
-    private NSTProcessor loadNSTRainPrincess() {
+    private STProcessor loadNSTRainPrincess() {
         File NSTFile = initNSTRainPrincess();
-        return new NSTProcessor(NSTFile.getAbsolutePath(), mLogger);
+        return new STProcessor(NSTFile.getAbsolutePath(), mLogger);
     }
 
     @NonNull
@@ -136,13 +136,13 @@ public class MLEngineInstance {
         return file;
     }
 
-    public NSTProcessor getNSTCandy() {
+    public STProcessor getNSTCandy() {
         return loadNSTCandy();
     }
 
-    private NSTProcessor loadNSTCandy() {
+    private STProcessor loadNSTCandy() {
         File NSTFile = initNSTCandy();
-        return new NSTProcessor(NSTFile.getAbsolutePath(), mLogger);
+        return new STProcessor(NSTFile.getAbsolutePath(), mLogger);
     }
 
     @NonNull
@@ -163,13 +163,13 @@ public class MLEngineInstance {
         return file;
     }
 
-    public NSTProcessor getNSTMosaic() {
+    public STProcessor getNSTMosaic() {
         return loadNSTMosaic();
     }
 
-    private NSTProcessor loadNSTMosaic() {
+    private STProcessor loadNSTMosaic() {
         File NSTFile = initNSTMosaic();
-        return new NSTProcessor(NSTFile.getAbsolutePath(), mLogger);
+        return new STProcessor(NSTFile.getAbsolutePath(), mLogger);
     }
 
     @NonNull

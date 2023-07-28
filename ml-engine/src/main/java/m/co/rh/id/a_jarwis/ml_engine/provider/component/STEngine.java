@@ -13,14 +13,14 @@ import java.io.ObjectOutputStream;
 
 import m.co.rh.id.a_jarwis.base.provider.component.helper.FileHelper;
 import m.co.rh.id.a_jarwis.base.util.SerializeUtils;
-import m.co.rh.id.a_jarwis.ml_engine.workmanager.NSTApplyWorkRequest;
 import m.co.rh.id.a_jarwis.ml_engine.workmanager.Params;
-import m.co.rh.id.a_jarwis.ml_engine.workmanager.model.NSTApplySerialFile;
+import m.co.rh.id.a_jarwis.ml_engine.workmanager.STApplyWorkRequest;
+import m.co.rh.id.a_jarwis.ml_engine.workmanager.model.STApplySerialFile;
 import m.co.rh.id.alogger.ILogger;
 import m.co.rh.id.aprovider.Provider;
 import m.co.rh.id.aprovider.ProviderValue;
 
-public class NSTEngine {
+public class STEngine {
     public static final int THEME_MOSAIC = 1;
     public static final int THEME_CANDY = 2;
     public static final int THEME_RAIN_PRINCESS = 3;
@@ -34,7 +34,7 @@ public class NSTEngine {
     private final ProviderValue<MLEngineInstance> mMLEngine;
     private final FileHelper mFileHelper;
 
-    public NSTEngine(Provider provider) {
+    public STEngine(Provider provider) {
         mWorkManager = provider.get(WorkManager.class);
         mLogger = provider.get(ILogger.class);
         mMLEngine = provider.lazyGet(MLEngineInstance.class);
@@ -78,17 +78,17 @@ public class NSTEngine {
         }
     }
 
-    public void enqueueNsT(File imageFile, int theme) {
+    public void enqueueST(File imageFile, int theme) {
         ObjectOutputStream oos = null;
         try {
             File serialFile = mFileHelper.createTempFile();
             oos = new ObjectOutputStream(new FileOutputStream(serialFile));
-            NSTApplySerialFile nstApplySerialFile = new NSTApplySerialFile(imageFile, theme);
-            oos.writeObject(nstApplySerialFile);
+            STApplySerialFile STApplySerialFile = new STApplySerialFile(imageFile, theme);
+            oos.writeObject(STApplySerialFile);
             oos.close();
             Data.Builder inputBuilder = new Data.Builder();
             inputBuilder.putByteArray(Params.SERIAL_FILE, SerializeUtils.serialize(serialFile));
-            OneTimeWorkRequest oneTimeWorkRequest = new OneTimeWorkRequest.Builder(NSTApplyWorkRequest.class)
+            OneTimeWorkRequest oneTimeWorkRequest = new OneTimeWorkRequest.Builder(STApplyWorkRequest.class)
                     .setInputData(inputBuilder.build())
                     .build();
             mWorkManager.enqueue(oneTimeWorkRequest);

@@ -6,19 +6,19 @@ import android.view.ViewGroup;
 
 import m.co.rh.id.a_jarwis.R;
 import m.co.rh.id.a_jarwis.app.ui.page.nav.param.SelectedTheme;
-import m.co.rh.id.a_jarwis.ml_engine.provider.component.NSTEngine;
+import m.co.rh.id.a_jarwis.ml_engine.provider.component.STEngine;
 import m.co.rh.id.anavigator.StatefulView;
 import m.co.rh.id.anavigator.annotation.NavInject;
 import m.co.rh.id.anavigator.component.INavigator;
 
-public class SelectNSTThemePage extends StatefulView<Activity> implements View.OnClickListener {
+public class SelectSTThemePage extends StatefulView<Activity> implements View.OnClickListener {
 
     @NavInject
     private transient INavigator mNavigator;
 
     @Override
     protected View createView(Activity activity, ViewGroup container) {
-        View rootView = activity.getLayoutInflater().inflate(R.layout.page_select_nst_theme, container, false);
+        View rootView = activity.getLayoutInflater().inflate(R.layout.page_select_st_theme, container, false);
         View mosaic = rootView.findViewById(R.id.container_mosaic_theme);
         mosaic.setOnClickListener(this);
         View candy = rootView.findViewById(R.id.container_candy_theme);
@@ -38,15 +38,15 @@ public class SelectNSTThemePage extends StatefulView<Activity> implements View.O
     public void onClick(View view) {
         int id = view.getId();
         if (id == R.id.container_mosaic_theme) {
-            mNavigator.pop(new SelectedTheme(NSTEngine.THEME_MOSAIC));
+            mNavigator.pop(new SelectedTheme(STEngine.THEME_MOSAIC));
         } else if (id == R.id.container_candy_theme) {
-            mNavigator.pop(new SelectedTheme(NSTEngine.THEME_CANDY));
+            mNavigator.pop(new SelectedTheme(STEngine.THEME_CANDY));
         } else if (id == R.id.container_rain_princess_theme) {
-            mNavigator.pop(new SelectedTheme(NSTEngine.THEME_RAIN_PRINCESS));
+            mNavigator.pop(new SelectedTheme(STEngine.THEME_RAIN_PRINCESS));
         } else if (id == R.id.container_udnie_theme) {
-            mNavigator.pop(new SelectedTheme(NSTEngine.THEME_UDNIE));
+            mNavigator.pop(new SelectedTheme(STEngine.THEME_UDNIE));
         } else if (id == R.id.container_pointilism_theme) {
-            mNavigator.pop(new SelectedTheme(NSTEngine.THEME_POINTILISM));
+            mNavigator.pop(new SelectedTheme(STEngine.THEME_POINTILISM));
         } else if (id == R.id.button_back) {
             mNavigator.pop();
         }

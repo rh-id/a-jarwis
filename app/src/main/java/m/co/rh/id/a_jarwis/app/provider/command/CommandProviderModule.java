@@ -8,6 +8,6 @@ public class CommandProviderModule implements ProviderModule {
     @Override
     public void provides(ProviderRegistry providerRegistry, Provider provider) {
         providerRegistry.registerLazy(BlurFaceCommand.class, () -> new BlurFaceCommand(provider));
-        providerRegistry.registerLazy(NSTApplyCommand.class, () -> new NSTApplyCommand(provider));
+        providerRegistry.registerLazy(STApplyCommand.class, () -> new STApplyCommand(provider));
     }
 }

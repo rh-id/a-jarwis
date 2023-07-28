@@ -26,7 +26,7 @@ import io.reactivex.rxjava3.functions.BiConsumer;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import m.co.rh.id.a_jarwis.R;
 import m.co.rh.id.a_jarwis.app.provider.command.BlurFaceCommand;
-import m.co.rh.id.a_jarwis.app.provider.command.NSTApplyCommand;
+import m.co.rh.id.a_jarwis.app.provider.command.STApplyCommand;
 import m.co.rh.id.a_jarwis.app.ui.page.nav.param.FileList;
 import m.co.rh.id.a_jarwis.app.ui.page.nav.param.MessageText;
 import m.co.rh.id.a_jarwis.app.ui.page.nav.param.SelectedChoice;
@@ -67,7 +67,7 @@ public class HomePage extends StatefulView<Activity> implements RequireComponent
     private transient ExecutorService mExecutorService;
     private transient RxDisposer mRxDisposer;
     private transient BlurFaceCommand mBlurFaceCommand;
-    private transient NSTApplyCommand mNSTApplyCommand;
+    private transient STApplyCommand mSTApplyCommand;
 
     // View related
     private transient DrawerLayout mDrawerLayout;
@@ -87,7 +87,7 @@ public class HomePage extends StatefulView<Activity> implements RequireComponent
         mExecutorService = mSvProvider.get(ExecutorService.class);
         mRxDisposer = mSvProvider.get(RxDisposer.class);
         mBlurFaceCommand = mSvProvider.get(BlurFaceCommand.class);
-        mNSTApplyCommand = mSvProvider.get(NSTApplyCommand.class);
+        mSTApplyCommand = mSvProvider.get(STApplyCommand.class);
         mOnNavigationClicked = view -> {
             if (!mDrawerLayout.isOpen()) {
                 mDrawerLayout.open();
@@ -426,7 +426,7 @@ public class HomePage extends StatefulView<Activity> implements RequireComponent
                 if (!uriList.isEmpty()) {
                     mRxDisposer.add("onActivityResult_nstApplyPicture_multiple",
                             Flowable.fromIterable(uriList)
-                                    .map(uri -> mNSTApplyCommand.execute(uri, mSelectedNSTTheme.getSelectedTheme())
+                                    .map(uri -> mSTApplyCommand.execute(uri, mSelectedNSTTheme.getSelectedTheme())
                                             .blockingGet())
                                     .subscribeOn(Schedulers.from(mExecutorService))
                                     .doOnError(throwable -> consumeFile.accept(null, throwable))
@@ -435,7 +435,7 @@ public class HomePage extends StatefulView<Activity> implements RequireComponent
                 }
             } else {
                 mRxDisposer.add("onActivityResult_nstApplyPicture",
-                        mNSTApplyCommand.execute(fullPhotoUri, mSelectedNSTTheme.getSelectedTheme())
+                        mSTApplyCommand.execute(fullPhotoUri, mSelectedNSTTheme.getSelectedTheme())
                                 .subscribeOn(Schedulers.from(mExecutorService))
                                 .subscribe(consumeFile));
             }

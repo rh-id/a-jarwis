@@ -29,16 +29,16 @@ import m.co.rh.id.aprovider.Provider;
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
 @RunWith(AndroidJUnit4.class)
-public class NSTEngineTest {
+public class STEngineTest {
 
-    private static NSTEngine mNSTEngine;
+    private static STEngine mSTEngine;
     private static Provider mMLEngineProvider;
 
     @BeforeClass
     public static void beforeAnyTest() {
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
         mMLEngineProvider = Provider.createProvider(appContext, new MLEngineTestProviderModule());
-        mNSTEngine = mMLEngineProvider.get(NSTEngine.class);
+        mSTEngine = mMLEngineProvider.get(STEngine.class);
     }
 
     @AfterClass
@@ -53,7 +53,7 @@ public class NSTEngineTest {
         Context context = mMLEngineProvider.getContext();
         Bitmap bitmap = BitmapFactory.decodeStream(context.getResources().
                 openRawResource(R.raw.amber));
-        Bitmap bitmap1 = mNSTEngine.applyMosaic(bitmap);
+        Bitmap bitmap1 = mSTEngine.applyMosaic(bitmap);
         File tempFile = mMLEngineProvider.get(FileHelper.class).createTempFile("NSTEngineTest_applyMosaic.jpg");
         bitmap1.compress(Bitmap.CompressFormat.JPEG, 100, new FileOutputStream(tempFile));
         bitmap1.recycle();
@@ -64,7 +64,7 @@ public class NSTEngineTest {
         Context context = mMLEngineProvider.getContext();
         Bitmap bitmap = BitmapFactory.decodeStream(context.getResources().
                 openRawResource(R.raw.amber));
-        Bitmap bitmap1 = mNSTEngine.applyCandy(bitmap);
+        Bitmap bitmap1 = mSTEngine.applyCandy(bitmap);
         File tempFile = mMLEngineProvider.get(FileHelper.class).createTempFile("NSTEngineTest_applyCandy.jpg");
         bitmap1.compress(Bitmap.CompressFormat.JPEG, 100, new FileOutputStream(tempFile));
         bitmap1.recycle();
@@ -75,7 +75,7 @@ public class NSTEngineTest {
         Context context = mMLEngineProvider.getContext();
         Bitmap bitmap = BitmapFactory.decodeStream(context.getResources().
                 openRawResource(R.raw.amber));
-        Bitmap bitmap1 = mNSTEngine.applyRainPrincess(bitmap);
+        Bitmap bitmap1 = mSTEngine.applyRainPrincess(bitmap);
         File tempFile = mMLEngineProvider.get(FileHelper.class).createTempFile("NSTEngineTest_applyRainPrincess.jpg");
         bitmap1.compress(Bitmap.CompressFormat.JPEG, 100, new FileOutputStream(tempFile));
         bitmap1.recycle();
@@ -86,7 +86,7 @@ public class NSTEngineTest {
         Context context = mMLEngineProvider.getContext();
         Bitmap bitmap = BitmapFactory.decodeStream(context.getResources().
                 openRawResource(R.raw.amber));
-        Bitmap bitmap1 = mNSTEngine.applyUdnie(bitmap);
+        Bitmap bitmap1 = mSTEngine.applyUdnie(bitmap);
         File tempFile = mMLEngineProvider.get(FileHelper.class).createTempFile("NSTEngineTest_applyUdnie.jpg");
         bitmap1.compress(Bitmap.CompressFormat.JPEG, 100, new FileOutputStream(tempFile));
         bitmap1.recycle();
@@ -97,7 +97,7 @@ public class NSTEngineTest {
         Context context = mMLEngineProvider.getContext();
         Bitmap bitmap = BitmapFactory.decodeStream(context.getResources().
                 openRawResource(R.raw.amber));
-        Bitmap bitmap1 = mNSTEngine.applyPointilism(bitmap);
+        Bitmap bitmap1 = mSTEngine.applyPointilism(bitmap);
         File tempFile = mMLEngineProvider.get(FileHelper.class).createTempFile("NSTEngineTest_applyPointilism.jpg");
         bitmap1.compress(Bitmap.CompressFormat.JPEG, 100, new FileOutputStream(tempFile));
         bitmap1.recycle();

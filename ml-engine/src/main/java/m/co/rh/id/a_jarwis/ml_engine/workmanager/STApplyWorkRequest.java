@@ -17,15 +17,15 @@ import java.io.ObjectInputStream;
 import m.co.rh.id.a_jarwis.base.BaseApplication;
 import m.co.rh.id.a_jarwis.base.provider.component.helper.MediaHelper;
 import m.co.rh.id.a_jarwis.base.util.SerializeUtils;
-import m.co.rh.id.a_jarwis.ml_engine.provider.component.NSTEngine;
-import m.co.rh.id.a_jarwis.ml_engine.workmanager.model.NSTApplySerialFile;
+import m.co.rh.id.a_jarwis.ml_engine.provider.component.STEngine;
+import m.co.rh.id.a_jarwis.ml_engine.workmanager.model.STApplySerialFile;
 import m.co.rh.id.alogger.ILogger;
 import m.co.rh.id.aprovider.Provider;
 
-public class NSTApplyWorkRequest extends Worker {
+public class STApplyWorkRequest extends Worker {
     private static final String TAG = "NSTApplyWorkRequest";
 
-    public NSTApplyWorkRequest(@NonNull Context context, @NonNull WorkerParameters workerParams) {
+    public STApplyWorkRequest(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
     }
 
@@ -36,7 +36,7 @@ public class NSTApplyWorkRequest extends Worker {
         Provider provider = BaseApplication.of(getApplicationContext()).getProvider();
         ILogger logger = provider.get(ILogger.class);
         MediaHelper mediaHelper = provider.get(MediaHelper.class);
-        NSTEngine nstEngine = provider.get(NSTEngine.class);
+        STEngine STEngine = provider.get(STEngine.class);
 
         File inputFile = null;
         ObjectInputStream ois = null;
@@ -44,12 +44,12 @@ public class NSTApplyWorkRequest extends Worker {
             byte[] serialFileB = getInputData().getByteArray(Params.SERIAL_FILE);
             File serialFile = SerializeUtils.deserialize(serialFileB);
             ois = new ObjectInputStream(new FileInputStream(serialFile));
-            NSTApplySerialFile nstApplySerialFile = (NSTApplySerialFile) ois.readObject();
-            inputFile = nstApplySerialFile.getInputFile();
-            int theme = nstApplySerialFile.getTheme();
+            STApplySerialFile STApplySerialFile = (STApplySerialFile) ois.readObject();
+            inputFile = STApplySerialFile.getInputFile();
+            int theme = STApplySerialFile.getTheme();
 
             Bitmap input = BitmapFactory.decodeFile(inputFile.getAbsolutePath());
-            Bitmap applied = nstEngine.apply(input, theme);
+            Bitmap applied = STEngine.apply(input, theme);
             String fileName = inputFile.getName();
             if (applied != null) {
                 mediaHelper.insertImage(applied, fileName, fileName);

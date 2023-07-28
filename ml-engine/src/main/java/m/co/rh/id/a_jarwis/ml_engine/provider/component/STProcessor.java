@@ -15,12 +15,12 @@ import java.util.List;
 
 import m.co.rh.id.alogger.ILogger;
 
-class NSTProcessor {
+class STProcessor {
     private final ILogger mLogger;
     private final Net mModelNet;
     private final String mTag;
 
-    public NSTProcessor(String modelPath, ILogger logger) {
+    public STProcessor(String modelPath, ILogger logger) {
         mModelNet = Dnn.readNetFromONNX(modelPath);
         mLogger = logger;
         mTag = modelPath.substring(modelPath.lastIndexOf("/") + 1);
