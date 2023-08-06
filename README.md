@@ -2,6 +2,7 @@
 
 ![Languages](https://img.shields.io/github/languages/top/rh-id/a-jarwis)
 ![Downloads](https://img.shields.io/github/downloads/rh-id/a-jarwis/total)
+![GitHub release (by tag)](https://img.shields.io/github/downloads/rh-id/a-jarwis/latest/total)
 ![Release](https://img.shields.io/github/v/release/rh-id/a-jarwis)
 ![Android CI](https://github.com/rh-id/a-jarwis/actions/workflows/gradlew-build.yml/badge.svg)
 ![Release Build](https://github.com/rh-id/a-jarwis/actions/workflows/android-release.yml/badge.svg)
