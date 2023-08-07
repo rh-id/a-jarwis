@@ -7,6 +7,7 @@ import android.content.ClipData;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -23,6 +24,7 @@ import java.util.concurrent.ExecutorService;
 
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.functions.BiConsumer;
+import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import m.co.rh.id.a_jarwis.R;
 import m.co.rh.id.a_jarwis.app.provider.command.BlurFaceCommand;
@@ -179,32 +181,51 @@ public class HomePage extends StatefulView<Activity> implements RequireComponent
         } else if (id == R.id.menu_donation) {
             mNavigator.push(Routes.DONATIONS_PAGE);
         } else if (id == R.id.button_auto_blur_face) {
-            Activity activity = mNavigator.getActivity();
-            if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE_IMAGE_AUTO_BLUR_FACE);
-            } else {
-                pickImage(activity, REQUEST_CODE_IMAGE_AUTO_BLUR_FACE);
-            }
+            requestWriteExternalStoragePermission(
+                    (activity) -> {
+                        pickImage(activity, REQUEST_CODE_IMAGE_AUTO_BLUR_FACE);
+                        return activity;
+                    }
+                    , REQUEST_CODE_IMAGE_AUTO_BLUR_FACE
+            );
         } else if (id == R.id.button_exclude_blur_face) {
-            Activity activity = mNavigator.getActivity();
-            if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE_IMAGE_EXCLUDE_BLUR_FACE);
-            } else {
-                startExcludeAutoBlur();
-            }
+            requestWriteExternalStoragePermission(
+                    (activity) -> {
+                        startExcludeAutoBlur();
+                        return activity;
+                    }
+                    , REQUEST_CODE_IMAGE_EXCLUDE_BLUR_FACE
+            );
         } else if (id == R.id.button_selective_blur_face) {
-            Activity activity = mNavigator.getActivity();
-            if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE_IMAGE_EXCLUDE_BLUR_FACE);
-            } else {
-                startSelectiveAutoBlur();
-            }
+            requestWriteExternalStoragePermission(
+                    (activity) -> {
+                        startSelectiveAutoBlur();
+                        return activity;
+                    }
+                    , REQUEST_CODE_IMAGE_SELECTIVE_BLUR_FACE
+            );
         } else if (id == R.id.button_nst_apply_picture) {
-            Activity activity = mNavigator.getActivity();
-            if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE_IMAGE_NST_APPLY_PICTURE);
-            } else {
-                startNstApplyPicture();
+            requestWriteExternalStoragePermission(
+                    (activity) -> {
+                        startNstApplyPicture();
+                        return activity;
+                    }
+                    , REQUEST_CODE_IMAGE_NST_APPLY_PICTURE
+            );
+        }
+    }
+
+    private void requestWriteExternalStoragePermission(Function<Activity, Activity> function, int requestCode) {
+        Activity activity = mNavigator.getActivity();
+        // if API Level more than 32 then it is not needed to request
+        if (android.os.Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2
+                && ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, requestCode);
+        } else {
+            try {
+                function.apply(activity);
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
             }
         }
     }
