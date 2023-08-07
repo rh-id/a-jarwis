@@ -92,7 +92,6 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 def openCVersionName = "4.8.0"
-def openCVersionCode = ((4 * 100 + 8) * 100 + 0) * 10 + 0
 
 println "OpenCV: " +openCVersionName + " " + project.buildscript.sourceFile
 
@@ -105,8 +104,6 @@ android {
         minSdk 21
         targetSdk 33
 
-        versionCode openCVersionCode
-        versionName openCVersionName
 
         externalNativeBuild {
             cmake {
@@ -153,26 +150,26 @@ android {
             path (project.projectDir.toString() + '/libcxx_helper/CMakeLists.txt')
         }
     }
-
-    lintOptions {
-        quiet true
+    lint {
         abortOnError false
-        checkReleaseBuilds false
-        ignoreWarnings true
         checkAllWarnings false
-        warningsAsErrors false
-        noLines true
-        showAll false
-        explainIssues false
-        textReport false
-        xmlReport false
-        htmlReport false
-        sarifReport false
-        checkTestSources false
-        ignoreTestSources true
-        checkGeneratedSources false
         checkDependencies false
+        checkGeneratedSources false
+        checkReleaseBuilds false
+        checkTestSources false
+        explainIssues false
+        htmlReport false
+        ignoreTestSources true
+        ignoreWarnings true
+        noLines true
+        quiet true
+        sarifReport false
+        showAll false
+        textReport false
+        warningsAsErrors false
+        xmlReport false
     }
+
 }
 
 dependencies {
