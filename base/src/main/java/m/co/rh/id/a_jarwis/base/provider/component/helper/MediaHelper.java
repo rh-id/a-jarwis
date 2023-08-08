@@ -118,7 +118,7 @@ public class MediaHelper {
             thumbOut.close();
             return thumb;
         } catch (Exception e) {
-            mLogger.e(TAG, e.getMessage(), e);
+            mLogger.d(TAG, e.getMessage(), e);
             return null;
         }
     }
