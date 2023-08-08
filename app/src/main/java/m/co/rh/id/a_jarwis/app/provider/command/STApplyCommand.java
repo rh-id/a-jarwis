@@ -3,6 +3,7 @@ package m.co.rh.id.a_jarwis.app.provider.command;
 import android.net.Uri;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 
 import io.reactivex.rxjava3.core.Single;
@@ -21,7 +22,7 @@ public class STApplyCommand {
         mSTEngine = provider.get(STEngine.class);
     }
 
-    public Single<File> execute(Uri uriFile, int theme) {
+    public Single<File> execute(Uri uriFile, Collection<Integer> themes) {
         return Single.fromFuture(mExecutorService.submit(() -> {
             String fullPath = uriFile.getPath();
             int cut = fullPath.lastIndexOf("/");
@@ -33,7 +34,7 @@ public class STApplyCommand {
             }
             File result = mFileHelper
                     .createImageTempFile(fileName, uriFile);
-            mSTEngine.enqueueST(result, theme);
+            mSTEngine.enqueueST(result, themes);
             return result;
         }));
     }

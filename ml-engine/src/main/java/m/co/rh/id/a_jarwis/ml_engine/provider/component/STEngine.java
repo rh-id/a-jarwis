@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.util.Collection;
 
 import m.co.rh.id.a_jarwis.base.provider.component.helper.FileHelper;
 import m.co.rh.id.a_jarwis.base.util.SerializeUtils;
@@ -78,12 +79,12 @@ public class STEngine {
         }
     }
 
-    public void enqueueST(File imageFile, int theme) {
+    public void enqueueST(File imageFile, Collection<Integer> themes) {
         ObjectOutputStream oos = null;
         try {
             File serialFile = mFileHelper.createTempFile();
             oos = new ObjectOutputStream(new FileOutputStream(serialFile));
-            STApplySerialFile STApplySerialFile = new STApplySerialFile(imageFile, theme);
+            STApplySerialFile STApplySerialFile = new STApplySerialFile(imageFile, themes);
             oos.writeObject(STApplySerialFile);
             oos.close();
             Data.Builder inputBuilder = new Data.Builder();

@@ -447,7 +447,7 @@ public class HomePage extends StatefulView<Activity> implements RequireComponent
                 if (!uriList.isEmpty()) {
                     mRxDisposer.add("onActivityResult_nstApplyPicture_multiple",
                             Flowable.fromIterable(uriList)
-                                    .map(uri -> mSTApplyCommand.execute(uri, mSelectedNSTTheme.getSelectedTheme())
+                                    .map(uri -> mSTApplyCommand.execute(uri, mSelectedNSTTheme.getSelectedThemes())
                                             .blockingGet())
                                     .subscribeOn(Schedulers.from(mExecutorService))
                                     .doOnError(throwable -> consumeFile.accept(null, throwable))
@@ -456,7 +456,7 @@ public class HomePage extends StatefulView<Activity> implements RequireComponent
                 }
             } else {
                 mRxDisposer.add("onActivityResult_nstApplyPicture",
-                        mSTApplyCommand.execute(fullPhotoUri, mSelectedNSTTheme.getSelectedTheme())
+                        mSTApplyCommand.execute(fullPhotoUri, mSelectedNSTTheme.getSelectedThemes())
                                 .subscribeOn(Schedulers.from(mExecutorService))
                                 .subscribe(consumeFile));
             }

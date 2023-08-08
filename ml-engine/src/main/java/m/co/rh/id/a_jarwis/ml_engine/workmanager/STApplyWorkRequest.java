@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.util.ArrayList;
 
 import m.co.rh.id.a_jarwis.base.BaseApplication;
 import m.co.rh.id.a_jarwis.base.provider.component.helper.MediaHelper;
@@ -46,18 +47,18 @@ public class STApplyWorkRequest extends Worker {
             ois = new ObjectInputStream(new FileInputStream(serialFile));
             STApplySerialFile STApplySerialFile = (STApplySerialFile) ois.readObject();
             inputFile = STApplySerialFile.getInputFile();
-            int theme = STApplySerialFile.getTheme();
-
+            ArrayList<Integer> themes = STApplySerialFile.getThemes();
             Bitmap input = BitmapFactory.decodeFile(inputFile.getAbsolutePath());
-            Bitmap applied = STEngine.apply(input, theme);
             String fileName = inputFile.getName();
-            if (applied != null) {
-                mediaHelper.insertImage(applied, fileName, fileName);
-                applied.recycle();
-                input.recycle();
-                logger.i(TAG, getApplicationContext()
-                        .getString(m.co.rh.id.a_jarwis.base.R.string.done_processing_, fileName));
+            for (Integer theme : themes) {
+                Bitmap applied = STEngine.apply(input, theme);
+                if (applied != null) {
+                    mediaHelper.insertImage(applied, fileName, fileName);
+                    applied.recycle();
+                }
             }
+            logger.i(TAG, getApplicationContext()
+                    .getString(m.co.rh.id.a_jarwis.base.R.string.done_processing_, fileName));
         } catch (Exception e) {
             logger.e(TAG, e.getMessage(), e);
             return Result.failure();

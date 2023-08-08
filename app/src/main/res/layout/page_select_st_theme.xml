@@ -16,7 +16,6 @@
         <GridLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:columnCount="@integer/grid_column_count"
             android:orientation="vertical">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -24,11 +23,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:layout_columnWeight="1"
-                android:layout_margin="@dimen/text_margin">
+                android:layout_margin="@dimen/text_margin"
+                android:background="@drawable/state_selected">
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_margin="@dimen/text_margin"
                     android:scaleType="centerCrop"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
@@ -55,11 +56,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:layout_columnWeight="1"
-                android:layout_margin="@dimen/text_margin">
+                android:layout_margin="@dimen/text_margin"
+                android:background="@drawable/state_selected">
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_margin="@dimen/text_margin"
                     android:scaleType="centerCrop"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
@@ -86,11 +89,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:layout_columnWeight="1"
-                android:layout_margin="@dimen/text_margin">
+                android:layout_margin="@dimen/text_margin"
+                android:background="@drawable/state_selected">
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_margin="@dimen/text_margin"
                     android:scaleType="centerCrop"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
@@ -117,11 +122,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:layout_columnWeight="1"
-                android:layout_margin="@dimen/text_margin">
+                android:layout_margin="@dimen/text_margin"
+                android:background="@drawable/state_selected">
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_margin="@dimen/text_margin"
                     android:scaleType="centerCrop"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
@@ -148,11 +155,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:layout_columnWeight="1"
-                android:layout_margin="@dimen/text_margin">
+                android:layout_margin="@dimen/text_margin"
+                android:background="@drawable/state_selected">
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_margin="@dimen/text_margin"
                     android:scaleType="centerCrop"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
@@ -196,6 +205,17 @@
             app:icon="@drawable/ic_arrow_back_white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/red_800"
+            android:text="@string/next"
+            app:icon="@drawable/ic_arrow_forward_white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
