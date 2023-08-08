@@ -1,0 +1,14 @@
+Release 1.3.3+11
+
+Fixes:
+* Thumbnail error message shown when applying NST
+
+----------------------------------------------------------------------------------
+Release 1.3.2+10
+
+Fixes:
+* App not working in Android 13 and 14
+
+Feature:
+* Enable multi selection of the themes for Style Transfer
+* Enhance background work tasks
