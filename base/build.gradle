@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace = 'm.co.rh.id.a_jarwis.base'
-    compileSdk = 34
+    compileSdk = 37
 
     buildFeatures {
         buildConfig = true

@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace = 'm.co.rh.id.a_jarwis.settings'
-    compileSdk = 34
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 21
