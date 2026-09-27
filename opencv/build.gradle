@@ -89,83 +89,91 @@
 //
 
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
 
 def openCVersionName = "4.8.0"
 
 println "OpenCV: " +openCVersionName + " " + project.buildscript.sourceFile
 
 android {
-    namespace "org.opencv"
-    compileSdk 34
-    ndkVersion '25.2.9519653'
+    namespace = "org.opencv"
+    compileSdk = 34
+    ndkVersion = '25.2.9519653'
 
     defaultConfig {
-        minSdk 21
+        minSdk = 21
 
         externalNativeBuild {
             cmake {
-                arguments "-DANDROID_STL=c++_shared"
-                targets "opencv_jni_shared"
+                arguments = ["-DANDROID_STL=c++_shared"]
+                targets = ["opencv_jni_shared"]
             }
         }
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
-    
+    packaging {
+        jniLibs {
+            keepDebugSymbols += '**/*.so'
+        }
+    }
 
     buildTypes {
-        debug {
-            packagingOptions {
-                doNotStrip '**/*.so'  // controlled by OpenCV CMake scripts
-            }
-        }
         release {
-            packagingOptions {
-                doNotStrip '**/*.so'  // controlled by OpenCV CMake scripts
-            }
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            minifyEnabled = false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.txt'
         }
     }
 
     sourceSets {
         main {
-            jniLibs.srcDirs = ['native/libs']
-            java.srcDirs = ['java/src']
-            aidl.srcDirs = ['java/src']
-            res.srcDirs = ['java/res']
-            manifest.srcFile 'java/AndroidManifest.xml'
+            jniLibs {
+                srcDirs = ['native/libs']
+            }
+            java {
+                srcDirs = ['java/src']
+            }
+            kotlin {
+                srcDirs = ['java/src']
+            }
+            aidl {
+                srcDirs = ['java/src']
+            }
+            res {
+                srcDirs = ['java/res']
+            }
+            manifest {
+                srcFile file('java/AndroidManifest.xml')
+            }
         }
     }
 
     externalNativeBuild {
         cmake {
-            path (project.projectDir.toString() + '/libcxx_helper/CMakeLists.txt')
+            path = file('libcxx_helper/CMakeLists.txt')
         }
     }
     lint {
-        abortOnError false
-        checkAllWarnings false
-        checkDependencies false
-        checkGeneratedSources false
-        checkReleaseBuilds false
-        checkTestSources false
-        explainIssues false
-        htmlReport false
-        ignoreTestSources true
-        ignoreWarnings true
-        noLines true
-        quiet true
-        sarifReport false
-        showAll false
-        textReport false
-        warningsAsErrors false
-        xmlReport false
+        abortOnError = false
+        checkAllWarnings = false
+        checkDependencies = false
+        checkGeneratedSources = false
+        checkReleaseBuilds = false
+        checkTestSources = false
+        explainIssues = false
+        htmlReport = false
+        ignoreTestSources = true
+        ignoreWarnings = true
+        noLines = true
+        quiet = true
+        sarifReport = false
+        showAll = false
+        textReport = false
+        warningsAsErrors = false
+        xmlReport = false
     }
 
 }

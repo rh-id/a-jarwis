@@ -4,25 +4,25 @@ plugins {
 }
 
 android {
-    namespace 'm.co.rh.id.a_jarwis.settings'
-    compileSdk 34
+    namespace = 'm.co.rh.id.a_jarwis.settings'
+    compileSdk = 34
 
     defaultConfig {
-        minSdk 21
+        minSdk = 21
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles "consumer-rules.pro"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles = ['consumer-rules.pro']
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled = false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 

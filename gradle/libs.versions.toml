@@ -1,0 +1,53 @@
+[versions]
+agp = "9.4.1"
+room = "2.5.2"
+work = "2.8.1"
+nav = "v0.0.72"
+provider = "v0.0.23"
+junit = "4.13.2"
+androidx-test-ext-junit = "1.1.5"
+espresso = "3.5.1"
+mockito = "4.11.0"
+rxjava = "3.1.4"
+rxandroid = "3.0.0"
+appcompat = "1.6.1"
+material = "1.9.0"
+constraintlayout = "2.1.4"
+drawerlayout = "1.2.0"
+swiperefreshlayout = "1.1.0"
+recyclerview = "1.3.1"
+exifinterface = "1.3.6"
+leakcanary = "2.9.1"
+a-logger = "v0.0.3"
+rx-utils = "v0.0.3"
+concurrent-utils = "v0.0.3"
+
+[libraries]
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+work-runtime = { group = "androidx.work", name = "work-runtime", version.ref = "work" }
+work-testing = { group = "androidx.work", name = "work-testing", version.ref = "work" }
+a-provider = { group = "com.github.rh-id", name = "a-provider", version.ref = "provider" }
+a-navigator = { group = "com.github.rh-id.a-navigator", name = "a-navigator", version.ref = "nav" }
+a-navigator-dialog = { group = "com.github.rh-id.a-navigator", name = "a-navigator-extension-dialog", version.ref = "nav" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-test-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
+espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso" }
+mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
+rxjava = { group = "io.reactivex.rxjava3", name = "rxjava", version.ref = "rxjava" }
+rxandroid = { group = "io.reactivex.rxjava3", name = "rxandroid", version.ref = "rxandroid" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+androidx-drawerlayout = { group = "androidx.drawerlayout", name = "drawerlayout", version.ref = "drawerlayout" }
+androidx-swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefreshlayout" }
+androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
+androidx-exifinterface = { group = "androidx.exifinterface", name = "exifinterface", version.ref = "exifinterface" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+leakcanary-plumber = { group = "com.squareup.leakcanary", name = "plumber-android", version.ref = "leakcanary" }
+a-logger = { group = "com.github.rh-id", name = "a-logger", version.ref = "a-logger" }
+rx-utils = { group = "com.github.rh-id", name = "rx-utils", version.ref = "rx-utils" }
+concurrent-utils = { group = "com.github.rh-id", name = "concurrent-utils", version.ref = "concurrent-utils" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
