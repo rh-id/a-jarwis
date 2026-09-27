@@ -21,6 +21,7 @@ leakcanary = "2.9.1"
 a-logger = "v0.0.3"
 rx-utils = "v0.0.3"
 concurrent-utils = "v0.0.3"
+opencv = "5.0.0.1"
 
 [libraries]
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
@@ -47,6 +48,7 @@ leakcanary-plumber = { group = "com.squareup.leakcanary", name = "plumber-androi
 a-logger = { group = "com.github.rh-id", name = "a-logger", version.ref = "a-logger" }
 rx-utils = { group = "com.github.rh-id", name = "rx-utils", version.ref = "rx-utils" }
 concurrent-utils = { group = "com.github.rh-id", name = "concurrent-utils", version.ref = "concurrent-utils" }
+opencv = { group = "org.opencv", name = "opencv", version.ref = "opencv" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

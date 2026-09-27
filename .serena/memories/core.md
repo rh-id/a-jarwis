@@ -4,9 +4,8 @@ On-device Android AI utility app (GitHub `rh-id/a-jarwis`, branch `master`). Fea
 
 ## Module graph (dependency direction)
 - `:app` → `:base`, `:settings`, `:ml-engine` (UI entry, commands)
-- `:ml-engine` → `:base`, `:opencv` (engines + WorkManager workers)
+- `:ml-engine` → `:base` (engines + WorkManager workers; OpenCV comes from the official Maven AAR, not a module)
 - `:settings` → `:base` (settings pages)
-- `:opencv` → nothing (vendored OpenCV 4.8.0 SDK, namespace `org.opencv`)
 - `:base` → nothing in-repo (shared infra; exposes a-provider/a-navigator/etc via `api`)
 
 ## Non-obvious invariants
@@ -18,5 +17,5 @@ On-device Android AI utility app (GitHub `rh-id/a-jarwis`, branch `master`). Fea
 - Long de-facto invariants: no unit tests (androidTest only, need emulator); no lint/format config.
 
 ## Where to go next
-- Module details: `app/core` (pages/commands/navigation), `base/core` (provider modules, helpers), `ml-engine/core` (engines, models, workers), `settings/core`, `opencv/core`
+- Module details: `app/core` (pages/commands/navigation), `base/core` (provider modules, helpers), `ml-engine/core` (engines, models, workers), `settings/core`, `ml-engine/opencv` (OpenCV integration)
 - Versions/libs: `tech_stack`; code style/patterns: `conventions`; commands: `suggested_commands`; done-checklist: `task_completion`

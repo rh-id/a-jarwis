@@ -30,12 +30,11 @@ android {
     buildFeatures {
         mlModelBinding = true
     }
-    ndkVersion = '25.2.9519653'
 }
 
 dependencies {
     implementation project(":base")
-    implementation project(":opencv")
+    implementation libs.opencv
 
     testImplementation libs.junit
     androidTestImplementation libs.androidx.test.junit

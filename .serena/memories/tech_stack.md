@@ -16,7 +16,7 @@
 - Test: JUnit4, Mockito 4.11, espresso, androidx.test-junit, work-testing (androidTest only)
 
 ## ML stack
-- OpenCV 4.8.0 vendored as `:opencv` module (java API + native cmake, NDK 25.2.9519653, `-DANDROID_STL=c++_shared`)
+- OpenCV 5.0.0.1 official Android AAR from Maven Central (`org.opencv:opencv:5.0.0.1`, catalog entry `libs.opencv`), consumed by `:ml-engine` directly; no local module (previously vendored 4.8.0 SDK — removed 2026-09)
 - ONNX models in `ml-engine/src/main/res/raw/`: `face_detection_yunet_2023mar.onnx`, `face_recognition_sface_2021dec_int8.onnx`, `nst_{mosaic,candy,rain_princess,udnie,pointilism}_9.onnx`
 - Models copied at runtime to `filesDir/ml-engine/engine/**` by `MLEngineInstance` (once, if absent); run via OpenCV `FaceDetectorYN`/`FaceRecognizerSF` and DNN (`STProcessor`)
 

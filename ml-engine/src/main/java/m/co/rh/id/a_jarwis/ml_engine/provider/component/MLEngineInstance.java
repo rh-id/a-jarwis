@@ -42,7 +42,7 @@ public class MLEngineInstance {
         mAppContext = provider.getContext().getApplicationContext();
         mLogger = provider.get(ILogger.class);
         mFileHelper = provider.get(FileHelper.class);
-        if (OpenCVLoader.initDebug()) {
+        if (OpenCVLoader.initLocal()) {
             mLogger.d("OpenCV", "OpenCV loaded");
         } else {
             mLogger.e("OpenCV", "Error Loading OpenCV");

@@ -35,7 +35,6 @@ The project follows a modular, layered architecture designed to separate concern
 *   **`:app`**: The entry point. Contains the UI, Navigation, and Command implementations. It manages user interaction and delegates tasks.
 *   **`:ml-engine`**: The core intelligence. Encapsulates ML models (OpenCV, etc.), logic engines (`FaceEngine`, `STEngine`), and background workers (`WorkManager`).
 *   **`:base`**: Shared infrastructure. Contains DI setup (`a-provider` modules), utilities (`FileHelper`, `MediaHelper`), and common UI components.
-*   **`:opencv`**: Wraps the OpenCV library integration.
 
 ### Key Libraries
 
