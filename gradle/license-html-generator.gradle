@@ -1644,8 +1644,13 @@ Public License instead of this License.
 
 ext.parseLicenseOverrides = { File yamlFile ->
     def overrides = []
+    def inStaticBlock = false
     yamlFile.eachLine { line ->
-        if (line.trim().startsWith('- artifact:')) {
+        if (line.trim().startsWith('- name:')) {
+            // static entry (non Gradle artifact), its indented keys belong to parseStaticLicenses
+            inStaticBlock = true
+        } else if (line.trim().startsWith('- artifact:')) {
+            inStaticBlock = false
             def artifact = line.trim().substring(12).trim()
             def parts = artifact.split(':')
             overrides << [
@@ -1655,6 +1660,7 @@ ext.parseLicenseOverrides = { File yamlFile ->
                 data: [:]
             ]
         } else if (line.trim().startsWith('artifact:')) {
+            inStaticBlock = false
             def artifact = line.trim().substring(10).trim()
             def parts = artifact.split(':')
             overrides << [
@@ -1663,7 +1669,7 @@ ext.parseLicenseOverrides = { File yamlFile ->
                 version: parts.size() > 2 ? parts[2] : '+',
                 data: [:]
             ]
-        } else if (line.startsWith('  ') && !overrides.isEmpty()) {
+        } else if (line.startsWith('  ') && !overrides.isEmpty() && !inStaticBlock) {
             def kv = line.trim().split(':', 2)
             if (kv.size() == 2) {
                 overrides.last().data[kv[0].trim()] = kv[1].trim()
@@ -1671,6 +1677,29 @@ ext.parseLicenseOverrides = { File yamlFile ->
         }
     }
     return overrides
+}
+
+// Parse static license entries from the yml, these are attributions for non Gradle
+// artifacts (e.g. AI models downloaded at runtime), each entry begins with `- name:`
+// and supports the same indented keys as artifact overrides:
+// name, copyrightHolder, license, licenseUrl, url
+ext.parseStaticLicenses = { File yamlFile ->
+    def staticLibraries = []
+    def inStaticBlock = false
+    yamlFile.eachLine { line ->
+        if (line.trim().startsWith('- name:')) {
+            inStaticBlock = true
+            staticLibraries << [name: line.trim().substring('- name:'.length()).trim()]
+        } else if (line.trim().startsWith('- artifact:') || line.trim().startsWith('artifact:')) {
+            inStaticBlock = false
+        } else if (line.startsWith('  ') && inStaticBlock && !staticLibraries.isEmpty()) {
+            def kv = line.trim().split(':', 2)
+            if (kv.size() == 2) {
+                staticLibraries.last()[kv[0].trim()] = kv[1].trim()
+            }
+        }
+    }
+    return staticLibraries
 }
 
 ext.findPomFile = { String group, String name, String version, File pomCacheDir ->
@@ -1952,6 +1981,38 @@ tasks.register('generateLicenseHtml') {
                 templateId: templateId
             ]
         }
+        }
+
+        // Append static entries (non Gradle artifacts, e.g. models downloaded at runtime)
+        def staticLibraries = yamlFile.exists() ? parseStaticLicenses(yamlFile) : []
+        staticLibraries.each { entry ->
+            def staticName = entry['name']
+            if (!staticName) return
+            def staticHolder = entry['copyrightHolder'] ?: 'Unknown'
+            def staticLicenseName = entry['license']
+            def staticLicenseUrl = entry['licenseUrl']
+            def escapedStaticHolder = escapeHtml(staticHolder)
+            def staticLicenseHtml = staticLicenseUrl ? getLicenseHtml(staticLicenseUrl, escapedStaticHolder) : null
+            if (!staticLicenseHtml) {
+                staticLicenseHtml = getLicenseHtmlByName(staticLicenseName, escapedStaticHolder)
+            }
+            if (!staticLicenseHtml) {
+                throw new GradleException("License generation failed for static entry '${staticName}': no resolvable license template (license: ${staticLicenseName ?: 'unknown'}, url: '${staticLicenseUrl ?: ''}')")
+            }
+            def staticTemplateId
+            if (licenseTextMap.containsKey(staticLicenseHtml)) {
+                staticTemplateId = licenseTextMap[staticLicenseHtml]
+            } else {
+                staticTemplateId = "lic-${licenseTextMap.size()}"
+                licenseTextMap[staticLicenseHtml] = staticTemplateId
+            }
+            libraries << [
+                name: staticName,
+                copyrightHolder: staticHolder,
+                url: entry['url'],
+                licenseUrl: staticLicenseUrl,
+                templateId: staticTemplateId
+            ]
         }
 
         if (!problems.isEmpty()) {

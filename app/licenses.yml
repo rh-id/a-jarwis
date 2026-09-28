@@ -469,10 +469,23 @@
   license: The Apache Software License, Version 2.0
   licenseUrl: http://www.apache.org/licenses/LICENSE-2.0.txt
   url: https://developer.android.com/jetpack/androidx/releases/exifinterface#1.3.6
-- artifact: onnx.models:vision.style_transfer:+
-  name: style-transfer-onnx-model
-  copyrightHolder: Unknown
+# Static entries: AI models downloaded at runtime from Hugging Face (not bundled in the APK).
+# Licenses are per-model, verified against primary sources: the OpenCV Zoo repo root is
+# Apache-2.0, but each model directory carries its own license (YuNet's is MIT), and the
+# fast neural style models are BSD-3-Clause per the ONNX Model Zoo model card (the
+# Hugging Face repos' apache-2.0 metadata tag is contradicted by the card).
+- name: YuNet face detection model
+  copyrightHolder: Shiqi Yu
+  license: MIT
+  licenseUrl: https://huggingface.co/opencv/face_detection_yunet/raw/main/LICENSE
+  url: https://huggingface.co/opencv/face_detection_yunet
+- name: SFace face recognition model
+  copyrightHolder: Yaoyao Zhong (OpenCV Zoo)
+  license: Apache-2.0
+  licenseUrl: https://www.apache.org/licenses/LICENSE-2.0.txt
+  url: https://huggingface.co/opencv/face_recognition_sface
+- name: Fast neural style transfer models (candy-9, mosaic-9, pointilism-9, rain-princess-9, udnie-9)
+  copyrightHolder: PyTorch contributors (ONNX Model Zoo)
   license: BSD-3-Clause
-  licenseUrl: https://opensource.org/license/bsd-3-clause/
-  url: https://github.com/onnx/models/tree/main/vision/style_transfer/fast_neural_style
-  forceGenerate: true
+  licenseUrl: https://opensource.org/licenses/BSD-3-Clause
+  url: https://github.com/onnx/models/tree/main/validated/vision/style_transfer/fast_neural_style
