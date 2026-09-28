@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -11,9 +12,13 @@ import java.util.List;
 import co.rh.id.lib.rx3_utils.subject.SerialBehaviorSubject;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import m.co.rh.id.a_jarwis.R;
+import m.co.rh.id.a_jarwis.app.ui.page.nav.param.SelectedChoice;
 import m.co.rh.id.a_jarwis.app.ui.page.nav.param.SelectedTheme;
+import m.co.rh.id.a_jarwis.base.constants.Routes;
 import m.co.rh.id.a_jarwis.base.provider.IStatefulViewProvider;
 import m.co.rh.id.a_jarwis.base.rx.RxDisposer;
+import m.co.rh.id.a_jarwis.ml_engine.model.ModelCatalog;
+import m.co.rh.id.a_jarwis.ml_engine.model.ModelType;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.STEngine;
 import m.co.rh.id.anavigator.StatefulView;
 import m.co.rh.id.anavigator.annotation.NavInject;
@@ -105,9 +110,38 @@ public class SelectSTThemePage extends StatefulView<Activity> implements Require
                     result.add(STEngine.THEME_POINTILISM);
                 }
             }
-            mNavigator.pop(new SelectedTheme(result));
+            proceedWithSelectedThemes(result);
         } else {
             selectReselectTheme(id);
+        }
+    }
+
+    /**
+     * Check the selected themes' NST models availability first,
+     * when missing, prompt model download and continue once download is done
+     */
+    private void proceedWithSelectedThemes(List<Integer> selectedThemes) {
+        Activity activity = mNavigator.getActivity();
+        HashSet<ModelType> collectedMissingModels = new HashSet<>();
+        for (Integer theme : selectedThemes) {
+            ModelType modelType = ModelCatalog.fromTheme(theme);
+            if (!collectedMissingModels.contains(modelType)
+                    && !ModelCatalog.isAvailable(activity, modelType)) {
+                collectedMissingModels.add(modelType);
+            }
+        }
+        if (collectedMissingModels.isEmpty()) {
+            mNavigator.pop(new SelectedTheme(selectedThemes));
+        } else {
+            mNavigator.push(Routes.MODEL_DOWNLOAD_PAGE, new ModelDownloadDialog.ModelList(collectedMissingModels),
+                    (navigator, navRoute, activity1, currentView) -> {
+                        Serializable serializable = navRoute.getRouteResult();
+                        if (serializable instanceof SelectedChoice
+                                && ((SelectedChoice) serializable).getSelectedChoice()
+                                == SelectedChoice.POSITIVE) {
+                            mNavigator.pop(new SelectedTheme(selectedThemes));
+                        }
+                    });
         }
     }
 

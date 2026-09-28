@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opencv.core.Mat;
 
+import java.io.IOException;
 import java.util.List;
 
 import m.co.rh.id.a_jarwis.ml_engine.provider.MLEngineTestProviderModule;
@@ -36,9 +37,10 @@ public class FaceEngineTest {
     private static Provider mMLEngineProvider;
 
     @BeforeClass
-    public static void beforeAnyTest() {
+    public static void beforeAnyTest() throws IOException {
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
         mMLEngineProvider = Provider.createProvider(appContext, new MLEngineTestProviderModule());
+        ModelTestHelper.installModels(mMLEngineProvider);
         mFaceEngine = mMLEngineProvider.get(FaceEngine.class);
     }
 

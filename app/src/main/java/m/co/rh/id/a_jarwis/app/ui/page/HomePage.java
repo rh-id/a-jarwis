@@ -29,6 +29,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 import m.co.rh.id.a_jarwis.R;
 import m.co.rh.id.a_jarwis.app.provider.command.BlurFaceCommand;
 import m.co.rh.id.a_jarwis.app.provider.command.STApplyCommand;
+import m.co.rh.id.a_jarwis.app.ui.page.common.ModelDownloadDialog;
 import m.co.rh.id.a_jarwis.app.ui.page.nav.param.FileList;
 import m.co.rh.id.a_jarwis.app.ui.page.nav.param.MessageText;
 import m.co.rh.id.a_jarwis.app.ui.page.nav.param.SelectedChoice;
@@ -37,6 +38,8 @@ import m.co.rh.id.a_jarwis.base.constants.Routes;
 import m.co.rh.id.a_jarwis.base.provider.IStatefulViewProvider;
 import m.co.rh.id.a_jarwis.base.rx.RxDisposer;
 import m.co.rh.id.a_jarwis.base.ui.component.AppBarSV;
+import m.co.rh.id.a_jarwis.ml_engine.model.ModelCatalog;
+import m.co.rh.id.a_jarwis.ml_engine.model.ModelType;
 import m.co.rh.id.alogger.ILogger;
 import m.co.rh.id.anavigator.NavRoute;
 import m.co.rh.id.anavigator.StatefulView;
@@ -183,7 +186,7 @@ public class HomePage extends StatefulView<Activity> implements RequireComponent
         } else if (id == R.id.button_auto_blur_face) {
             requestWriteExternalStoragePermission(
                     (activity) -> {
-                        pickImage(activity, REQUEST_CODE_IMAGE_AUTO_BLUR_FACE);
+                        startAutoBlurFace();
                         return activity;
                     }
                     , REQUEST_CODE_IMAGE_AUTO_BLUR_FACE
@@ -230,6 +233,43 @@ public class HomePage extends StatefulView<Activity> implements RequireComponent
         }
     }
 
+    /**
+     * Check the face engine models availability first,
+     * when missing, prompt model download and continue the given action once download is done
+     */
+    private void startIfFaceModelsAvailable(Runnable continueAction) {
+        Activity activity = mNavigator.getActivity();
+        ArrayList<ModelType> missingModels = new ArrayList<>();
+        if (!ModelCatalog.isAvailable(activity, ModelType.FACE_DETECT)) {
+            missingModels.add(ModelType.FACE_DETECT);
+        }
+        if (!ModelCatalog.isAvailable(activity, ModelType.FACE_RECOGNIZER)) {
+            missingModels.add(ModelType.FACE_RECOGNIZER);
+        }
+        if (missingModels.isEmpty()) {
+            continueAction.run();
+        } else {
+            startModelDownload(missingModels, continueAction);
+        }
+    }
+
+    private void startModelDownload(ArrayList<ModelType> missingModels, Runnable continueAction) {
+        mNavigator.push(Routes.MODEL_DOWNLOAD_PAGE, new ModelDownloadDialog.ModelList(missingModels),
+                (navigator, navRoute, activity1, currentView) -> {
+                    Serializable serializable = navRoute.getRouteResult();
+                    if (serializable instanceof SelectedChoice
+                            && ((SelectedChoice) serializable).getSelectedChoice()
+                            == SelectedChoice.POSITIVE) {
+                        continueAction.run();
+                    }
+                });
+    }
+
+    private void startAutoBlurFace() {
+        startIfFaceModelsAvailable(() ->
+                pickImage(mNavigator.getActivity(), REQUEST_CODE_IMAGE_AUTO_BLUR_FACE));
+    }
+
     private void startNstApplyPicture() {
         int title = m.co.rh.id.a_jarwis.base.R.string.title_what_to_do;
         int body = m.co.rh.id.a_jarwis.base.R.string.pick_image_for_nst_apply_picture;
@@ -258,11 +298,13 @@ public class HomePage extends StatefulView<Activity> implements RequireComponent
     }
 
     private void startSelectiveAutoBlur() {
-        int title = m.co.rh.id.a_jarwis.base.R.string.title_what_to_do;
-        int body = m.co.rh.id.a_jarwis.base.R.string.pick_image_for_selective_blur;
-        mNavigator.push(Routes.SHOW_MESSAGE_PAGE, new MessageText(title, body, true)
-                , (navigator, navRoute, activity1, currentView) ->
-                        startSelectiveAutoBlur_processFirstRespond(navRoute));
+        startIfFaceModelsAvailable(() -> {
+            int title = m.co.rh.id.a_jarwis.base.R.string.title_what_to_do;
+            int body = m.co.rh.id.a_jarwis.base.R.string.pick_image_for_selective_blur;
+            mNavigator.push(Routes.SHOW_MESSAGE_PAGE, new MessageText(title, body, true)
+                    , (navigator, navRoute, activity1, currentView) ->
+                            startSelectiveAutoBlur_processFirstRespond(navRoute));
+        });
     }
 
     private void startSelectiveAutoBlur_processFirstRespond(NavRoute navRoute) {
@@ -288,11 +330,13 @@ public class HomePage extends StatefulView<Activity> implements RequireComponent
     }
 
     private void startExcludeAutoBlur() {
-        int title = m.co.rh.id.a_jarwis.base.R.string.title_what_to_do;
-        int body = m.co.rh.id.a_jarwis.base.R.string.pick_image_to_be_excluded_from_blur;
-        mNavigator.push(Routes.SHOW_MESSAGE_PAGE, new MessageText(title, body, true)
-                , (navigator, navRoute, activity1, currentView) ->
-                        startExcludeAutoBlur_processFirstRespond(navRoute));
+        startIfFaceModelsAvailable(() -> {
+            int title = m.co.rh.id.a_jarwis.base.R.string.title_what_to_do;
+            int body = m.co.rh.id.a_jarwis.base.R.string.pick_image_to_be_excluded_from_blur;
+            mNavigator.push(Routes.SHOW_MESSAGE_PAGE, new MessageText(title, body, true)
+                    , (navigator, navRoute, activity1, currentView) ->
+                            startExcludeAutoBlur_processFirstRespond(navRoute));
+        });
     }
 
     private void startExcludeAutoBlur_processFirstRespond(NavRoute navRoute) {
@@ -469,7 +513,7 @@ public class HomePage extends StatefulView<Activity> implements RequireComponent
                 && grantResults.length > 0 &&
                 grantResults[0] == PackageManager.PERMISSION_GRANTED
         ) {
-            pickImage(activity, requestCode);
+            startAutoBlurFace();
         } else if (requestCode == REQUEST_CODE_IMAGE_EXCLUDE_BLUR_FACE
                 && grantResults.length > 0 &&
                 grantResults[0] == PackageManager.PERMISSION_GRANTED

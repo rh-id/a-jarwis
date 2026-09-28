@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Jarwis</string>
+    <string name="title_download_model">Download AI model?</string>
+    <string name="msg_model_download_prompt">This feature requires the following AI model(s) to be downloaded once over the internet:\n\n%s</string>
+    <string name="button_download">Download</string>
+    <string name="retry">Retry</string>
+    <string name="downloading_model">Downloading model…</string>
+    <string name="download_progress_">%1$d%% (%2$s / %3$s)</string>
+    <string name="download_failed">Download failed. Check your internet connection and try again.</string>
 </resources>

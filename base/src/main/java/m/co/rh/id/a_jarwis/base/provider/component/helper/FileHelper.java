@@ -44,18 +44,61 @@ public class FileHelper {
         mTempFileRoot.mkdirs();
     }
 
-    public void copyRawtoFile(int id, File file) throws IOException {
-        InputStream in = mAppContext.getResources().openRawResource(id);
-        FileOutputStream out = new FileOutputStream(file);
-        byte[] buff = new byte[1024];
-        int read = 0;
-        try {
-            while ((read = in.read(buff)) > 0) {
-                out.write(buff, 0, read);
+    /**
+     * Copy the content of the source file into the target file using a buffered stream.
+     *
+     * @param source file to copy from
+     * @param target file to copy to (overwritten if it exists)
+     * @throws IOException when failed to copy the file
+     */
+    public void copyFile(File source, File target) throws IOException {
+        try (InputStream inputStream = new FileInputStream(source);
+             OutputStream outputStream = new FileOutputStream(target)) {
+            byte[] buffer = new byte[8192];
+            int read;
+            while ((read = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, read);
             }
-        } finally {
-            in.close();
-            out.close();
+        }
+    }
+
+    /**
+     * Move the source file to the target file, creating the target parent directories first.
+     * Falls back to copy and delete when an atomic rename is not possible
+     * (e.g. when the source and the target are on different file systems).
+     * The fallback copies into a sibling temporary file first and renames it to the
+     * target only after the copy succeeded, so a mid-copy failure never leaves a
+     * truncated target behind.
+     *
+     * @param source file to move
+     * @param target destination file (replaced if it exists)
+     * @throws IOException when failed to move the file
+     */
+    public void atomicMove(File source, File target) throws IOException {
+        File parentFile = target.getParentFile();
+        if (parentFile != null) {
+            parentFile.mkdirs();
+        }
+        if (target.exists() && !target.delete()) {
+            throw new IOException("Failed to delete old file: " + target.getAbsolutePath());
+        }
+        if (!source.renameTo(target)) {
+            // the source may be the sibling "<target>.tmp", the copy temp must use a
+            // different suffix to avoid colliding with the source path
+            File copyTemp = new File(parentFile, target.getName() + ".copy");
+            copyTemp.delete();
+            try {
+                copyFile(source, copyTemp);
+            } catch (IOException e) {
+                copyTemp.delete();
+                throw e;
+            }
+            if (!copyTemp.renameTo(target)) {
+                copyTemp.delete();
+                throw new IOException("Failed to rename the copied file to: "
+                        + target.getAbsolutePath());
+            }
+            source.delete();
         }
     }
 

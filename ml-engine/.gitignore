@@ -1,1 +1,5 @@
 /build
+
+# ONNX models are downloaded on demand at runtime,
+# they must never be bundled into this module (and hence into the APK)
+*.onnx

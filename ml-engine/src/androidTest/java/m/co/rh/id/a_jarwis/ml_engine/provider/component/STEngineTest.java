@@ -35,9 +35,10 @@ public class STEngineTest {
     private static Provider mMLEngineProvider;
 
     @BeforeClass
-    public static void beforeAnyTest() {
+    public static void beforeAnyTest() throws IOException {
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
         mMLEngineProvider = Provider.createProvider(appContext, new MLEngineTestProviderModule());
+        ModelTestHelper.installModels(mMLEngineProvider);
         mSTEngine = mMLEngineProvider.get(STEngine.class);
     }
 

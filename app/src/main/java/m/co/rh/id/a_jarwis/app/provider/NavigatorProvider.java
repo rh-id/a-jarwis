@@ -17,6 +17,7 @@ import m.co.rh.id.a_jarwis.app.MainActivity;
 import m.co.rh.id.a_jarwis.app.ui.page.DonationsPage;
 import m.co.rh.id.a_jarwis.app.ui.page.HomePage;
 import m.co.rh.id.a_jarwis.app.ui.page.SplashPage;
+import m.co.rh.id.a_jarwis.app.ui.page.common.ModelDownloadDialog;
 import m.co.rh.id.a_jarwis.app.ui.page.common.SelectFaceImagePage;
 import m.co.rh.id.a_jarwis.app.ui.page.common.SelectSTThemePage;
 import m.co.rh.id.a_jarwis.app.ui.page.common.ShowMessagePage;
@@ -59,6 +60,7 @@ public class NavigatorProvider implements ProviderDisposable {
         navMap.put(Routes.SHOW_MESSAGE_PAGE, (args, activity) -> new ShowMessagePage());
         navMap.put(Routes.SELECT_FACE_IMAGE_PAGE, (args, activity) -> new SelectFaceImagePage());
         navMap.put(Routes.SELECT_NST_THEME_PAGE, (args, activity) -> new SelectSTThemePage());
+        navMap.put(Routes.MODEL_DOWNLOAD_PAGE, (args, activity) -> new ModelDownloadDialog());
         navMap.put(Routes.SETTINGS_PAGE, (args, activity) -> new SettingsPage());
         navMap.put(Routes.DONATIONS_PAGE, (args, activity) -> new DonationsPage());
         navMap.putAll(mNavExtDialogConfig.getNavMap());
