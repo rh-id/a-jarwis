@@ -26,6 +26,18 @@ This is AI utility app for Android device, it basically uses AI model directly o
     </li>
 </ul>
 
+### On-Demand AI Model Download
+<ul>
+    <li>AI models are not bundled with the app; when a feature is used for the first time, the
+        required models are downloaded once over the internet from their official Hugging Face
+        repositories (<code>ModelDownloadDialog</code> enqueues <code>ModelDownloadWorker</code>,
+        which runs <code>ModelDownloader</code>)</li>
+    <li>Each model is verified against its known sha256 checksum before use, and the download
+        progress is streamed live to the UI via <code>ModelChangeNotifier</code> (RxJava)</li>
+    <li>An internet connection is only needed for the initial download; afterwards all features
+        work fully offline</li>
+</ul>
+
 ## Architecture
 
 The project follows a modular, layered architecture designed to separate concerns between the UI, business logic, and heavy ML processing.
@@ -33,7 +45,7 @@ The project follows a modular, layered architecture designed to separate concern
 ### Modules
 
 *   **`:app`**: The entry point. Contains the UI, Navigation, and Command implementations. It manages user interaction and delegates tasks.
-*   **`:ml-engine`**: The core intelligence. Encapsulates ML models (OpenCV, etc.), logic engines (`FaceEngine`, `STEngine`), and background workers (`WorkManager`).
+*   **`:ml-engine`**: The core intelligence. Encapsulates the logic engines (`FaceEngine`, `STEngine`), the AI model catalog with on-demand model download from Hugging Face, and background workers (`WorkManager`).
 *   **`:base`**: Shared infrastructure. Contains DI setup (`a-provider` modules), utilities (`FileHelper`, `MediaHelper`), and common UI components.
 
 ### Key Libraries
@@ -117,6 +129,6 @@ sequenceDiagram
 Consider donation to support this project
 <table>
   <tr>
-    <td><a href="https://trakteer.id/rh-id">https://trakteer.id/rh-id</a></td>
+    <td><a href="https://teer.id/rh-id">https://teer.id/rh-id</a></td>
   </tr>
 </table>
