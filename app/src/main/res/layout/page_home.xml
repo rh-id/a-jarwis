@@ -65,35 +65,4 @@
                 app:icon="@drawable/ic_palette_black" />
         </GridLayout>
     </LinearLayout>
-
-    <androidx.appcompat.widget.LinearLayoutCompat
-        android:id="@+id/nav_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:background="?attr/colorOnPrimary"
-        android:orientation="vertical">
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:background="?attr/colorSecondary" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/menu_settings"
-            style="@style/Theme.Asnapblur.BorderlessMenuButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/settings"
-            app:icon="@drawable/ic_settings_black" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/menu_donation"
-            style="@style/Theme.Asnapblur.BorderlessMenuButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/buy_developer_a_coffee"
-            app:icon="@drawable/ic_coffee_black" />
-
-    </androidx.appcompat.widget.LinearLayoutCompat>
 </androidx.drawerlayout.widget.DrawerLayout>
