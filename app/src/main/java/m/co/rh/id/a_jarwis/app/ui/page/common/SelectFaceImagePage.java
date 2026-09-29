@@ -173,7 +173,7 @@ public class SelectFaceImagePage extends StatefulView<Activity> implements NavOn
                 }
             }
             if (!faceSelected) {
-                mLogger.i(TAG, mNavigator.getActivity().getString(m.co.rh.id.a_jarwis.base.R.string.no_face_selected));
+                mLogger.i(TAG, mNavigator.getActivity().getString(R.string.no_face_selected));
                 mIsLoading.onNext(false);
             } else {
                 mRxDisposer.add("onClick_next",

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="transparent_gray_700">#99616161</color>
+    <color name="daynight_white_black">@color/white</color>
+</resources>

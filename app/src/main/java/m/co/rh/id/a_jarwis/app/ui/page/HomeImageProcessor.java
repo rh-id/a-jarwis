@@ -49,7 +49,7 @@ class HomeImageProcessor {
         if (throwable != null) {
             mLogger.e(TAG, throwable.getMessage(), throwable);
         } else {
-            mLogger.i(TAG, mContext.getString(m.co.rh.id.a_jarwis.base.R.string.processing_,
+            mLogger.i(TAG, mContext.getString(m.co.rh.id.a_jarwis.R.string.processing_,
                     file.getName()));
         }
     }

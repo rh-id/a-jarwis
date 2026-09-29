@@ -64,7 +64,7 @@ public class HomePage extends StatefulView<Activity> implements RequireComponent
         mHomeDrawerSV.attachDrawer(drawerLayout);
         mHomeDrawerSV.setOnSettingsClickListener(v -> mNavigator.push(Routes.SETTINGS_PAGE));
         mHomeDrawerSV.setOnDonationsClickListener(v -> mNavigator.push(Routes.DONATIONS_PAGE));
-        mAppBarSV.setTitle(activity.getString(m.co.rh.id.a_jarwis.base.R.string.home));
+        mAppBarSV.setTitle(activity.getString(R.string.home));
         mAppBarSV.setNavigationOnClick(v -> mHomeDrawerSV.open());
         Button autoBlurButton = rootLayout.findViewById(R.id.button_auto_blur_face);
         autoBlurButton.setOnClickListener(this);
@@ -104,7 +104,7 @@ public class HomePage extends StatefulView<Activity> implements RequireComponent
             } else {
                 mLastBackPressMilis = currentMilis;
                 mLogger.i(TAG,
-                        activity.getString(m.co.rh.id.a_jarwis.base.R.string.toast_back_press_exit));
+                        activity.getString(R.string.toast_back_press_exit));
             }
         }
     }

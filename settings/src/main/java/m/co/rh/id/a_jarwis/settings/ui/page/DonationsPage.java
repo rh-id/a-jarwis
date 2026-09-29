@@ -1,4 +1,4 @@
-package m.co.rh.id.a_jarwis.app.ui.page;
+package m.co.rh.id.a_jarwis.settings.ui.page;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import androidx.core.text.HtmlCompat;
 
-import m.co.rh.id.a_jarwis.R;
+import m.co.rh.id.a_jarwis.settings.R;
 import m.co.rh.id.alogger.ILogger;
 import m.co.rh.id.anavigator.StatefulView;
 import m.co.rh.id.anavigator.annotation.NavInject;
@@ -33,7 +33,7 @@ public class DonationsPage extends StatefulView<Activity> implements View.OnClic
         Button donate = rootLayout.findViewById(R.id.button_donate);
         donate.setOnClickListener(this);
         TextView otherApps = rootLayout.findViewById(R.id.text_other_apps);
-        String otherAppMsg = activity.getString(m.co.rh.id.a_jarwis.base.R.string.donation_other_apps, DEV_URL);
+        String otherAppMsg = activity.getString(R.string.donation_other_apps, DEV_URL);
         otherApps.setText(HtmlCompat.fromHtml(otherAppMsg, HtmlCompat.FROM_HTML_MODE_LEGACY));
         otherApps.setMovementMethod(LinkMovementMethod.getInstance());
         return rootLayout;
@@ -54,7 +54,7 @@ public class DonationsPage extends StatefulView<Activity> implements View.OnClic
                 return;
             }
             mProvider.get(ILogger.class)
-                    .i(TAG, context.getString(m.co.rh.id.a_jarwis.base.R.string.donation_thank_you));
+                    .i(TAG, context.getString(R.string.donation_thank_you));
         }
     }
 }

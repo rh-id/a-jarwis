@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
                                 BaseApplication.of(this).getNavigator(this).reBuildAllRoute();
                                 // Switching to night mode didn't update window background for some reason?
                                 // seemed to occur on android 8 and below
-                                getWindow().setBackgroundDrawableResource(m.co.rh.id.a_jarwis.base.R.color.daynight_white_black);
+                                getWindow().setBackgroundDrawableResource(m.co.rh.id.a_jarwis.R.color.daynight_white_black);
                             }
                         })
                 );

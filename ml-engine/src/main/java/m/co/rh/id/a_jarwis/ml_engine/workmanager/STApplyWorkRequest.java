@@ -58,7 +58,7 @@ public class STApplyWorkRequest extends Worker {
                 }
             }
             logger.i(TAG, getApplicationContext()
-                    .getString(m.co.rh.id.a_jarwis.base.R.string.done_processing_, fileName));
+                    .getString(m.co.rh.id.a_jarwis.ml_engine.R.string.done_processing_, fileName));
         } catch (Exception e) {
             logger.e(TAG, e.getMessage(), e);
             return Result.failure();

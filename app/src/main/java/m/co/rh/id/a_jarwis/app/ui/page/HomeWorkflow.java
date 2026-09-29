@@ -71,20 +71,20 @@ class HomeWorkflow implements Serializable {
 
     public void startSelectiveBlur() {
         requestWriteExternalStoragePermission(() -> startFacePickFlow(
-                m.co.rh.id.a_jarwis.base.R.string.pick_image_for_selective_blur,
+                m.co.rh.id.a_jarwis.R.string.pick_image_for_selective_blur,
                 REQUEST_CODE_IMAGE_SELECTIVE_BLUR_FACE), REQUEST_CODE_IMAGE_SELECTIVE_BLUR_FACE);
     }
 
     public void startExcludeBlur() {
         requestWriteExternalStoragePermission(() -> startFacePickFlow(
-                m.co.rh.id.a_jarwis.base.R.string.pick_image_to_be_excluded_from_blur,
+                m.co.rh.id.a_jarwis.R.string.pick_image_to_be_excluded_from_blur,
                 REQUEST_CODE_IMAGE_EXCLUDE_BLUR_FACE), REQUEST_CODE_IMAGE_EXCLUDE_BLUR_FACE);
     }
 
     public void startNstApply() {
         requestWriteExternalStoragePermission(() -> {
-            int title = m.co.rh.id.a_jarwis.base.R.string.title_what_to_do;
-            int body = m.co.rh.id.a_jarwis.base.R.string.pick_image_for_nst_apply_picture;
+            int title = m.co.rh.id.a_jarwis.R.string.title_what_to_do;
+            int body = m.co.rh.id.a_jarwis.R.string.pick_image_for_nst_apply_picture;
             mNavigator.push(Routes.SHOW_MESSAGE_PAGE, new MessageText(title, body, true)
                     , (navigator, navRoute, activity1, currentView) ->
                             startNstApply_processFirstRespond(navRoute));
@@ -135,7 +135,7 @@ class HomeWorkflow implements Serializable {
 
     private void startFacePickFlow(int bodyResId, int requestCode) {
         startIfFaceModelsAvailable(() -> {
-            int title = m.co.rh.id.a_jarwis.base.R.string.title_what_to_do;
+            int title = m.co.rh.id.a_jarwis.R.string.title_what_to_do;
             mNavigator.push(Routes.SHOW_MESSAGE_PAGE, new MessageText(title, bodyResId, true)
                     , (navigator, navRoute, activity1, currentView) ->
                             startFacePickFlow_processFirstRespond(navRoute, requestCode));

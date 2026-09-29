@@ -63,10 +63,10 @@ public class BlurFaceWorkRequest extends Worker {
                 face.recycle();
                 blurredFace.recycle();
                 logger.i(TAG, getApplicationContext()
-                        .getString(m.co.rh.id.a_jarwis.base.R.string.done_processing_, fileName));
+                        .getString(m.co.rh.id.a_jarwis.ml_engine.R.string.done_processing_, fileName));
             } else {
                 logger.i(TAG, getApplicationContext()
-                        .getString(m.co.rh.id.a_jarwis.base.R.string.no_face_detected_, fileName));
+                        .getString(m.co.rh.id.a_jarwis.ml_engine.R.string.no_face_detected_, fileName));
             }
         } catch (Exception e) {
             logger.e(TAG, e.getMessage(), e);

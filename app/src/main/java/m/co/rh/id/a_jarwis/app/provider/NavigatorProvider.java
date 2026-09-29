@@ -14,7 +14,7 @@ import java.util.Map;
 
 import m.co.rh.id.a_jarwis.R;
 import m.co.rh.id.a_jarwis.app.MainActivity;
-import m.co.rh.id.a_jarwis.app.ui.page.DonationsPage;
+import m.co.rh.id.a_jarwis.settings.ui.page.DonationsPage;
 import m.co.rh.id.a_jarwis.app.ui.page.HomePage;
 import m.co.rh.id.a_jarwis.app.ui.page.SplashPage;
 import m.co.rh.id.a_jarwis.app.ui.page.common.ModelDownloadDialog;

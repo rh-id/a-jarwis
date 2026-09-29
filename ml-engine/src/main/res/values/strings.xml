@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="done_processing_">Done processing: %s</string>
+    <string name="no_face_detected_">No face detected: %s</string>
+</resources>

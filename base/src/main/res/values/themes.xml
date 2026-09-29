@@ -44,14 +44,4 @@
         <item name="iconTint">?attr/colorSecondary</item>
         <item name="iconGravity">top</item>
     </style>
-
-    <style name="Theme.Asnapblur.MenuTextView" parent="Widget.AppCompat.TextView">
-        <item name="android:textAppearance">?android:attr/textAppearanceButton</item>
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:minHeight">70dp</item>
-        <item name="android:textAllCaps">false</item>
-        <item name="android:textColor">@color/daynight_gray_700_white</item>
-        <item name="android:textSize">@dimen/text_nav_menu</item>
-        <item name="android:textStyle">normal</item>
-    </style>
 </resources>
