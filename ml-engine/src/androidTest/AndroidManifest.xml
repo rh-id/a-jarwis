@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- The ONNX models are no longer bundled (see ModelTestHelper), the
+         instrumented tests download them on demand inside the standalone
+         test APK process. The :app manifest declaring INTERNET is not part
+         of this test build, so the permission is declared here. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+</manifest>

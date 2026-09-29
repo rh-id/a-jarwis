@@ -25,8 +25,20 @@ public final class ModelTestHelper {
         Context context = provider.getContext().getApplicationContext();
         ModelDownloader modelDownloader = provider.get(ModelDownloader.class);
         for (ModelType modelType : ModelType.values()) {
-            if (!ModelCatalog.isAvailable(context, modelType)) {
+            if (ModelCatalog.isAvailable(context, modelType)) {
+                continue;
+            }
+            try {
                 modelDownloader.download(context, modelType);
+            } catch (IOException e) {
+                throw new IOException("Failed to download test model "
+                        + modelType.getDisplayName()
+                        + "; the instrumented test app needs working network access"
+                        + " (android.permission.INTERNET) on the test device", e);
+            }
+            if (!ModelCatalog.isAvailable(context, modelType)) {
+                throw new IOException("Model " + modelType.getDisplayName()
+                        + " download reported success but the model file is still missing");
             }
         }
     }
