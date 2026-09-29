@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="title_no_record">No Record</string>
-    <string name="bitcoin">Bitcoin</string>
+    <string name="trakteer">Trakteer</string>
     <string name="donation_pitch">Support developer, treat a cup of coffee</string>
     <string name="donation_other_apps">Other apps by developer: %s</string>
     <string name="donation_thank_you">Thank you for your support</string>
