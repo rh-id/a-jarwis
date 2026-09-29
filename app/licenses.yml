@@ -322,6 +322,12 @@
   license: The Apache Software License, Version 2.0
   licenseUrl: http://www.apache.org/licenses/LICENSE-2.0.txt
   url: https://developer.android.com/jetpack/androidx/releases/work#2.8.1
+- artifact: com.android.tools:desugar_jdk_libs:+
+  name: Small subset of OpenJDK libraries
+  copyrightHolder: Google Inc
+  license: GNU General Public License, version 2, with the Classpath Exception
+  licenseUrl: https://github.com/google/desugar_jdk_libs/blob/master/LICENSE
+  url: https://github.com/google/desugar_jdk_libs
 - artifact: com.github.rh-id.a-navigator:a-navigator-extension-dialog:+
   name: a-navigator-extension-dialog
   copyrightHolder: Ruby Hartono

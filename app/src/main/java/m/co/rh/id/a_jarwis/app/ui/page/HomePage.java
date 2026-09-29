@@ -3,11 +3,11 @@ package m.co.rh.id.a_jarwis.app.ui.page;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import m.co.rh.id.a_jarwis.R;
@@ -59,7 +59,7 @@ public class HomePage extends StatefulView<Activity> implements RequireComponent
         DrawerLayout drawerLayout = rootLayout.findViewById(R.id.drawer);
         DrawerLayout.LayoutParams drawerLayoutParams = new DrawerLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        drawerLayoutParams.gravity = Gravity.START;
+        drawerLayoutParams.gravity = GravityCompat.START;
         drawerLayout.addView(mHomeDrawerSV.buildView(activity, container), drawerLayoutParams);
         mHomeDrawerSV.attachDrawer(drawerLayout);
         mHomeDrawerSV.setOnSettingsClickListener(v -> mNavigator.push(Routes.SETTINGS_PAGE));
