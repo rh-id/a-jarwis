@@ -2,7 +2,6 @@ package m.co.rh.id.a_jarwis.app.provider;
 
 import android.app.Application;
 
-import m.co.rh.id.a_jarwis.app.provider.command.CommandProviderModule;
 import m.co.rh.id.a_jarwis.base.provider.BaseProviderModule;
 import m.co.rh.id.a_jarwis.base.provider.IStatefulViewProvider;
 import m.co.rh.id.a_jarwis.base.provider.RxProviderModule;
@@ -23,7 +22,6 @@ public class AppProviderModule implements ProviderModule {
     @Override
     public void provides(ProviderRegistry providerRegistry, Provider provider) {
         providerRegistry.registerModule(new BaseProviderModule());
-        providerRegistry.registerModule(new CommandProviderModule());
         providerRegistry.registerModule(new RxProviderModule());
         providerRegistry.registerModule(new SettingsProviderModule());
         providerRegistry.registerModule(new MLEngineProviderModule());

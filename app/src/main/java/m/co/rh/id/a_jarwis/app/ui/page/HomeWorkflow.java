@@ -10,24 +10,17 @@ import android.os.Build;
 
 import androidx.core.app.ActivityCompat;
 
-import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
-import io.reactivex.rxjava3.core.Single;
-import m.co.rh.id.a_jarwis.app.provider.command.STApplyCommand;
 import m.co.rh.id.a_jarwis.app.ui.page.common.ModelDownloadDialog;
-import m.co.rh.id.a_jarwis.app.ui.page.nav.param.MessageText;
 import m.co.rh.id.a_jarwis.app.ui.page.nav.param.SelectedChoice;
-import m.co.rh.id.a_jarwis.app.ui.page.nav.param.SelectedTheme;
 import m.co.rh.id.a_jarwis.app.ui.page.nav.param.UriList;
 import m.co.rh.id.a_jarwis.base.constants.Routes;
 import m.co.rh.id.a_jarwis.base.provider.IStatefulViewProvider;
 import m.co.rh.id.a_jarwis.ml_engine.model.ModelCatalog;
 import m.co.rh.id.a_jarwis.ml_engine.model.ModelType;
-import m.co.rh.id.anavigator.NavRoute;
 import m.co.rh.id.anavigator.component.INavigator;
 
 class HomeWorkflow implements Serializable {
@@ -36,11 +29,7 @@ class HomeWorkflow implements Serializable {
     private static final int REQUEST_CODE_IMAGE_BLUR_FACE = 1;
     private static final int REQUEST_CODE_IMAGE_NST_APPLY_PICTURE = 4;
 
-    private SelectedTheme mSelectedNSTTheme;
-
     private transient INavigator mNavigator;
-    private transient STApplyCommand mSTApplyCommand;
-    private transient HomeImageProcessor mImageProcessor;
 
     private interface ContinueAction extends Serializable {
         void run();
@@ -48,8 +37,6 @@ class HomeWorkflow implements Serializable {
 
     void init(INavigator navigator, IStatefulViewProvider svProvider) {
         mNavigator = navigator;
-        mSTApplyCommand = svProvider.get(STApplyCommand.class);
-        mImageProcessor = new HomeImageProcessor(svProvider);
     }
 
     public void startBlurFace() {
@@ -58,13 +45,8 @@ class HomeWorkflow implements Serializable {
     }
 
     public void startNstApply() {
-        requestWriteExternalStoragePermission(() -> {
-            int title = m.co.rh.id.a_jarwis.R.string.title_what_to_do;
-            int body = m.co.rh.id.a_jarwis.R.string.pick_image_for_nst_apply_picture;
-            mNavigator.push(Routes.SHOW_MESSAGE_PAGE, new MessageText(title, body, true)
-                    , (navigator, navRoute, activity1, currentView) ->
-                            startNstApply_processFirstRespond(navRoute));
-        }, REQUEST_CODE_IMAGE_NST_APPLY_PICTURE);
+        requestWriteExternalStoragePermission(() ->
+                pickImage(REQUEST_CODE_IMAGE_NST_APPLY_PICTURE), REQUEST_CODE_IMAGE_NST_APPLY_PICTURE);
     }
 
     private void requestWriteExternalStoragePermission(ContinueAction continueAction, int requestCode) {
@@ -106,25 +88,6 @@ class HomeWorkflow implements Serializable {
                 });
     }
 
-    private void startNstApply_processFirstRespond(NavRoute navRoute) {
-        Serializable serializable = navRoute.getRouteResult();
-        if (serializable instanceof SelectedChoice) {
-            int selectedChoice = ((SelectedChoice) serializable).getSelectedChoice();
-            if (SelectedChoice.POSITIVE == selectedChoice) {
-                mNavigator.push(Routes.SELECT_NST_THEME_PAGE, (navigator, navRoute1, activity1, currentView) ->
-                        startNstApply_processSecondRespond(navRoute1));
-            }
-        }
-    }
-
-    private void startNstApply_processSecondRespond(NavRoute navRoute) {
-        Serializable serializable = navRoute.getRouteResult();
-        if (serializable instanceof SelectedTheme) {
-            mSelectedNSTTheme = (SelectedTheme) serializable;
-            pickImage(REQUEST_CODE_IMAGE_NST_APPLY_PICTURE);
-        }
-    }
-
     private void pickImage(int requestCode) {
         Activity activity = mNavigator.getActivity();
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -151,8 +114,7 @@ class HomeWorkflow implements Serializable {
         if (requestCode == REQUEST_CODE_IMAGE_BLUR_FACE) {
             pushFaceEditor(data);
         } else if (requestCode == REQUEST_CODE_IMAGE_NST_APPLY_PICTURE) {
-            processPickedImages("onActivityResult_nstApplyPicture", data,
-                    uri -> mSTApplyCommand.execute(uri, mSelectedNSTTheme.getSelectedThemes()));
+            pushStyleEditor(data);
         }
     }
 
@@ -171,16 +133,19 @@ class HomeWorkflow implements Serializable {
         mNavigator.push(Routes.FACE_EDITOR_PAGE, new UriList(uris));
     }
 
-    private void processPickedImages(String baseTag, Intent data, Function<Uri, Single<File>> commandFactory) {
-        List<Uri> uriList = collectPickedUris(data);
-        if (uriList.isEmpty()) {
+    /**
+     * Push the interactive style editor page for the picked images
+     */
+    private void pushStyleEditor(Intent data) {
+        List<Uri> pickedUris = collectPickedUris(data);
+        if (pickedUris.isEmpty()) {
             return;
         }
-        if (uriList.size() == 1) {
-            mImageProcessor.processImage(baseTag, uriList.get(0), commandFactory);
-        } else {
-            mImageProcessor.processImages(baseTag + "_multiple", uriList, commandFactory);
+        ArrayList<String> uris = new ArrayList<>();
+        for (Uri uri : pickedUris) {
+            uris.add(uri.toString());
         }
+        mNavigator.push(Routes.STYLE_EDITOR_PAGE, new UriList(uris));
     }
 
     private List<Uri> collectPickedUris(Intent data) {

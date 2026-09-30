@@ -15,8 +15,6 @@
     <string name="processing_">Processing %s</string>
     <string name="back">Back</string>
     <string name="next">Next</string>
-    <string name="title_what_to_do">What to do?</string>
-    <string name="pick_image_for_nst_apply_picture">Pick neural style transfer theme to be applied to image and then select image(s) from gallery on which image(s) to be applied on</string>
     <string name="no_face_selected">No face selected: %s</string>
     <string name="title_mosaic">Mosaic</string>
     <string name="title_candy">Candy</string>
@@ -46,4 +44,12 @@
     <string name="title_save_result">Save Result</string>
     <string name="title_discard_changes">Discard changes?</string>
     <string name="msg_discard_changes">Your face blur selection has not been saved. Discard the changes?</string>
+    <string name="msg_discard_style_changes">Your style selection has not been saved. Discard the changes?</string>
+    <string name="style_original">Original</string>
+    <string name="apply_to_all">Apply style to all</string>
+    <string name="loading_images_progress">Loading image… (%1$d/%2$d)</string>
+    <string name="no_style_applied_">No style applied: %s</string>
+    <string name="title_share_no_style">Share without style?</string>
+    <string name="msg_share_no_style">The current image has no style applied. Share it as the original image?</string>
+    <string name="badge_content_description">Model not downloaded</string>
 </resources>

@@ -1,4 +1,4 @@
-package m.co.rh.id.a_jarwis.app.ui.page.common;
+package m.co.rh.id.a_jarwis.app.ui.page.editor;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -285,6 +285,9 @@ public class FaceEditorPage extends StatefulView<Activity> implements RequireCom
         // session-level last used blur config (not persisted), it becomes the
         // initial config of each image detected in this session
         mLastUsedBlurConfig = new BlurConfig();
+        // session-level source copy list (not persisted), re-initialized here
+        // because Java deserialization does not run the constructor
+        mSessionSourceFiles = new ArrayList<>();
     }
 
     // ClickableViewAccessibility is suppressed because onTouch calls performClick
@@ -678,6 +681,11 @@ public class FaceEditorPage extends StatefulView<Activity> implements RequireCom
             // reads the copy
             editorState.mUris.set(detectedImage.mIndex,
                     Uri.fromFile(detectedImage.mSourceFile).toString());
+            if (mSessionSourceFiles == null) {
+                // belt-and-braces against a deserialized instance (the list is
+                // normally re-initialized in provideComponent)
+                mSessionSourceFiles = new ArrayList<>();
+            }
             mSessionSourceFiles.add(detectedImage.mSourceFile);
         }
         if (detectedImage.mPreviewCache != null) {

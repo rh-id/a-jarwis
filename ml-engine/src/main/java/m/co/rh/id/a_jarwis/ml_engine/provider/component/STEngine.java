@@ -2,22 +2,6 @@ package m.co.rh.id.a_jarwis.ml_engine.provider.component;
 
 import android.graphics.Bitmap;
 
-import androidx.work.Data;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkManager;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.util.Collection;
-
-import m.co.rh.id.a_jarwis.base.provider.component.helper.FileHelper;
-import m.co.rh.id.a_jarwis.base.util.SerializeUtils;
-import m.co.rh.id.a_jarwis.ml_engine.workmanager.Params;
-import m.co.rh.id.a_jarwis.ml_engine.workmanager.STApplyWorkRequest;
-import m.co.rh.id.a_jarwis.ml_engine.workmanager.model.STApplySerialFile;
-import m.co.rh.id.alogger.ILogger;
 import m.co.rh.id.aprovider.Provider;
 import m.co.rh.id.aprovider.ProviderValue;
 
@@ -28,40 +12,43 @@ public class STEngine {
     public static final int THEME_UDNIE = 4;
     public static final int THEME_POINTILISM = 5;
 
-    private static final String TAG = "NSTEngine";
-
-    private final WorkManager mWorkManager;
-    private final ILogger mLogger;
     private final ProviderValue<MLEngineInstance> mMLEngine;
-    private final FileHelper mFileHelper;
 
     public STEngine(Provider provider) {
-        mWorkManager = provider.get(WorkManager.class);
-        mLogger = provider.get(ILogger.class);
         mMLEngine = provider.lazyGet(MLEngineInstance.class);
-        mFileHelper = provider.get(FileHelper.class);
     }
 
     public Bitmap applyMosaic(Bitmap bitmap) {
-        return mMLEngine.get().getNSTMosaic().process(bitmap);
+        return mMLEngine.get().getSTProcessor(THEME_MOSAIC).process(bitmap);
     }
 
     public Bitmap applyCandy(Bitmap bitmap) {
-        return mMLEngine.get().getNSTCandy().process(bitmap);
+        return mMLEngine.get().getSTProcessor(THEME_CANDY).process(bitmap);
     }
 
     public Bitmap applyRainPrincess(Bitmap bitmap) {
-        return mMLEngine.get().getNSTRainPrincess().process(bitmap);
+        return mMLEngine.get().getSTProcessor(THEME_RAIN_PRINCESS).process(bitmap);
     }
 
     public Bitmap applyUdnie(Bitmap bitmap) {
-        return mMLEngine.get().getNSTUdnie().process(bitmap);
+        return mMLEngine.get().getSTProcessor(THEME_UDNIE).process(bitmap);
     }
 
     public Bitmap applyPointilism(Bitmap bitmap) {
-        return mMLEngine.get().getNSTPointilism().process(bitmap);
+        return mMLEngine.get().getSTProcessor(THEME_POINTILISM).process(bitmap);
     }
 
+    /**
+     * Apply the neural style transfer model of the given theme on the given bitmap,
+     * the bitmap is returned unchanged when the theme has no matching style.
+     * The processing is a heavy native operation, callers are expected to run it
+     * serialized (e.g. on a single background executor)
+     *
+     * @param bitmap input bitmap, never recycled by this method
+     * @param theme  neural style transfer theme constant defined in this class
+     * @return the stylized bitmap, a new bitmap instance unless the theme has no
+     * matching style (the input instance is returned as is)
+     */
     public Bitmap apply(Bitmap bitmap, int theme) {
         switch (theme) {
             case THEME_MOSAIC:
@@ -76,34 +63,6 @@ public class STEngine {
                 return applyPointilism(bitmap);
             default:
                 return bitmap;
-        }
-    }
-
-    public void enqueueST(File imageFile, Collection<Integer> themes) {
-        ObjectOutputStream oos = null;
-        try {
-            File serialFile = mFileHelper.createTempFile();
-            oos = new ObjectOutputStream(new FileOutputStream(serialFile));
-            STApplySerialFile STApplySerialFile = new STApplySerialFile(imageFile, themes);
-            oos.writeObject(STApplySerialFile);
-            oos.close();
-            Data.Builder inputBuilder = new Data.Builder();
-            inputBuilder.putByteArray(Params.SERIAL_FILE, SerializeUtils.serialize(serialFile));
-            OneTimeWorkRequest oneTimeWorkRequest = new OneTimeWorkRequest.Builder(STApplyWorkRequest.class)
-                    .setInputData(inputBuilder.build())
-                    .build();
-            mWorkManager.enqueue(oneTimeWorkRequest);
-        } catch (Exception e) {
-            mLogger.e(TAG, e.getMessage(), e);
-            throw new RuntimeException(e);
-        } finally {
-            if (oos != null) {
-                try {
-                    oos.close();
-                } catch (IOException e) {
-                    mLogger.e(TAG, e.getMessage(), e);
-                }
-            }
         }
     }
 }

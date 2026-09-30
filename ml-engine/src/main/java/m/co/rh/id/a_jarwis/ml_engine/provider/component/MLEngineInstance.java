@@ -10,6 +10,7 @@ import org.opencv.objdetect.FaceDetectorYN;
 import org.opencv.objdetect.FaceRecognizerSF;
 
 import java.io.File;
+import java.util.concurrent.ConcurrentHashMap;
 
 import m.co.rh.id.a_jarwis.ml_engine.model.ModelCatalog;
 import m.co.rh.id.a_jarwis.ml_engine.model.ModelType;
@@ -35,10 +36,18 @@ public class MLEngineInstance {
     public static final String NST_POINTILISM_FILE = "pointilism-9.onnx";
     private final Context mAppContext;
     private final ILogger mLogger;
+    /**
+     * Lazy per-theme neural style transfer processor cache,
+     * an instance holds its ONNX model loaded in the native memory
+     * (~32 MB worst case) for the app lifetime because the models are
+     * never deleted once downloaded
+     */
+    private final ConcurrentHashMap<Integer, STProcessor> mSTProcessors;
 
     public MLEngineInstance(Provider provider) {
         mAppContext = provider.getContext().getApplicationContext();
         mLogger = provider.get(ILogger.class);
+        mSTProcessors = new ConcurrentHashMap<>();
         if (OpenCVLoader.initLocal()) {
             mLogger.d("OpenCV", "OpenCV loaded");
         } else {
@@ -46,24 +55,20 @@ public class MLEngineInstance {
         }
     }
 
-    public STProcessor getNSTPointilism() {
-        return new STProcessor(requireModelFile(ModelType.NST_POINTILISM).getAbsolutePath(), mLogger);
-    }
-
-    public STProcessor getNSTUdnie() {
-        return new STProcessor(requireModelFile(ModelType.NST_UDNIE).getAbsolutePath(), mLogger);
-    }
-
-    public STProcessor getNSTRainPrincess() {
-        return new STProcessor(requireModelFile(ModelType.NST_RAIN_PRINCESS).getAbsolutePath(), mLogger);
-    }
-
-    public STProcessor getNSTCandy() {
-        return new STProcessor(requireModelFile(ModelType.NST_CANDY).getAbsolutePath(), mLogger);
-    }
-
-    public STProcessor getNSTMosaic() {
-        return new STProcessor(requireModelFile(ModelType.NST_MOSAIC).getAbsolutePath(), mLogger);
+    /**
+     * Returns the neural style transfer processor of the given theme, creating
+     * and caching it on first access. A processor instance must never have its
+     * process() invoked concurrently, callers are expected to serialize their
+     * calls on one instance (e.g. through a single-thread executor)
+     *
+     * @param theme neural style transfer theme constant defined in {@link STEngine}
+     * @return the cached processor of the given theme
+     */
+    public STProcessor getSTProcessor(int theme) {
+        return mSTProcessors.computeIfAbsent(theme,
+                themeKey -> new STProcessor(
+                        requireModelFile(ModelCatalog.fromTheme(themeKey)).getAbsolutePath(),
+                        mLogger));
     }
 
     public FaceRecognizerSF getFaceRecognizerModel() {

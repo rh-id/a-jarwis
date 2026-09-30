@@ -112,14 +112,10 @@ sequenceDiagram
 
 ### Deep Dive: Neural Style Transfer (NST) Flow
 
-1.  **HomePage**: Collects image and theme selection, then calls `mSTApplyCommand.execute(uri, themes)`.
-2.  **STApplyCommand**: Delegated to `STEngine.enqueueST(...)`.
-3.  **STEngine**: Serializes the request and enqueues a `STApplyWorkRequest`.
-4.  **STApplyWorkRequest** (Background):
-    *   Deserializes data.
-    *   Iterates through selected themes (Mosaic, Candy, etc.).
-    *   Calls `STEngine.apply()`, which delegates to specific model processors (e.g., `NSTMosaic`).
-    *   Saves each stylized image to the gallery.
+1.  **HomePage**: Pushes the picked image(s) to `StyleEditorPage`.
+2.  **StyleEditorPage**: Interactive editor showing each picked image with a row of style tiles (Mosaic, Candy, Rain Princess, Udnie, Pointilism). Tapping a style renders a live stylized preview of the image; missing style models are prompted for download on demand.
+3.  **STEngine**: Applies the selected theme by delegating to the cached per-theme `STProcessor` (OpenCV DNN) on a downscaled preview while editing, and at full resolution on save/share.
+4.  **Save/Share**: Saves each stylized image to the gallery via `MediaHelper` or writes a temp JPEG for the Android share sheet.
 
 ## Screenshots
 <img src="https://github.com/rh-id/a-jarwis/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" height="512"/>
