@@ -1,0 +1,8 @@
+Die Kraft von KI in deinen Händen!
+
+Dies ist eine KI-Utility-App für Android-Geräte. Sie nutzt KI-Modelle direkt auf dem Gerät, um bei verschiedenen Aufgaben zu helfen.
+
+Aktuelle Funktionen:
+<ul>
+  <li>Für Bilddateien: Gesichter von Personen erkennen und einen Weichzeichnungseffekt hinzufügen, dann das Bild in die Galerie exportieren</li>
+</ul>

@@ -1,0 +1,2 @@
+Kraften i AI i hånden din!
+Dette er en AI-verktøyapp for Android-enheter som bruker AI-modeller direkte på enheten for å hjelpe deg med ulike oppgaver.

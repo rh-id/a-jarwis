@@ -1,0 +1,8 @@
+La forza da l'AI en tes mauns!
+
+Quai è ina app da utilitad cun AI per apparats Android, che utilisescha in model AI directamain sin l'apparat per gidar a far differentas incumbensas.
+
+Funcziuns actualas:
+<ul>
+  <li>Per datotecas d'imagi: detectar las fatschas da las persunas e agiuntar in effect da nebulisaziun, ed exportar l'imagi en la galeria</li>
+</ul>

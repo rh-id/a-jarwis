@@ -1,0 +1,8 @@
+Kekuatan AI di genggaman tangan Anda!
+
+Ini adalah aplikasi utilitas AI untuk perangkat Android, yang menggunakan model AI langsung di perangkat untuk membantu menyelesaikan berbagai tugas.
+
+Fitur saat ini:
+<ul>
+  <li>Untuk berkas gambar: mendeteksi wajah orang dan menambahkan efek buram, lalu mengekspor gambar ke galeri</li>
+</ul>

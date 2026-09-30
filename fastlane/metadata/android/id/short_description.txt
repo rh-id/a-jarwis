@@ -1,0 +1,2 @@
+Kekuatan AI di genggaman tangan Anda!
+Ini adalah aplikasi utilitas AI untuk perangkat Android, yang menggunakan model AI langsung di perangkat untuk membantu menyelesaikan berbagai tugas.

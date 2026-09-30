@@ -1,0 +1,2 @@
+Kraftur gervigreindar í lófa þínum!
+Þetta er gervigreindarforrit fyrir Android-tæki, sem notar AI-líkan beint á tækinu til að hjálpa við ýmis verkefni.

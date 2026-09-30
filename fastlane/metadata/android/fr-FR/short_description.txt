@@ -1,0 +1,2 @@
+La puissance de l'IA dans la paume de vos mains !
+Il s'agit d'une application utilitaire d'IA pour appareil Android, qui utilise un modèle d'IA directement sur l'appareil pour vous aider à accomplir des tâches.

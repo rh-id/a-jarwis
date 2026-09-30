@@ -1,0 +1,2 @@
+Tehisintellekti jõud sinu kätes!
+See on Androidi seadmete tehisintellekti rakendus, mis kasutab AI-mudelit otse seadmes, et aidata ülesannete täitmisel.

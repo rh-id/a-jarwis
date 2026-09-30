@@ -1,0 +1,8 @@
+Tehisintellekti jõud sinu kätes!
+
+See on Androidi seadmete tehisintellekti rakendus, mis kasutab AI-mudelit otse seadmes, et aidata ülesannete täitmisel.
+
+Praegused funktsioonid:
+<ul>
+  <li>Pildifailide puhul: inimese näo tuvastamine ja hägustamise efekti lisamine ning pildi eksportimine galeriisse</li>
+</ul>

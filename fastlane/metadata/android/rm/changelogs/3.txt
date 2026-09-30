@@ -1,0 +1,4 @@
+Release 1.1.0+3
+
+Features:
+* Add exclude blur face to exclude some faces when blurring

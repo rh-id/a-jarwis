@@ -1,0 +1,8 @@
+La puissance de l'IA dans la paume de vos mains !
+
+Il s'agit d'une application utilitaire d'IA pour appareil Android, qui utilise un modèle d'IA directement sur l'appareil pour vous aider à accomplir des tâches.
+
+Fonctionnalités actuelles :
+<ul>
+  <li>Pour les fichiers image : détecter les visages des personnes et ajouter un effet de flou, puis exporter l'image vers la galerie</li>
+</ul>

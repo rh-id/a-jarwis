@@ -1,0 +1,25 @@
+Release 1.1.3+6
+
+Fixes:
+* App Crashing due to face recognition not able to recognize face
+* Improve select face UX
+
+------------------------------------------------------------
+Release 1.1.2+5
+
+Fixes:
+* App Crashing due to memory usage
+* Optimize memory and performance
+* Improve select face UX
+
+------------------------------------------------------------
+Release 1.1.1+4
+
+Fixes:
+* App Crashing due to background task error
+
+------------------------------------------------------------
+Release 1.1.0+3
+
+Features:
+* Add exclude blur face to exclude some faces when blurring

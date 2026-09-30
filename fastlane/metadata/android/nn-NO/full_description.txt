@@ -1,0 +1,8 @@
+Krafta i AI i handa di!
+
+Dette er ein AI-verktøyapp for Android-einingar som brukar AI-modellar direkte på eininga for å hjelpe deg med ulike oppgåver.
+
+Noverande funksjonar:
+<ul>
+  <li>For biletfiler: oppdagar folks ansikt og legg til uskarpeffekt, og eksporterer biletet til galleriet</li>
+</ul>

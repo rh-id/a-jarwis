@@ -1,0 +1,8 @@
+Kraftur gervigreindar í lófa þínum!
+
+Þetta er gervigreindarforrit fyrir Android-tæki, sem notar AI-líkan beint á tækinu til að hjálpa við ýmis verkefni.
+
+Núverandi eiginleikar:
+<ul>
+  <li>Fyrir myndskrár: greina andlit fólks og bæta við móðunaráhrifum, og flytja myndina út í myndasafn</li>
+</ul>
