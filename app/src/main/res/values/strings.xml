@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Jarwis</string>
+    <string name="app_name" translatable="false">Jarwis</string>
     <string name="title_download_model">Download AI model?</string>
     <string name="msg_model_download_prompt">This feature requires the following AI model(s) to be downloaded once over the internet:\n\n%s</string>
     <string name="button_download">Download</string>
@@ -17,10 +17,10 @@
     <string name="next">Next</string>
     <string name="no_face_selected">No face selected: %s</string>
     <string name="title_mosaic">Mosaic</string>
-    <string name="title_candy">Candy</string>
-    <string name="title_rain_princess">Rain Princess</string>
-    <string name="title_udnie">Udnie</string>
-    <string name="title_pointilism">Pointilism</string>
+    <string name="title_candy" translatable="false">Candy</string>
+    <string name="title_rain_princess" translatable="false">Rain Princess</string>
+    <string name="title_udnie" translatable="false">Udnie</string>
+    <string name="title_pointilism" translatable="false">Pointilism</string>
     <string name="save">Save</string>
     <string name="share">Share</string>
     <string name="blur_all">Blur all</string>

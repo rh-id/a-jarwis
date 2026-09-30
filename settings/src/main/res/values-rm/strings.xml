@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="log_file">Datoteca da log</string>
+    <string name="share_log_file">Parturar la datoteca da log</string>
+    <string name="error_sharing_log_file">Error tar il parturar da la datoteca da log</string>
+    <string name="clear_log_file">Stizzar la datoteca da log</string>
+    <string name="log_file_deleted">Datoteca da log stizzada</string>
+    <string name="version_">Versiun:</string>
+    <string name="licenses">Licenzas</string>
+    <string name="theme_setting">Parameter da la tema</string>
+    <string name="follow_system">Suandar il sistem</string>
+    <string name="light_mode">Modus cler</string>
+    <string name="dark_mode">Modus stgir</string>
+    <string name="settings">Parameters</string>
+    <string name="donation_pitch">Sustegnair il developpadur cun in cafe</string>
+    <string name="donation_other_apps">Autras apps dal developpadur: %s</string>
+    <string name="donation_thank_you">Grazia fitg per Voss sustegn</string>
+    <string name="title_no_record">Nagin register</string>
+</resources>

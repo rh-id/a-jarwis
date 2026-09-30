@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="log_file">Annálskrá</string>
+    <string name="share_log_file">Deila annálskrá</string>
+    <string name="error_sharing_log_file">Villa við að deila annálskrá</string>
+    <string name="clear_log_file">Hreinsa annálskrá</string>
+    <string name="log_file_deleted">Annálskrá eytt</string>
+    <string name="version_">Útgáfa:</string>
+    <string name="licenses">Notendaleyfi</string>
+    <string name="theme_setting">Þemastilling</string>
+    <string name="follow_system">Fylgja kerfinu</string>
+    <string name="light_mode">Ljóst útlit</string>
+    <string name="dark_mode">Dökkt útlit</string>
+    <string name="settings">Stillingar</string>
+    <string name="donation_pitch">Styddu forritarann og bjóddu upp á kaffibolla</string>
+    <string name="donation_other_apps">Önnur forrit eftir forritarann: %s</string>
+    <string name="donation_thank_you">Takk fyrir stuðninginn</string>
+    <string name="title_no_record">Engar skráningar</string>
+</resources>

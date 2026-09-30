@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="done_processing_">处理完成：%s</string>
+    <string name="no_face_detected_">未检测到人脸：%s</string>
+</resources>

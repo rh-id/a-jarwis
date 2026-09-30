@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="log_file">File di log</string>
+    <string name="share_log_file">Condividi file di log</string>
+    <string name="error_sharing_log_file">Errore durante la condivisione del file di log</string>
+    <string name="clear_log_file">Cancella file di log</string>
+    <string name="log_file_deleted">File di log eliminato</string>
+    <string name="version_">Versione:</string>
+    <string name="licenses">Licenze</string>
+    <string name="theme_setting">Impostazione tema</string>
+    <string name="follow_system">Segui il sistema</string>
+    <string name="light_mode">Tema chiaro</string>
+    <string name="dark_mode">Tema scuro</string>
+    <string name="settings">Impostazioni</string>
+    <string name="donation_pitch">Supporta lo sviluppatore, offri una tazza di caffè</string>
+    <string name="donation_other_apps">Altre app dello sviluppatore: %s</string>
+    <string name="donation_thank_you">Grazie per il tuo supporto</string>
+    <string name="title_no_record">Nessun record</string>
+</resources>

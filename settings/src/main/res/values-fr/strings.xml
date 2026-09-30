@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="log_file">Fichier journal</string>
+    <string name="share_log_file">Partager le fichier journal</string>
+    <string name="error_sharing_log_file">Erreur lors du partage du fichier journal</string>
+    <string name="clear_log_file">Effacer le fichier journal</string>
+    <string name="log_file_deleted">Fichier journal supprimé</string>
+    <string name="version_">Version :</string>
+    <string name="licenses">Licences</string>
+    <string name="theme_setting">Paramètre de thème</string>
+    <string name="follow_system">Valeur du système</string>
+    <string name="light_mode">Mode clair</string>
+    <string name="dark_mode">Mode sombre</string>
+    <string name="settings">Paramètres</string>
+    <string name="donation_pitch">Soutenez le développeur, offrez une tasse de café</string>
+    <string name="donation_other_apps">Autres applications du développeur : %s</string>
+    <string name="donation_thank_you">Merci pour votre soutien</string>
+    <string name="title_no_record">Aucun enregistrement</string>
+</resources>

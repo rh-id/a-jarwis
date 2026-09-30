@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="log_file">Loggfil</string>
+    <string name="share_log_file">Del loggfil</string>
+    <string name="error_sharing_log_file">Feil ved deling av loggfil</string>
+    <string name="clear_log_file">Tøm loggfil</string>
+    <string name="log_file_deleted">Loggfilen er slettet</string>
+    <string name="version_">Versjon:</string>
+    <string name="licenses">Lisenser</string>
+    <string name="theme_setting">Temainnstilling</string>
+    <string name="follow_system">Følg systemet</string>
+    <string name="light_mode">Lys modus</string>
+    <string name="dark_mode">Mørk modus</string>
+    <string name="settings">Innstillinger</string>
+    <string name="donation_pitch">Støtt utvikleren med en kopp kaffe</string>
+    <string name="donation_other_apps">Andre apper fra utvikleren: %s</string>
+    <string name="donation_thank_you">Takk for støtten</string>
+    <string name="title_no_record">Ingen oppføring</string>
+</resources>
