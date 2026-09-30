@@ -14,20 +14,17 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
 
 import io.reactivex.rxjava3.core.Single;
-import m.co.rh.id.a_jarwis.app.provider.command.BlurFaceCommand;
 import m.co.rh.id.a_jarwis.app.provider.command.STApplyCommand;
 import m.co.rh.id.a_jarwis.app.ui.page.common.ModelDownloadDialog;
-import m.co.rh.id.a_jarwis.app.ui.page.nav.param.FileList;
 import m.co.rh.id.a_jarwis.app.ui.page.nav.param.MessageText;
 import m.co.rh.id.a_jarwis.app.ui.page.nav.param.SelectedChoice;
 import m.co.rh.id.a_jarwis.app.ui.page.nav.param.SelectedTheme;
+import m.co.rh.id.a_jarwis.app.ui.page.nav.param.UriList;
 import m.co.rh.id.a_jarwis.base.constants.Routes;
 import m.co.rh.id.a_jarwis.base.provider.IStatefulViewProvider;
-import m.co.rh.id.a_jarwis.base.rx.RxDisposer;
 import m.co.rh.id.a_jarwis.ml_engine.model.ModelCatalog;
 import m.co.rh.id.a_jarwis.ml_engine.model.ModelType;
 import m.co.rh.id.anavigator.NavRoute;
@@ -36,18 +33,12 @@ import m.co.rh.id.anavigator.component.INavigator;
 class HomeWorkflow implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private static final int REQUEST_CODE_IMAGE_AUTO_BLUR_FACE = 1;
-    private static final int REQUEST_CODE_IMAGE_EXCLUDE_BLUR_FACE = 2;
-    private static final int REQUEST_CODE_IMAGE_SELECTIVE_BLUR_FACE = 3;
+    private static final int REQUEST_CODE_IMAGE_BLUR_FACE = 1;
     private static final int REQUEST_CODE_IMAGE_NST_APPLY_PICTURE = 4;
 
-    private ArrayList<File> mFacesList;
     private SelectedTheme mSelectedNSTTheme;
 
     private transient INavigator mNavigator;
-    private transient ExecutorService mExecutorService;
-    private transient RxDisposer mRxDisposer;
-    private transient BlurFaceCommand mBlurFaceCommand;
     private transient STApplyCommand mSTApplyCommand;
     private transient HomeImageProcessor mImageProcessor;
 
@@ -57,28 +48,13 @@ class HomeWorkflow implements Serializable {
 
     void init(INavigator navigator, IStatefulViewProvider svProvider) {
         mNavigator = navigator;
-        mExecutorService = svProvider.get(ExecutorService.class);
-        mRxDisposer = svProvider.get(RxDisposer.class);
-        mBlurFaceCommand = svProvider.get(BlurFaceCommand.class);
         mSTApplyCommand = svProvider.get(STApplyCommand.class);
         mImageProcessor = new HomeImageProcessor(svProvider);
     }
 
-    public void startAutoBlur() {
+    public void startBlurFace() {
         requestWriteExternalStoragePermission(() -> startIfFaceModelsAvailable(() ->
-                pickImage(REQUEST_CODE_IMAGE_AUTO_BLUR_FACE)), REQUEST_CODE_IMAGE_AUTO_BLUR_FACE);
-    }
-
-    public void startSelectiveBlur() {
-        requestWriteExternalStoragePermission(() -> startFacePickFlow(
-                m.co.rh.id.a_jarwis.R.string.pick_image_for_selective_blur,
-                REQUEST_CODE_IMAGE_SELECTIVE_BLUR_FACE), REQUEST_CODE_IMAGE_SELECTIVE_BLUR_FACE);
-    }
-
-    public void startExcludeBlur() {
-        requestWriteExternalStoragePermission(() -> startFacePickFlow(
-                m.co.rh.id.a_jarwis.R.string.pick_image_to_be_excluded_from_blur,
-                REQUEST_CODE_IMAGE_EXCLUDE_BLUR_FACE), REQUEST_CODE_IMAGE_EXCLUDE_BLUR_FACE);
+                pickImage(REQUEST_CODE_IMAGE_BLUR_FACE)), REQUEST_CODE_IMAGE_BLUR_FACE);
     }
 
     public void startNstApply() {
@@ -111,9 +87,6 @@ class HomeWorkflow implements Serializable {
         if (!ModelCatalog.isAvailable(activity, ModelType.FACE_DETECT)) {
             missingModels.add(ModelType.FACE_DETECT);
         }
-        if (!ModelCatalog.isAvailable(activity, ModelType.FACE_RECOGNIZER)) {
-            missingModels.add(ModelType.FACE_RECOGNIZER);
-        }
         if (missingModels.isEmpty()) {
             continueAction.run();
         } else {
@@ -131,37 +104,6 @@ class HomeWorkflow implements Serializable {
                         continueAction.run();
                     }
                 });
-    }
-
-    private void startFacePickFlow(int bodyResId, int requestCode) {
-        startIfFaceModelsAvailable(() -> {
-            int title = m.co.rh.id.a_jarwis.R.string.title_what_to_do;
-            mNavigator.push(Routes.SHOW_MESSAGE_PAGE, new MessageText(title, bodyResId, true)
-                    , (navigator, navRoute, activity1, currentView) ->
-                            startFacePickFlow_processFirstRespond(navRoute, requestCode));
-        });
-    }
-
-    private void startFacePickFlow_processFirstRespond(NavRoute navRoute, int requestCode) {
-        Serializable serializable = navRoute.getRouteResult();
-        if (serializable instanceof SelectedChoice) {
-            int selectedChoice = ((SelectedChoice) serializable).getSelectedChoice();
-            if (SelectedChoice.POSITIVE == selectedChoice) {
-                mNavigator.push(Routes.SELECT_FACE_IMAGE_PAGE, (navigator, navRoute1, activity1, currentView) ->
-                        startFacePickFlow_processSecondRespond(navRoute1, requestCode));
-            }
-        }
-    }
-
-    private void startFacePickFlow_processSecondRespond(NavRoute navRoute, int requestCode) {
-        Serializable serializable = navRoute.getRouteResult();
-        if (serializable instanceof FileList) {
-            ArrayList<File> fileList = ((FileList) serializable).getFiles();
-            if (!fileList.isEmpty()) {
-                mFacesList = fileList;
-                pickImage(requestCode);
-            }
-        }
     }
 
     private void startNstApply_processFirstRespond(NavRoute navRoute) {
@@ -195,12 +137,8 @@ class HomeWorkflow implements Serializable {
         if (!granted) {
             return;
         }
-        if (requestCode == REQUEST_CODE_IMAGE_AUTO_BLUR_FACE) {
-            startAutoBlur();
-        } else if (requestCode == REQUEST_CODE_IMAGE_EXCLUDE_BLUR_FACE) {
-            startExcludeBlur();
-        } else if (requestCode == REQUEST_CODE_IMAGE_SELECTIVE_BLUR_FACE) {
-            startSelectiveBlur();
+        if (requestCode == REQUEST_CODE_IMAGE_BLUR_FACE) {
+            startBlurFace();
         } else if (requestCode == REQUEST_CODE_IMAGE_NST_APPLY_PICTURE) {
             startNstApply();
         }
@@ -210,37 +148,55 @@ class HomeWorkflow implements Serializable {
         if (resultCode != Activity.RESULT_OK) {
             return;
         }
-        if (requestCode == REQUEST_CODE_IMAGE_AUTO_BLUR_FACE) {
-            processPickedImages("onActivityResult_autoBlurFace", data,
-                    uri -> mBlurFaceCommand.execute(uri));
-        } else if (requestCode == REQUEST_CODE_IMAGE_EXCLUDE_BLUR_FACE) {
-            processPickedImages("onActivityResult_excludeAutoBlurFace", data,
-                    uri -> mBlurFaceCommand.execute(uri, mFacesList));
-        } else if (requestCode == REQUEST_CODE_IMAGE_SELECTIVE_BLUR_FACE) {
-            processPickedImages("onActivityResult_selectiveAutoBlurFace", data,
-                    uri -> mBlurFaceCommand.execute(uri, mFacesList, false));
+        if (requestCode == REQUEST_CODE_IMAGE_BLUR_FACE) {
+            pushFaceEditor(data);
         } else if (requestCode == REQUEST_CODE_IMAGE_NST_APPLY_PICTURE) {
             processPickedImages("onActivityResult_nstApplyPicture", data,
                     uri -> mSTApplyCommand.execute(uri, mSelectedNSTTheme.getSelectedThemes()));
         }
     }
 
-    private void processPickedImages(String baseTag, Intent data, Function<Uri, Single<File>> commandFactory) {
-        if (data == null) {
+    /**
+     * Push the interactive face editor page for the picked images
+     */
+    private void pushFaceEditor(Intent data) {
+        List<Uri> pickedUris = collectPickedUris(data);
+        if (pickedUris.isEmpty()) {
             return;
+        }
+        ArrayList<String> uris = new ArrayList<>();
+        for (Uri uri : pickedUris) {
+            uris.add(uri.toString());
+        }
+        mNavigator.push(Routes.FACE_EDITOR_PAGE, new UriList(uris));
+    }
+
+    private void processPickedImages(String baseTag, Intent data, Function<Uri, Single<File>> commandFactory) {
+        List<Uri> uriList = collectPickedUris(data);
+        if (uriList.isEmpty()) {
+            return;
+        }
+        if (uriList.size() == 1) {
+            mImageProcessor.processImage(baseTag, uriList.get(0), commandFactory);
+        } else {
+            mImageProcessor.processImages(baseTag + "_multiple", uriList, commandFactory);
+        }
+    }
+
+    private List<Uri> collectPickedUris(Intent data) {
+        List<Uri> uriList = new ArrayList<>();
+        if (data == null) {
+            return uriList;
         }
         ClipData clipData = data.getClipData();
         if (clipData != null) {
             int count = clipData.getItemCount();
-            List<Uri> uriList = new ArrayList<>();
             for (int i = 0; i < count; i++) {
                 uriList.add(clipData.getItemAt(i).getUri());
             }
-            if (!uriList.isEmpty()) {
-                mImageProcessor.processImages(baseTag + "_multiple", uriList, commandFactory);
-            }
         } else if (data.getData() != null) {
-            mImageProcessor.processImage(baseTag, data.getData(), commandFactory);
+            uriList.add(data.getData());
         }
+        return uriList;
     }
 }

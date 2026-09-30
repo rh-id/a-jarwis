@@ -66,12 +66,8 @@ public class HomePage extends StatefulView<Activity> implements RequireComponent
         mHomeDrawerSV.setOnDonationsClickListener(v -> mNavigator.push(Routes.DONATIONS_PAGE));
         mAppBarSV.setTitle(activity.getString(R.string.home));
         mAppBarSV.setNavigationOnClick(v -> mHomeDrawerSV.open());
-        Button autoBlurButton = rootLayout.findViewById(R.id.button_auto_blur_face);
-        autoBlurButton.setOnClickListener(this);
-        Button excludeBlurButton = rootLayout.findViewById(R.id.button_exclude_blur_face);
-        excludeBlurButton.setOnClickListener(this);
-        Button selectiveBlurButton = rootLayout.findViewById(R.id.button_selective_blur_face);
-        selectiveBlurButton.setOnClickListener(this);
+        Button blurFaceButton = rootLayout.findViewById(R.id.button_blur_face);
+        blurFaceButton.setOnClickListener(this);
         Button nstApplyPictureButton = rootLayout.findViewById(R.id.button_nst_apply_picture);
         nstApplyPictureButton.setOnClickListener(this);
         ViewGroup containerAppBar = rootLayout.findViewById(R.id.container_app_bar);
@@ -112,12 +108,8 @@ public class HomePage extends StatefulView<Activity> implements RequireComponent
     @Override
     public void onClick(View view) {
         int id = view.getId();
-        if (id == R.id.button_auto_blur_face) {
-            mWorkflow.startAutoBlur();
-        } else if (id == R.id.button_exclude_blur_face) {
-            mWorkflow.startExcludeBlur();
-        } else if (id == R.id.button_selective_blur_face) {
-            mWorkflow.startSelectiveBlur();
+        if (id == R.id.button_blur_face) {
+            mWorkflow.startBlurFace();
         } else if (id == R.id.button_nst_apply_picture) {
             mWorkflow.startNstApply();
         }

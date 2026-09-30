@@ -7,7 +7,6 @@ import m.co.rh.id.aprovider.ProviderRegistry;
 public class CommandProviderModule implements ProviderModule {
     @Override
     public void provides(ProviderRegistry providerRegistry, Provider provider) {
-        providerRegistry.registerLazy(BlurFaceCommand.class, () -> new BlurFaceCommand(provider));
         providerRegistry.registerLazy(STApplyCommand.class, () -> new STApplyCommand(provider));
     }
 }
