@@ -2,7 +2,7 @@
 
 ## Build
 - Gradle 9.6.0 (wrapper), AGP 9.4.1, Groovy DSL build files, version catalog `gradle/libs.versions.toml`
-- JDK 17 required (CI uses adoptium 17); compileSdk/targetSdk 34; minSdk 21
+- JDK 17 required (CI uses adoptium 17); compileSdk/targetSdk 37; minSdk 21
 - App identity: `m.co.rh.id.a_jarwis`; versionCode/versionName live in `app/build.gradle` (not catalog)
 - Release signing only via CI env vars: `SIGNING_KEY` (base64 keystore), `ALIAS`, `KEY_STORE_PASSWORD`, `KEY_PASSWORD`
 
@@ -17,8 +17,8 @@
 
 ## ML stack
 - OpenCV 5.0.0.1 official Android AAR from Maven Central (`org.opencv:opencv:5.0.0.1`, catalog entry `libs.opencv`), consumed by `:ml-engine` directly; no local module (previously vendored 4.8.0 SDK — removed 2026-09)
-- ONNX models in `ml-engine/src/main/res/raw/`: `face_detection_yunet_2023mar.onnx`, `face_recognition_sface_2021dec_int8.onnx`, `nst_{mosaic,candy,rain_princess,udnie,pointilism}_9.onnx`
-- Models copied at runtime to `filesDir/ml-engine/engine/**` by `MLEngineInstance` (once, if absent); run via OpenCV `FaceDetectorYN`/`FaceRecognizerSF` and DNN (`STProcessor`)
+- ONNX models are NOT in the APK — downloaded on demand (`ModelType`/`ModelCatalog`/`ModelDownloader` via `ModelDownloadWorker`) into `filesDir/ml-engine/engine/**`; legacy bundled `nst_*_9.onnx` files are renamed in place by `ModelCatalog.migrateLegacyIfNeeded`
+- Run via OpenCV `FaceDetectorYN`/`FaceRecognizerSF` and DNN (`STProcessor`); processors cached per theme by `MLEngineInstance`
 
 ## CI (.github/workflows)
 - `gradlew-build.yml`: `./gradlew build` on push/PR → master
