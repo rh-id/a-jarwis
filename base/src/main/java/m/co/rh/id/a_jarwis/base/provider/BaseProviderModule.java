@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 import co.rh.id.lib.concurrent_utils.concurrent.executor.WeightedThreadPool;
 import m.co.rh.id.a_jarwis.base.BuildConfig;
 import m.co.rh.id.a_jarwis.base.provider.component.helper.FileHelper;
+import m.co.rh.id.a_jarwis.base.provider.component.helper.ImageHelper;
 import m.co.rh.id.a_jarwis.base.provider.component.helper.MediaHelper;
 import m.co.rh.id.alogger.AndroidLogger;
 import m.co.rh.id.alogger.CompositeLogger;
@@ -71,6 +72,7 @@ public class BaseProviderModule implements ProviderModule {
 
         providerRegistry.register(NavExtDialogConfig.class, () -> new NavExtDialogConfig(appContext));
         providerRegistry.register(FileHelper.class, () -> new FileHelper(provider));
+        providerRegistry.register(ImageHelper.class, () -> new ImageHelper(provider));
         providerRegistry.registerLazy(MediaHelper.class, () -> new MediaHelper(provider));
     }
 

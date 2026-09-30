@@ -2,17 +2,11 @@ package m.co.rh.id.a_jarwis.base.provider.component.helper;
 
 import android.content.ContentResolver;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.net.Uri;
-
-import androidx.exifinterface.media.ExifInterface;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -103,20 +97,37 @@ public class FileHelper {
     }
 
     public File createTempFile() throws IOException {
-        return createTempFile(UUID.randomUUID().toString(), null);
-    }
-
-    public File createTempFile(String fileName) throws IOException {
-        return createTempFile(fileName, null);
+        return createTempFile(UUID.randomUUID().toString());
     }
 
     /**
      * Create temporary file
      *
-     * @param fileName file name for this file
-     * @param content  content of the file to write to this temp file
+     * @param fileName file name for this file, a random uuid is used when null or empty
      * @return temporary file
      * @throws IOException when failed to create file
+     */
+    public File createTempFile(String fileName) throws IOException {
+        File parent = new File(mTempFileRoot, UUID.randomUUID().toString());
+        parent.mkdirs();
+        String fName = fileName;
+        if (fName == null || fName.isEmpty()) {
+            fName = UUID.randomUUID().toString();
+        }
+        File tmpFile = new File(parent, fName);
+        tmpFile.createNewFile();
+        return tmpFile;
+    }
+
+    /**
+     * Create a temporary file and copy the given content into it as a raw
+     * buffered byte copy, so the copied bytes (and any EXIF) are identical to
+     * the source.
+     *
+     * @param fileName file name for this file, a random uuid is used when null or empty
+     * @param content  content of the file to write to this temp file
+     * @return temporary file
+     * @throws IOException when failed to create or copy the file
      */
     public File createTempFile(String fileName, Uri content) throws IOException {
         File parent = new File(mTempFileRoot, UUID.randomUUID().toString());
@@ -135,10 +146,12 @@ public class FileHelper {
 
             FileOutputStream fileOutputStream = new FileOutputStream(tmpFile);
             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
-            byte[] buff = new byte[102800];
+            byte[] buff = new byte[8192];
             int b = bufferedInputStream.read(buff);
             while (b != -1) {
-                bufferedOutputStream.write(buff);
+                // write only the bytes read so the last chunk never carries
+                // stale tail bytes from the previous iteration
+                bufferedOutputStream.write(buff, 0, b);
                 b = bufferedInputStream.read(buff);
             }
             bufferedOutputStream.close();
@@ -164,106 +177,58 @@ public class FileHelper {
         return mLogFile;
     }
 
-    public File createImageTempFile() throws IOException {
-        return createImageTempFile(UUID.randomUUID().toString());
+    /**
+     * Delete the temp files with the given file name prefix, best effort,
+     * any failure is ignored.
+     *
+     * @param fileNamePrefix file name prefix of the temp files to be deleted
+     */
+    public void deleteTempFiles(String fileNamePrefix) {
+        deleteTempFiles(fileNamePrefix, 0L);
     }
 
+    /**
+     * Delete the temp files with the given file name prefix whose last modified
+     * time is older than the given max age, best effort, any failure is ignored.
+     * A max age of 0 deletes every matching file, a positive max age keeps the
+     * recent files (e.g. the source copies of a restored editor session).
+     *
+     * @param fileNamePrefix file name prefix of the temp files to be deleted
+     * @param maxAgeMillis   maximum age of the files to be deleted in milliseconds
+     */
+    public void deleteTempFiles(String fileNamePrefix, long maxAgeMillis) {
+        long modifiedCutoff = System.currentTimeMillis() - maxAgeMillis;
+        File[] parentDirs = mTempFileRoot.listFiles();
+        if (parentDirs == null) {
+            return;
+        }
+        for (File parentDir : parentDirs) {
+            File[] files = parentDir.listFiles();
+            if (files == null) {
+                continue;
+            }
+            for (File file : files) {
+                if (file.getName().startsWith(fileNamePrefix)
+                        && file.lastModified() < modifiedCutoff) {
+                    file.delete();
+                }
+            }
+        }
+    }
+
+    /**
+     * Create an empty temporary image file under the temp root,
+     * used as the backing for the image temp file creation on {@link ImageHelper}
+     *
+     * @param fileName file name for this file
+     * @return temporary file
+     * @throws IOException when failed to create file
+     */
     public File createImageTempFile(String fileName) throws IOException {
         File parent = new File(mTempFileRoot, UUID.randomUUID().toString());
         parent.mkdirs();
         File tmpFile = new File(parent, fileName);
         tmpFile.createNewFile();
         return tmpFile;
-    }
-
-    public File createImageTempFile(Uri content) throws IOException {
-        return createImageTempFile(UUID.randomUUID().toString() + ".jpg", content);
-    }
-
-    public File createImageTempFile(String fileName, Uri content) throws IOException {
-        File outFile = createImageTempFile(fileName);
-        try {
-            copyImage(content, outFile);
-            return outFile;
-        } catch (Exception e) {
-            outFile.delete();
-            throw e;
-        }
-    }
-
-    public void copyImage(Uri content, File outFile) throws IOException {
-        copyImage(content, outFile, 1280, 720);
-    }
-
-    public void copyImage(Uri content, File outFile, int width, int height) throws IOException {
-        ContentResolver contentResolver = mAppContext.getContentResolver();
-        FileDescriptor fd = contentResolver.openFileDescriptor(
-                content, "r").getFileDescriptor();
-        InputStream fis = new FileInputStream(fd);
-        BitmapFactory.Options bmOptions = getBitmapOptionForCompression(fis, width, height);
-        OutputStream fileOutputStream = new BufferedOutputStream(
-                new FileOutputStream(outFile), 10240);
-        Bitmap bitmap = processExifAttr(mAppContext, content, bmOptions);
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, fileOutputStream);
-        fileOutputStream.flush();
-        fileOutputStream.close();
-    }
-
-    private BitmapFactory.Options getBitmapOptionForCompression(InputStream fis, int width, int height) {
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeStream(fis, null, bmOptions);
-        int inWidth = bmOptions.outWidth;
-        int inHeight = bmOptions.outHeight;
-        int outWidth = width;
-        int outHeight = height;
-        if (inHeight > inWidth) {
-            outHeight = width;
-            outWidth = height;
-        }
-        int scaleFactor = Math.max(1, Math.min(inWidth / outWidth, inHeight / outHeight));
-        bmOptions.inJustDecodeBounds = false;
-        bmOptions.inSampleSize = scaleFactor;
-        return bmOptions;
-    }
-
-    private Bitmap processExifAttr(Context context, Uri imageUri, BitmapFactory.Options bmOptions) throws IOException {
-        ContentResolver contentResolver = context.getContentResolver();
-        FileDescriptor fd = contentResolver.openFileDescriptor(
-                imageUri, "r").getFileDescriptor();
-        ExifInterface exifInterface = new ExifInterface(fd);
-        int rotation = getRotation(exifInterface);
-
-        // get fd again
-        fd = contentResolver.openFileDescriptor(
-                imageUri, "r").getFileDescriptor();
-        Bitmap bitmap = BitmapFactory.decodeFileDescriptor(fd, null, bmOptions);
-        if (rotation != 0) {
-            Matrix matrix = new Matrix();
-            matrix.setRotate(rotation);
-            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(),
-                    matrix, true);
-        }
-        return bitmap;
-    }
-
-    private int getRotation(ExifInterface exifInterface) {
-        int rotation = 0;
-        int exifRotation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
-
-        if (exifRotation != ExifInterface.ORIENTATION_UNDEFINED) {
-            switch (exifRotation) {
-                case ExifInterface.ORIENTATION_ROTATE_180:
-                    rotation = 180;
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_270:
-                    rotation = 270;
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_90:
-                    rotation = 90;
-                    break;
-            }
-        }
-        return rotation;
     }
 }

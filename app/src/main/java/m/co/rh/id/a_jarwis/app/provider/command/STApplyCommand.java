@@ -7,18 +7,18 @@ import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 
 import io.reactivex.rxjava3.core.Single;
-import m.co.rh.id.a_jarwis.base.provider.component.helper.FileHelper;
+import m.co.rh.id.a_jarwis.base.provider.component.helper.ImageHelper;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.STEngine;
 import m.co.rh.id.aprovider.Provider;
 
 public class STApplyCommand {
     private final ExecutorService mExecutorService;
-    private final FileHelper mFileHelper;
+    private final ImageHelper mImageHelper;
     private final STEngine mSTEngine;
 
     public STApplyCommand(Provider provider) {
         mExecutorService = provider.get(ExecutorService.class);
-        mFileHelper = provider.get(FileHelper.class);
+        mImageHelper = provider.get(ImageHelper.class);
         mSTEngine = provider.get(STEngine.class);
     }
 
@@ -32,7 +32,7 @@ public class STApplyCommand {
             if (lastDot == -1) {
                 fileName = fileNameWithExt + ".jpg";
             }
-            File result = mFileHelper
+            File result = mImageHelper
                     .createImageTempFile(fileName, uriFile);
             mSTEngine.enqueueST(result, themes);
             return result;

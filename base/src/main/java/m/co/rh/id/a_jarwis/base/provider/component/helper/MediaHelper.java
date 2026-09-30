@@ -58,11 +58,7 @@ public class MediaHelper {
                     imageOut.close();
                 }
 
-                long id = ContentUris.parseId(url);
-                // Wait until MINI_KIND thumbnail is generated.
-                Bitmap miniThumb = MediaStore.Images.Thumbnails.getThumbnail(cr, id, MediaStore.Images.Thumbnails.MINI_KIND, null);
-                // This is for backward compatibility.
-                storeThumbnail(cr, miniThumb, id, 50F, 50F, MediaStore.Images.Thumbnails.MICRO_KIND);
+                insertThumbnail(cr, url);
             } else {
                 cr.delete(url, null, null);
                 url = null;
@@ -80,6 +76,24 @@ public class MediaHelper {
         }
 
         return stringUrl;
+    }
+
+    /**
+     * Generate and store the thumbnails of the inserted image.
+     * A thumbnail failure must not roll back the image insert,
+     * any failure here is only logged and swallowed.
+     */
+    @SuppressWarnings("deprecation")
+    private void insertThumbnail(ContentResolver cr, Uri url) {
+        try {
+            long id = ContentUris.parseId(url);
+            // Wait until MINI_KIND thumbnail is generated.
+            Bitmap miniThumb = MediaStore.Images.Thumbnails.getThumbnail(cr, id, MediaStore.Images.Thumbnails.MINI_KIND, null);
+            // This is for backward compatibility.
+            storeThumbnail(cr, miniThumb, id, 50F, 50F, MediaStore.Images.Thumbnails.MICRO_KIND);
+        } catch (Exception e) {
+            mLogger.e(TAG, e.getMessage(), e);
+        }
     }
 
     private Bitmap storeThumbnail(
