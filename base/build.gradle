@@ -33,12 +33,15 @@ android {
         }
     }
     compileOptions {
+        coreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
 }
 
 dependencies {
+    coreLibraryDesugaring libs.desugar.jdk.libs
+
     api libs.a.provider
     api libs.a.navigator
     api libs.a.navigator.dialog

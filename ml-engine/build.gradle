@@ -24,12 +24,15 @@ android {
         }
     }
     compileOptions {
+        coreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 }
 
 dependencies {
+    coreLibraryDesugaring libs.desugar.jdk.libs
+
     implementation project(":base")
     implementation libs.opencv
 
