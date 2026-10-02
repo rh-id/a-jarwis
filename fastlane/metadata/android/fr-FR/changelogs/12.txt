@@ -1,0 +1,16 @@
+Release 2.0.0+12
+
+Nouveautés:
+* Le nouvel éditeur de style interactif remplace l'ancien flux de transfert de style neuronal en un seul appui
+* L'éditeur de visage interactif unifié regroupe les anciens modes de floutage des visages
+* L'application est entièrement traduite en 10 langues : allemand, estonien, français, indonésien, islandais, italien, norvégien bokmål, norvégien nynorsk, romanche et chinois simplifié
+
+Modifications:
+* Les modèles d'IA sont désormais téléchargés à la demande depuis Hugging Face, ce qui rend l'application beaucoup plus légère
+* Mise à jour vers le dernier Android SDK avec une interface edge-to-edge
+* Dépendances mises à jour et OpenCV remplacé par la bibliothèque officielle
+* Le lien de don passe de Bitcoin à Trakteer
+
+Corrections:
+* Correction des erreurs d'exécution sur les anciennes versions d'Android
+* Gestion des fichiers temporaires plus robuste pour une meilleure stabilité

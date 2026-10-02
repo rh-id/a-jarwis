@@ -1,0 +1,16 @@
+Release 2.0.0+12
+
+Feature:
+* New interactive Style Editor replaces the old one-tap Neural Style Transfer flow
+* Unified interactive Face Editor merges the previous face blur modes
+* App fully localized into 10 languages: German, Estonian, French, Indonesian, Icelandic, Italian, Norwegian Bokmål, Norwegian Nynorsk, Romansh and Simplified Chinese
+
+Changes:
+* AI models are now downloaded on demand from Hugging Face, making the app much smaller
+* Updated to the latest Android SDK with edge-to-edge UI
+* Dependencies updated and OpenCV replaced with the official library
+* Donation link switched from Bitcoin to Trakteer
+
+Fixes:
+* Fixed runtime errors on older Android versions
+* More robust temporary file handling for better stability

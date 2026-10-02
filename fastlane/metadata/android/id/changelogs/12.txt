@@ -1,0 +1,16 @@
+Release 2.0.0+12
+
+Fitur:
+* Editor Gaya interaktif yang baru menggantikan alur Neural Style Transfer lama yang hanya sekali ketuk
+* Editor Wajah interaktif yang terpadu menggabungkan mode pemburaman wajah sebelumnya
+* Aplikasi kini sepenuhnya dilokalkan ke dalam 10 bahasa: Jerman, Estonia, Prancis, Indonesia, Islandia, Italia, Norwegia Bokmål, Norwegia Nynorsk, Romansh, dan Mandarin Sederhana
+
+Perubahan:
+* Model AI kini diunduh sesuai permintaan dari Hugging Face, membuat aplikasi menjadi jauh lebih kecil
+* Diperbarui ke Android SDK terbaru dengan UI edge-to-edge
+* Dependensi diperbarui dan OpenCV diganti dengan pustaka resmi
+* Tautan donasi beralih dari Bitcoin ke Trakteer
+
+Perbaikan:
+* Memperbaiki error runtime pada versi Android yang lebih lama
+* Penanganan berkas sementara yang lebih andal untuk stabilitas yang lebih baik

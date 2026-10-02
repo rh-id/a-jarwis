@@ -1,0 +1,16 @@
+Release 2.0.0+12
+
+Uued funktsioonid:
+* Uus interaktiivne stiiliredaktor asendab vana ühe puudutusega tehisintellekti stiiliefekti rakendamisviisi
+* Ühtne interaktiivne näoredaktor ühendab endised näo hägustamise režiimid
+* Rakendus on nüüd täielikult tõlgitud 10 keelde: saksa, eesti, prantsuse, indoneesia, islandi, itaalia, norra (bokmål), norra (nynorsk), retoromaani ja lihtsustatud hiina keelde
+
+Muudatused:
+* Tehisintellekti mudeleid laaditakse nüüd vajadusel alla Hugging Face'ist, mistõttu on rakendus palju väiksem
+* Värskendatud uusimale Android SDK-le koos edge-to-edge-kasutajaliidesega
+* Sõltuvused värskendatud ja OpenCV asendatud ametliku teegiga
+* Annetuse link vahetatud Bitcoinilt Trakteerile
+
+Parandused:
+* Parandatud käitusvead vanematel Androidi versioonidel
+* Püsivam ajutiste failide käsitlemine suurema stabiilsuse tagamiseks

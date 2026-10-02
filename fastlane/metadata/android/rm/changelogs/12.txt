@@ -1,0 +1,16 @@
+Release 2.0.0+12
+
+Novitads:
+* Il nov editor da stil interactiv remplazza il vegl transfert da stil neural cun in sulet clic
+* L'editor da ftgna interactiv e unifitgà unescha ils vegls modus da sfumatura da ftgnas
+* L'app è ussa cumplettamain traducta en 10 linguas: tudestg, eston, franzos, indonais, islandais, talian, norvegais bokmål, norvegais nynorsk, rumantsch e chinais simplifitgà
+
+Midadas:
+* Ils models d'IA vegnan ussa chargiads giu a demanda da Hugging Face, quai che fa l'app bler pli pitschna
+* Actualisà al pli nov Android SDK cun in'interfacia edge-to-edge
+* Dependenzas actualisadas e OpenCV remplazzà cun la biblioteca uffiziala
+* Il link da donaziun è vegnì midà da Bitcoin a Trakteer
+
+Reparaturas:
+* Reparà errurs da executziun sin versiuns pli veglias dad Android
+* In medi pli robust da las datotecas temporaras per ina pli gronda stabilitad

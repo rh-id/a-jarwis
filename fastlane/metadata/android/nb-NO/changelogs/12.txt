@@ -1,0 +1,16 @@
+Release 2.0.0+12
+
+Nye funksjoner:
+* Det nye interaktive stilredigeringsverktøyet erstatter den gamle nevrale stiloverføringen med ett trykk
+* Det samlede interaktive ansiktsredigeringsverktøyet samler de tidligere modusene for ansiktssløring
+* Appen er nå fullstendig oversatt til 10 språk: tysk, estisk, fransk, indonesisk, islandsk, italiensk, norsk bokmål, norsk nynorsk, retoromansk og kinesisk (forenklet)
+
+Endringer:
+* KI-modeller lastes nå ned ved behov fra Hugging Face, noe som gjør appen mye mindre
+* Oppdatert til nyeste Android SDK med edge-to-edge-grensesnitt
+* Avhengigheter oppdatert og OpenCV erstattet med det offisielle biblioteket
+* Donasjonslenken er byttet fra Bitcoin til Trakteer
+
+Rettelser:
+* Rettet kjøretidsfeil på eldre Android-versjoner
+* Mer robust håndtering av midlertidige filer for bedre stabilitet

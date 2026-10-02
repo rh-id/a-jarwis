@@ -1,0 +1,16 @@
+Release 2.0.0+12
+
+Nýjar aðgerðir:
+* Nýi gagnvirki stílritillinn leysir af hólmi gamla tauganetsstílsferlið með einni snertingu
+* Samþættur gagnvirkur andlitsritill sameinar fyrri hami andlitsmóðunar
+* Forritið er nú þýtt að fullu á 10 tungumál: þýska, eistneska, franska, indónesíska, íslenska, ítalska, norska (bókmál), norska (nýnorska), rætorómanska og einfölduð kínverska
+
+Breytingar:
+* Gervigreindarlíkön eru nú sótt eftir þörfum frá Hugging Face, sem gerir forritið mun minna
+* Uppfært í nýjasta Android SDK með edge-to-edge viðmóti
+* Ósjálfstæði uppfærð og OpenCV skipt út fyrir opinbera aðgerðasafnið
+* Framlagaslóðin hefur verið breytt úr Bitcoin í Trakteer
+
+Villuleiðréttingar:
+* Lagaðar keyrsluvillur á eldri Android-útgáfum
+* Öruggari meðhöndlun bráðabirgðaskráa fyrir betri stöðugleika

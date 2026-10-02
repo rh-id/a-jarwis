@@ -1,0 +1,16 @@
+Release 2.0.0+12
+
+Neue Funktionen:
+* Der neue interaktive Stileditor ersetzt den bisherigen Neuralen Stiltransfer mit einem Fingertipp
+* Der einheitliche interaktive Gesichtseditor vereint die bisherigen Modi zum Weichzeichnen von Gesichtern
+* Die App ist nun vollständig in 10 Sprachen übersetzt: Deutsch, Estnisch, Französisch, Indonesisch, Isländisch, Italienisch, Norwegisch (Bokmål), Norwegisch (Nynorsk), Rätoromanisch und Chinesisch (vereinfacht)
+
+Änderungen:
+* KI-Modelle werden nun bei Bedarf von Hugging Face heruntergeladen, wodurch die App viel kleiner wird
+* Aktualisierung auf das neueste Android SDK mit einer edge-to-edge-Benutzeroberfläche
+* Abhängigkeiten aktualisiert und OpenCV durch die offizielle Bibliothek ersetzt
+* Der Spenden-Link wurde von Bitcoin auf Trakteer umgestellt
+
+Behoben:
+* Laufzeitfehler auf älteren Android-Versionen behoben
+* Robustere Handhabung temporärer Dateien für mehr Stabilität
