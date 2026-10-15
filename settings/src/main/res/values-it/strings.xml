@@ -11,6 +11,7 @@
     <string name="follow_system">Segui il sistema</string>
     <string name="light_mode">Tema chiaro</string>
     <string name="dark_mode">Tema scuro</string>
+    <string name="settings_use_dynamic_colors">Usa i colori di sistema (Material You)</string>
     <string name="settings">Impostazioni</string>
     <string name="donation_pitch">Supporta lo sviluppatore, offri una tazza di caffè</string>
     <string name="donation_other_apps">Altre app dello sviluppatore: %s</string>

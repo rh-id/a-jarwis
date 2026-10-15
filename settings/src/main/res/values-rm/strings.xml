@@ -11,6 +11,7 @@
     <string name="follow_system">Suandar il sistem</string>
     <string name="light_mode">Modus cler</string>
     <string name="dark_mode">Modus stgir</string>
+    <string name="settings_use_dynamic_colors">Utilisar las colurs dal sistem (Material You)</string>
     <string name="settings">Parameters</string>
     <string name="donation_pitch">Sustegnair il developpadur cun in cafe</string>
     <string name="donation_other_apps">Autras apps dal developpadur: %s</string>

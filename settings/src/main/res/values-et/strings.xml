@@ -11,6 +11,7 @@
     <string name="follow_system">Järgi süsteemi</string>
     <string name="light_mode">Hele režiim</string>
     <string name="dark_mode">Tume režiim</string>
+    <string name="settings_use_dynamic_colors">Kasuta süsteemi värve (Material You)</string>
     <string name="settings">Seaded</string>
     <string name="donation_pitch">Toeta arendajat, pakku tass kohvi</string>
     <string name="donation_other_apps">Arendaja teised rakendused: %s</string>

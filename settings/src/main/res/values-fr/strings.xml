@@ -11,6 +11,7 @@
     <string name="follow_system">Valeur du système</string>
     <string name="light_mode">Mode clair</string>
     <string name="dark_mode">Mode sombre</string>
+    <string name="settings_use_dynamic_colors">Utiliser les couleurs du système (Material You)</string>
     <string name="settings">Paramètres</string>
     <string name="donation_pitch">Soutenez le développeur, offrez une tasse de café</string>
     <string name="donation_other_apps">Autres applications du développeur : %s</string>

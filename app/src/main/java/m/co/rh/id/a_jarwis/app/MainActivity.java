@@ -2,7 +2,9 @@ package m.co.rh.id.a_jarwis.app;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.TypedValue;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
@@ -13,6 +15,8 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import com.google.android.material.color.DynamicColors;
 
 import java.util.concurrent.TimeUnit;
 
@@ -38,6 +42,12 @@ public class MainActivity extends AppCompatActivity {
         mRxDisposer = mProvider.get(RxDisposer.class);
         mSettingsSharedPreferences = BaseApplication.of(this).getProvider()
                 .get(SettingsSharedPreferences.class);
+        // apply Material You dynamic colors before super.onCreate installs the
+        // theme; gated on both the user setting and the device support
+        if (mSettingsSharedPreferences.isDynamicColorsEnabled()
+                && DynamicColors.isDynamicColorAvailable()) {
+            getTheme().applyStyle(m.co.rh.id.a_jarwis.base.R.style.Theme_Asnapblur_Overlay_DynamicColors, true);
+        }
         mRebuildUi = PublishSubject.create();
         // rebuild UI is expensive and error prone, avoid spam rebuild (especially due to day and night mode)
         mRxDisposer
@@ -45,10 +55,31 @@ public class MainActivity extends AppCompatActivity {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(aBoolean -> {
                             if (aBoolean) {
+                                // mirrors the onCreate applyStyle gate: the activity handles
+                                // uiMode config changes without recreation, so re-apply the
+                                // overlay to re-resolve its DayNight variant (light/dark)
+                                // for the new configuration before views rebuild
+                                if (mSettingsSharedPreferences.isDynamicColorsEnabled()
+                                        && DynamicColors.isDynamicColorAvailable()) {
+                                    getTheme().applyStyle(m.co.rh.id.a_jarwis.base.R.style.Theme_Asnapblur_Overlay_DynamicColors, true);
+                                }
+                                // the window background drawable was instantiated under the
+                                // previous configuration and is never re-created by applyStyle,
+                                // so re-resolve it explicitly
+                                TypedValue windowBackground = new TypedValue();
+                                getTheme().resolveAttribute(android.R.attr.windowBackground, windowBackground, true);
+                                if (windowBackground.type >= TypedValue.TYPE_FIRST_COLOR_INT
+                                        && windowBackground.type <= TypedValue.TYPE_LAST_COLOR_INT) {
+                                    getWindow().setBackgroundDrawable(new ColorDrawable(windowBackground.data));
+                                } else if (windowBackground.resourceId != 0) {
+                                    getWindow().setBackgroundDrawableResource(windowBackground.resourceId);
+                                }
                                 BaseApplication.of(this).getNavigator(this).reBuildAllRoute();
-                                // Switching to night mode didn't update window background for some reason?
-                                // seemed to occur on android 8 and below
-                                getWindow().setBackgroundDrawableResource(m.co.rh.id.a_jarwis.R.color.daynight_white_black);
+                                // reBuildAllRoute re-installs the activity content view while the
+                                // activity is running; the new hierarchy misses the initial inset
+                                // dispatch, so request one explicitly or content lays out under
+                                // the transparent status bar (edge-to-edge)
+                                getWindow().getDecorView().requestApplyInsets();
                             }
                         })
                 );

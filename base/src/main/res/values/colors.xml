@@ -9,4 +9,8 @@
     <color name="orange_800">#E07000</color>
     <color name="daynight_gray_700_white">@color/gray_700</color>
     <color name="daynight_black_white">@color/black</color>
+    <!-- Material You dynamic palette wrappers: resolved per UI mode so themed
+         surfaces follow the system colors in both light and dark. -->
+    <color name="dynamic_primary_variant">@color/m3_sys_color_dynamic_light_primary</color>
+    <color name="dynamic_secondary_variant">@color/m3_sys_color_dynamic_light_secondary</color>
 </resources>

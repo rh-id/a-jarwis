@@ -11,6 +11,7 @@
     <string name="follow_system">跟随系统</string>
     <string name="light_mode">浅色模式</string>
     <string name="dark_mode">深色模式</string>
+    <string name="settings_use_dynamic_colors">使用系统颜色（Material You）</string>
     <string name="settings">设置</string>
     <string name="donation_pitch">支持开发者，请杯咖啡</string>
     <string name="donation_other_apps">开发者的其他应用：%s</string>

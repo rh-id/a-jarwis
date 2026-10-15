@@ -11,6 +11,7 @@
     <string name="follow_system">Følg systemet</string>
     <string name="light_mode">Lys modus</string>
     <string name="dark_mode">Mørk modus</string>
+    <string name="settings_use_dynamic_colors">Bruk systemfargane (Material You)</string>
     <string name="settings">Innstillingar</string>
     <string name="donation_pitch">Støtt utviklaren, spander ein kopp kaffi</string>
     <string name="donation_other_apps">Andre appar frå utviklaren: %s</string>

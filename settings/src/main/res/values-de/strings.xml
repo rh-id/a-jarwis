@@ -11,6 +11,7 @@
     <string name="follow_system">Systemeinstellung folgen</string>
     <string name="light_mode">Heller Modus</string>
     <string name="dark_mode">Dunkler Modus</string>
+    <string name="settings_use_dynamic_colors">Systemfarben verwenden (Material You)</string>
     <string name="settings">Einstellungen</string>
     <string name="donation_pitch">Unterstützen Sie den Entwickler – spendieren Sie ihm eine Tasse Kaffee</string>
     <string name="donation_other_apps">Weitere Apps des Entwicklers: %s</string>

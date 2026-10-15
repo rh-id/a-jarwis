@@ -11,6 +11,7 @@
     <string name="follow_system">Fylgja kerfinu</string>
     <string name="light_mode">Ljóst útlit</string>
     <string name="dark_mode">Dökkt útlit</string>
+    <string name="settings_use_dynamic_colors">Nota kerfisliti (Material You)</string>
     <string name="settings">Stillingar</string>
     <string name="donation_pitch">Styddu forritarann og bjóddu upp á kaffibolla</string>
     <string name="donation_other_apps">Önnur forrit eftir forritarann: %s</string>

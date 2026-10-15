@@ -2,4 +2,6 @@
 <resources>
     <color name="daynight_gray_700_white">@color/white</color>
     <color name="daynight_black_white">@color/white</color>
+    <color name="dynamic_primary_variant">@color/m3_sys_color_dynamic_dark_primary</color>
+    <color name="dynamic_secondary_variant">@color/m3_sys_color_dynamic_dark_secondary</color>
 </resources>
