@@ -28,6 +28,36 @@
   license: The Apache Software License, Version 2.0
   licenseUrl: http://www.apache.org/licenses/LICENSE-2.0.txt
   url: https://developer.android.com/jetpack/androidx/releases/appcompat#1.6.1
+- artifact: androidx.camera:camera-camera2:+
+  name: camera-camera2
+  copyrightHolder: The Android Open Source Project
+  license: The Apache Software License, Version 2.0
+  licenseUrl: http://www.apache.org/licenses/LICENSE-2.0.txt
+  url: https://developer.android.com/jetpack/androidx/releases/camera
+- artifact: androidx.camera:camera-core:+
+  name: camera-core
+  copyrightHolder: The Android Open Source Project
+  license: The Apache Software License, Version 2.0
+  licenseUrl: http://www.apache.org/licenses/LICENSE-2.0.txt
+  url: https://developer.android.com/jetpack/androidx/releases/camera
+- artifact: androidx.camera:camera-lifecycle:+
+  name: camera-lifecycle
+  copyrightHolder: The Android Open Source Project
+  license: The Apache Software License, Version 2.0
+  licenseUrl: http://www.apache.org/licenses/LICENSE-2.0.txt
+  url: https://developer.android.com/jetpack/androidx/releases/camera
+- artifact: androidx.camera:camera-video:+
+  name: camera-video
+  copyrightHolder: The Android Open Source Project
+  license: The Apache Software License, Version 2.0
+  licenseUrl: http://www.apache.org/licenses/LICENSE-2.0.txt
+  url: https://developer.android.com/jetpack/androidx/releases/camera
+- artifact: androidx.camera:camera-view:+
+  name: camera-view
+  copyrightHolder: The Android Open Source Project
+  license: The Apache Software License, Version 2.0
+  licenseUrl: http://www.apache.org/licenses/LICENSE-2.0.txt
+  url: https://developer.android.com/jetpack/androidx/releases/camera
 - artifact: androidx.arch.core:core-common:+
   name: core-common
   copyrightHolder: The Android Open Source Project
@@ -369,6 +399,11 @@
   license: The Apache Software License, Version 2.0
   licenseUrl: http://www.apache.org/licenses/LICENSE-2.0.txt
   url: https://github.com/material-components/material-components-android
+- artifact: com.google.auto.value:auto-value-annotations:+
+  name: auto-value-annotations
+  copyrightHolder: Google Inc
+  license: Apache 2.0
+  licenseUrl: http://www.apache.org/licenses/LICENSE-2.0.txt
 - artifact: com.google.errorprone:error_prone_annotations:+
   name: error_prone_annotations
   copyrightHolder: Google Inc

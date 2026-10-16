@@ -52,4 +52,21 @@
     <string name="title_share_no_style">Share without style?</string>
     <string name="msg_share_no_style">The current image has no style applied. Share it as the original image?</string>
     <string name="badge_content_description">Model not downloaded</string>
+    <string name="title_qr_censor">Censor QR Codes</string>
+    <string name="title_qr_scan">Scan QR Codes</string>
+    <string name="detecting_qr_progress">Detecting QR codes… (%1$d/%2$d)</string>
+    <string name="no_qr_detected">No QR code detected</string>
+    <string name="no_qr_detected_">No QR code detected: %s</string>
+    <string name="no_qr_selected_">No QR code selected: %s</string>
+    <string name="censor_all">Censor all</string>
+    <string name="msg_discard_qr_changes">Your QR censor selection has not been saved. Discard the changes?</string>
+    <string name="title_share_no_censor">No censored QR codes</string>
+    <string name="msg_share_no_censor">No QR codes are censored on this image. Share the original anyway?</string>
+    <string name="title_qr_scan_result">QR Scan Result</string>
+    <string name="no_qr_result">No QR code found</string>
+    <string name="copy">Copy</string>
+    <string name="copied_to_clipboard">Copied to clipboard</string>
+    <string name="scan_from_image">Scan from image</string>
+    <string name="copy_all">Copy all</string>
+    <string name="msg_camera_permission_missing">Camera permission is required to scan QR codes</string>
 </resources>

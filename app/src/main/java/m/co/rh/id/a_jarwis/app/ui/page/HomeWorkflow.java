@@ -28,6 +28,8 @@ class HomeWorkflow implements Serializable {
 
     private static final int REQUEST_CODE_IMAGE_BLUR_FACE = 1;
     private static final int REQUEST_CODE_IMAGE_NST_APPLY_PICTURE = 4;
+    private static final int REQUEST_CODE_IMAGE_QR_CENSOR = 5;
+    private static final int REQUEST_CODE_QR_SCAN = 6;
 
     private transient INavigator mNavigator;
 
@@ -49,11 +51,38 @@ class HomeWorkflow implements Serializable {
                 pickImage(REQUEST_CODE_IMAGE_NST_APPLY_PICTURE), REQUEST_CODE_IMAGE_NST_APPLY_PICTURE);
     }
 
+    public void startQrCensor() {
+        // the QR detection runs fully on the in-box OpenCV detector,
+        // no model download is needed
+        requestWriteExternalStoragePermission(() ->
+                pickImage(REQUEST_CODE_IMAGE_QR_CENSOR), REQUEST_CODE_IMAGE_QR_CENSOR);
+    }
+
+    public void startQrScan() {
+        // the scanner page opens the live camera directly, the camera permission
+        // must be granted before the page is pushed (the scan from image action
+        // lives inside the scanner page)
+        requestCameraPermission(this::pushQrScanner, REQUEST_CODE_QR_SCAN);
+    }
+
     private void requestWriteExternalStoragePermission(ContinueAction continueAction, int requestCode) {
         Activity activity = mNavigator.getActivity();
         if (android.os.Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2
                 && ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, requestCode);
+        } else {
+            try {
+                continueAction.run();
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private void requestCameraPermission(ContinueAction continueAction, int requestCode) {
+        Activity activity = mNavigator.getActivity();
+        if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA}, requestCode);
         } else {
             try {
                 continueAction.run();
@@ -104,6 +133,10 @@ class HomeWorkflow implements Serializable {
             startBlurFace();
         } else if (requestCode == REQUEST_CODE_IMAGE_NST_APPLY_PICTURE) {
             startNstApply();
+        } else if (requestCode == REQUEST_CODE_IMAGE_QR_CENSOR) {
+            startQrCensor();
+        } else if (requestCode == REQUEST_CODE_QR_SCAN) {
+            startQrScan();
         }
     }
 
@@ -115,6 +148,8 @@ class HomeWorkflow implements Serializable {
             pushFaceEditor(data);
         } else if (requestCode == REQUEST_CODE_IMAGE_NST_APPLY_PICTURE) {
             pushStyleEditor(data);
+        } else if (requestCode == REQUEST_CODE_IMAGE_QR_CENSOR) {
+            pushQrCensorEditor(data);
         }
     }
 
@@ -146,6 +181,28 @@ class HomeWorkflow implements Serializable {
             uris.add(uri.toString());
         }
         mNavigator.push(Routes.STYLE_EDITOR_PAGE, new UriList(uris));
+    }
+
+    /**
+     * Push the interactive QR censor editor page for the picked images
+     */
+    private void pushQrCensorEditor(Intent data) {
+        List<Uri> pickedUris = collectPickedUris(data);
+        if (pickedUris.isEmpty()) {
+            return;
+        }
+        ArrayList<String> uris = new ArrayList<>();
+        for (Uri uri : pickedUris) {
+            uris.add(uri.toString());
+        }
+        mNavigator.push(Routes.QR_CENSOR_EDITOR_PAGE, new UriList(uris));
+    }
+
+    /**
+     * Push the live camera QR scanner page, no route args needed
+     */
+    private void pushQrScanner() {
+        mNavigator.push(Routes.QR_SCANNER_PAGE);
     }
 
     private List<Uri> collectPickedUris(Intent data) {

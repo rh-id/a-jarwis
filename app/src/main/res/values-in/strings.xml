@@ -48,4 +48,21 @@
     <string name="title_share_no_style">Bagikan tanpa gaya?</string>
     <string name="msg_share_no_style">Gambar saat ini belum diterapkan gaya apa pun. Bagikan sebagai gambar asli?</string>
     <string name="badge_content_description">Model belum diunduh</string>
+    <string name="title_qr_censor">Sensor Kode QR</string>
+    <string name="title_qr_scan">Pindai Kode QR</string>
+    <string name="detecting_qr_progress">Mendeteksi kode QR… (%1$d/%2$d)</string>
+    <string name="no_qr_detected">Tidak ada kode QR terdeteksi</string>
+    <string name="no_qr_detected_">Tidak ada kode QR terdeteksi: %s</string>
+    <string name="no_qr_selected_">Tidak ada kode QR yang dipilih: %s</string>
+    <string name="censor_all">Sensor semua</string>
+    <string name="msg_discard_qr_changes">Pilihan sensor kode QR Anda belum disimpan. Buang perubahannya?</string>
+    <string name="title_share_no_censor">Tidak ada kode QR yang disensor</string>
+    <string name="msg_share_no_censor">Tidak ada kode QR yang disensor pada gambar ini. Tetap bagikan gambar aslinya?</string>
+    <string name="title_qr_scan_result">Hasil Pindai QR</string>
+    <string name="no_qr_result">Tidak ada kode QR yang ditemukan</string>
+    <string name="copy">Salin</string>
+    <string name="copied_to_clipboard">Tersalin ke papan klip</string>
+    <string name="scan_from_image">Pindai dari Gambar</string>
+    <string name="copy_all">Salin semua</string>
+    <string name="msg_camera_permission_missing">Izin kamera diperlukan untuk memindai kode QR</string>
 </resources>

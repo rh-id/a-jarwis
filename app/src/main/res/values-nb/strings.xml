@@ -48,4 +48,21 @@
     <string name="title_share_no_style">Dele uten stil?</string>
     <string name="msg_share_no_style">Det gjeldende bildet har ingen stil brukt. Vil du dele det som originalbildet?</string>
     <string name="badge_content_description">Modellen er ikke lastet ned</string>
+    <string name="title_qr_censor">Sensurer QR-koder</string>
+    <string name="title_qr_scan">Skann QR-koder</string>
+    <string name="detecting_qr_progress">Oppdager QR-koder… (%1$d/%2$d)</string>
+    <string name="no_qr_detected">Ingen QR-kode oppdaget</string>
+    <string name="no_qr_detected_">Ingen QR-kode oppdaget: %s</string>
+    <string name="no_qr_selected_">Ingen QR-kode valgt: %s</string>
+    <string name="censor_all">Sensurer alle</string>
+    <string name="msg_discard_qr_changes">Valgene dine for QR-sensurering er ikke lagret. Vil du forkaste endringene?</string>
+    <string name="title_share_no_censor">Ingen sensurerte QR-koder</string>
+    <string name="msg_share_no_censor">Ingen sensurerte QR-koder på dette bildet. Vil du dele originalen likevel?</string>
+    <string name="title_qr_scan_result">Skanneresultat</string>
+    <string name="no_qr_result">Ingen QR-kode funnet</string>
+    <string name="copy">Kopier</string>
+    <string name="copied_to_clipboard">Kopiert til utklippstavlen</string>
+    <string name="scan_from_image">Skann fra bilde</string>
+    <string name="copy_all">Kopier alle</string>
+    <string name="msg_camera_permission_missing">Kameratillatelse er nødvendig for å skanne QR-koder</string>
 </resources>

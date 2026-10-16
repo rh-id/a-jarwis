@@ -70,6 +70,10 @@ public class HomePage extends StatefulView<Activity> implements RequireComponent
         blurFaceButton.setOnClickListener(this);
         Button nstApplyPictureButton = rootLayout.findViewById(R.id.button_nst_apply_picture);
         nstApplyPictureButton.setOnClickListener(this);
+        Button qrCensorButton = rootLayout.findViewById(R.id.button_qr_censor);
+        qrCensorButton.setOnClickListener(this);
+        Button qrScanButton = rootLayout.findViewById(R.id.button_qr_scan);
+        qrScanButton.setOnClickListener(this);
         ViewGroup containerAppBar = rootLayout.findViewById(R.id.container_app_bar);
         containerAppBar.addView(mAppBarSV.buildView(activity, container));
         return rootLayout;
@@ -112,6 +116,10 @@ public class HomePage extends StatefulView<Activity> implements RequireComponent
             mWorkflow.startBlurFace();
         } else if (id == R.id.button_nst_apply_picture) {
             mWorkflow.startNstApply();
+        } else if (id == R.id.button_qr_censor) {
+            mWorkflow.startQrCensor();
+        } else if (id == R.id.button_qr_scan) {
+            mWorkflow.startQrScan();
         }
     }
 

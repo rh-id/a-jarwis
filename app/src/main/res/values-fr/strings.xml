@@ -48,4 +48,21 @@
     <string name="title_share_no_style">Partager sans style ?</string>
     <string name="msg_share_no_style">L\'image actuelle n\'a aucun style appliqué. La partager en tant qu\'image originale ?</string>
     <string name="badge_content_description">Modèle non téléchargé</string>
+    <string name="title_qr_censor">Censurer les codes QR</string>
+    <string name="title_qr_scan">Scanner les codes QR</string>
+    <string name="detecting_qr_progress">Détection des codes QR… (%1$d/%2$d)</string>
+    <string name="no_qr_detected">Aucun code QR détecté</string>
+    <string name="no_qr_detected_">Aucun code QR détecté : %s</string>
+    <string name="no_qr_selected_">Aucun code QR sélectionné : %s</string>
+    <string name="censor_all">Tout censurer</string>
+    <string name="msg_discard_qr_changes">Votre sélection de codes QR à censurer n\'a pas été enregistrée. Abandonner les modifications ?</string>
+    <string name="title_share_no_censor">Aucun code QR censuré</string>
+    <string name="msg_share_no_censor">Aucun code QR n\'est censuré sur cette image. Partager l\'original quand même ?</string>
+    <string name="title_qr_scan_result">Résultat du scan QR</string>
+    <string name="no_qr_result">Aucun code QR trouvé</string>
+    <string name="copy">Copier</string>
+    <string name="copied_to_clipboard">Copié dans le presse-papiers</string>
+    <string name="scan_from_image">Scanner depuis une image</string>
+    <string name="copy_all">Tout copier</string>
+    <string name="msg_camera_permission_missing">L\'autorisation d\'accéder à la caméra est requise pour scanner des codes QR</string>
 </resources>

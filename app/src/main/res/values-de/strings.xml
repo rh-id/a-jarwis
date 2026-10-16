@@ -48,4 +48,21 @@
     <string name="title_share_no_style">Ohne Stil teilen?</string>
     <string name="msg_share_no_style">Auf das aktuelle Bild wurde kein Stil angewendet. Möchten Sie es als Originalbild teilen?</string>
     <string name="badge_content_description">Modell nicht heruntergeladen</string>
+    <string name="title_qr_censor">QR-Codes zensieren</string>
+    <string name="title_qr_scan">QR-Codes scannen</string>
+    <string name="detecting_qr_progress">QR-Codes werden erkannt… (%1$d/%2$d)</string>
+    <string name="no_qr_detected">Kein QR-Code erkannt</string>
+    <string name="no_qr_detected_">Kein QR-Code erkannt: %s</string>
+    <string name="no_qr_selected_">Kein QR-Code ausgewählt: %s</string>
+    <string name="censor_all">Alle zensieren</string>
+    <string name="msg_discard_qr_changes">Ihre QR-Zensierauswahl wurde nicht gespeichert. Möchten Sie die Änderungen verwerfen?</string>
+    <string name="title_share_no_censor">Keine zensierten QR-Codes</string>
+    <string name="msg_share_no_censor">Auf diesem Bild sind keine QR-Codes zensiert. Möchten Sie das Original trotzdem teilen?</string>
+    <string name="title_qr_scan_result">QR-Scan-Ergebnis</string>
+    <string name="no_qr_result">Kein QR-Code gefunden</string>
+    <string name="copy">Kopieren</string>
+    <string name="copied_to_clipboard">In die Zwischenablage kopiert</string>
+    <string name="scan_from_image">Aus Bild scannen</string>
+    <string name="copy_all">Alle kopieren</string>
+    <string name="msg_camera_permission_missing">Kameraberechtigung wird zum Scannen von QR-Codes benötigt</string>
 </resources>

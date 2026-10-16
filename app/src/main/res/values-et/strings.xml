@@ -48,4 +48,21 @@
     <string name="title_share_no_style">Kas jagada ilma stiilita?</string>
     <string name="msg_share_no_style">Praegusele pildile pole stiili rakendatud. Kas jagada seda algse pildina?</string>
     <string name="badge_content_description">Mudel pole alla laaditud</string>
+    <string name="title_qr_censor">Peida QR-koodid</string>
+    <string name="title_qr_scan">Skanni QR-koodid</string>
+    <string name="detecting_qr_progress">QR-koodide tuvastamine… (%1$d/%2$d)</string>
+    <string name="no_qr_detected">QR-koode ei tuvastatud</string>
+    <string name="no_qr_detected_">QR-koode ei tuvastatud: %s</string>
+    <string name="no_qr_selected_">Ühtegi QR-koodi pole valitud: %s</string>
+    <string name="censor_all">Peida kõik</string>
+    <string name="msg_discard_qr_changes">QR-koodide peitmise valikuid pole salvestatud. Kas loobuda muudatustest?</string>
+    <string name="title_share_no_censor">Peidetud QR-koode pole</string>
+    <string name="msg_share_no_censor">Sellel pildil pole peidetud QR-koode. Kas jagada siiski algset pilti?</string>
+    <string name="title_qr_scan_result">QR-skanni tulemus</string>
+    <string name="no_qr_result">QR-koode ei leitud</string>
+    <string name="copy">Kopeeri</string>
+    <string name="copied_to_clipboard">Kopeeritud lõikelauale</string>
+    <string name="scan_from_image">Skanni pildilt</string>
+    <string name="copy_all">Kopeeri kõik</string>
+    <string name="msg_camera_permission_missing">QR-koodide skannimiseks on vaja kaamera luba</string>
 </resources>

@@ -48,4 +48,21 @@
     <string name="title_share_no_style">Parturar senza stil?</string>
     <string name="msg_share_no_style">Il maletg actual n\'ha nagin stil applitgà. Vulais parturar sco maletg original?</string>
     <string name="badge_content_description">Model betg telechargià</string>
+    <string name="title_qr_censor">Censurar ils codes QR</string>
+    <string name="title_qr_scan">Scannar ils codes QR</string>
+    <string name="detecting_qr_progress">Tschertgar codes QR… (%1$d/%2$d)</string>
+    <string name="no_qr_detected">Nagin code QR chattà</string>
+    <string name="no_qr_detected_">Nagin code QR chattà: %s</string>
+    <string name="no_qr_selected_">Nagin code QR elegì: %s</string>
+    <string name="censor_all">Censurar tut</string>
+    <string name="msg_discard_qr_changes">Vossa selecziun da codes QR per censurar n\'è betg vegnida memorisada. Vulais sbutter las midadas?</string>
+    <string name="title_share_no_censor">Nagins codes QR censurads</string>
+    <string name="msg_share_no_censor">Nagins codes QR censurads sin quest maletg. Vulais parturar tuttina l\'original?</string>
+    <string name="title_qr_scan_result">Resultat dal scannar</string>
+    <string name="no_qr_result">Nagin code QR chattà</string>
+    <string name="copy">Copiar</string>
+    <string name="copied_to_clipboard">Copià en la pasta da copiar</string>
+    <string name="scan_from_image">Scannar dal maletg</string>
+    <string name="copy_all">Copiar tut</string>
+    <string name="msg_camera_permission_missing">L\'autorassun da la camera è necessaria per scannar codes QR</string>
 </resources>

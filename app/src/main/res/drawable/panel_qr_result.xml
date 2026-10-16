@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <!-- Opaque bottom panel of the QR scanner result overlay, the daynight
+         color reference resolves per UI mode so the panel is white in the
+         light theme and black in the dark theme -->
+    <solid android:color="@color/daynight_white_black" />
+    <corners
+        android:topLeftRadius="@dimen/qr_result_panel_corner_radius"
+        android:topRightRadius="@dimen/qr_result_panel_corner_radius" />
+</shape>

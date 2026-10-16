@@ -41,4 +41,7 @@ dependencies {
     androidTestImplementation libs.espresso.core
     androidTestImplementation libs.mockito.core
     androidTestImplementation libs.work.testing
+    // independent test oracle for the QR censorship effectiveness tests,
+    // test-scope only: zxing must never reach the shipped APK
+    androidTestImplementation libs.zxing.core
 }

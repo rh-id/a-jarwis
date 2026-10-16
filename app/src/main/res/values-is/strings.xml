@@ -48,4 +48,21 @@
     <string name="title_share_no_style">Deila án stíls?</string>
     <string name="msg_share_no_style">Enginn stíll hefur verið beittur á núverandi mynd. Viltu deila henni sem upprunalegri mynd?</string>
     <string name="badge_content_description">Líkan ekki sótt</string>
+    <string name="title_qr_censor">Fela QR-kóða</string>
+    <string name="title_qr_scan">Skanna QR-kóða</string>
+    <string name="detecting_qr_progress">Greini QR-kóða… (%1$d/%2$d)</string>
+    <string name="no_qr_detected">Enginn QR-kóði fannst</string>
+    <string name="no_qr_detected_">Enginn QR-kóði fannst: %s</string>
+    <string name="no_qr_selected_">Enginn QR-kóði valinn: %s</string>
+    <string name="censor_all">Fela allt</string>
+    <string name="msg_discard_qr_changes">Valið þitt á QR-kóðafelingu hefur ekki verið vistað. Viltu fleygja breytingunum?</string>
+    <string name="title_share_no_censor">Enginn falinn QR-kóði</string>
+    <string name="msg_share_no_censor">Enginn QR-kóði er falinn á þessari mynd. Viltu samt deila upprunalegu myndinni?</string>
+    <string name="title_qr_scan_result">Niðurstaða QR-skönnunar</string>
+    <string name="no_qr_result">Enginn QR-kóði fannst</string>
+    <string name="copy">Afrita</string>
+    <string name="copied_to_clipboard">Afritað á klippiborðið</string>
+    <string name="scan_from_image">Skanna af mynd</string>
+    <string name="copy_all">Afrita allt</string>
+    <string name="msg_camera_permission_missing">Myndavélaheimild er nauðsynleg til að skanna QR-kóða</string>
 </resources>

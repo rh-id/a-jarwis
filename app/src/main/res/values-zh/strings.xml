@@ -48,4 +48,21 @@
     <string name="title_share_no_style">不应用风格并分享？</string>
     <string name="msg_share_no_style">当前图片尚未应用风格。要按原图分享吗？</string>
     <string name="badge_content_description">模型未下载</string>
+    <string name="title_qr_censor">遮挡二维码</string>
+    <string name="title_qr_scan">扫描二维码</string>
+    <string name="detecting_qr_progress">正在检测二维码… (%1$d/%2$d)</string>
+    <string name="no_qr_detected">未检测到二维码</string>
+    <string name="no_qr_detected_">未检测到二维码：%s</string>
+    <string name="no_qr_selected_">未选择二维码：%s</string>
+    <string name="censor_all">全部遮挡</string>
+    <string name="msg_discard_qr_changes">您的二维码遮挡选择尚未保存。要放弃这些更改吗？</string>
+    <string name="title_share_no_censor">暂无已遮挡的二维码</string>
+    <string name="msg_share_no_censor">此图片上没有已遮挡的二维码。仍要分享原图吗？</string>
+    <string name="title_qr_scan_result">二维码扫描结果</string>
+    <string name="no_qr_result">未找到二维码</string>
+    <string name="copy">复制</string>
+    <string name="copied_to_clipboard">已复制到剪贴板</string>
+    <string name="scan_from_image">从图片扫描</string>
+    <string name="copy_all">全部复制</string>
+    <string name="msg_camera_permission_missing">扫描二维码需要相机权限</string>
 </resources>

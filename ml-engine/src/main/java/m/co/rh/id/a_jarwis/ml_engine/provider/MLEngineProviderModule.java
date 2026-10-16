@@ -4,6 +4,7 @@ import m.co.rh.id.a_jarwis.base.provider.component.helper.FileHelper;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.FaceEngine;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.MLEngineInstance;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.ModelDownloader;
+import m.co.rh.id.a_jarwis.ml_engine.provider.component.QREngine;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.STEngine;
 import m.co.rh.id.a_jarwis.ml_engine.provider.notifier.ModelChangeNotifier;
 import m.co.rh.id.alogger.ILogger;
@@ -16,6 +17,7 @@ public class MLEngineProviderModule implements ProviderModule {
     public void provides(ProviderRegistry providerRegistry, Provider provider) {
         providerRegistry.registerAsync(MLEngineInstance.class, () -> new MLEngineInstance(provider));
         providerRegistry.registerLazy(FaceEngine.class, () -> new FaceEngine(provider));
+        providerRegistry.registerLazy(QREngine.class, () -> new QREngine(provider));
         providerRegistry.registerLazy(STEngine.class, () -> new STEngine(provider));
         providerRegistry.registerLazy(ModelDownloader.class,
                 () -> new ModelDownloader(provider.get(ILogger.class),

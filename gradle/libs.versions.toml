@@ -22,6 +22,8 @@ a-logger = "v0.0.4"
 rx-utils = "v0.0.3"
 concurrent-utils = "v0.0.4"
 opencv = "5.0.0.1"
+camera = "1.4.2"
+zxing = "3.5.3"
 desugar-jdk-libs = "2.1.5"
 
 [libraries]
@@ -50,6 +52,11 @@ a-logger = { group = "com.github.rh-id", name = "a-logger", version.ref = "a-log
 rx-utils = { group = "com.github.rh-id", name = "rx-utils", version.ref = "rx-utils" }
 concurrent-utils = { group = "com.github.rh-id", name = "concurrent-utils", version.ref = "concurrent-utils" }
 opencv = { group = "org.opencv", name = "opencv", version.ref = "opencv" }
+camera-core = { group = "androidx.camera", name = "camera-core", version.ref = "camera" }
+camera-camera2 = { group = "androidx.camera", name = "camera-camera2", version.ref = "camera" }
+camera-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "camera" }
+camera-view = { group = "androidx.camera", name = "camera-view", version.ref = "camera" }
+zxing-core = { group = "com.google.zxing", name = "core", version.ref = "zxing" }
 desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar-jdk-libs" }
 
 [plugins]

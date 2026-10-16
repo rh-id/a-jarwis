@@ -48,4 +48,21 @@
     <string name="title_share_no_style">Dela utan stil?</string>
     <string name="msg_share_no_style">Det er ikkje brukt nokon stil på det gjeldande biletet. Del det som originalbiletet?</string>
     <string name="badge_content_description">Modell ikkje lasta ned</string>
+    <string name="title_qr_censor">Sensurer QR-kodar</string>
+    <string name="title_qr_scan">Skann QR-kodar</string>
+    <string name="detecting_qr_progress">Oppdagar QR-kodar… (%1$d/%2$d)</string>
+    <string name="no_qr_detected">Ingen QR-kode oppdaga</string>
+    <string name="no_qr_detected_">Ingen QR-kode oppdaga: %s</string>
+    <string name="no_qr_selected_">Ingen QR-kode valt: %s</string>
+    <string name="censor_all">Sensurer alle</string>
+    <string name="msg_discard_qr_changes">Valet ditt av QR-sensurering er ikkje lagra. Forkast endringane?</string>
+    <string name="title_share_no_censor">Ingen sensurerte QR-kodar</string>
+    <string name="msg_share_no_censor">Ingen sensurerte QR-kodar på dette biletet. Del originalen likevel?</string>
+    <string name="title_qr_scan_result">Skanneresultat</string>
+    <string name="no_qr_result">Ingen QR-kode funnen</string>
+    <string name="copy">Kopier</string>
+    <string name="copied_to_clipboard">Kopiert til utklippstavla</string>
+    <string name="scan_from_image">Skann frå bilete</string>
+    <string name="copy_all">Kopier alle</string>
+    <string name="msg_camera_permission_missing">Kameratillating er naudsynt for å skanna QR-kodar</string>
 </resources>

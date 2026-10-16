@@ -58,6 +58,11 @@ dependencies {
     implementation project(":settings")
     implementation project(":ml-engine")
 
+    implementation libs.camera.core
+    implementation libs.camera.camera2
+    implementation libs.camera.lifecycle
+    implementation libs.camera.view
+
     testImplementation libs.junit
     androidTestImplementation libs.androidx.test.junit
     androidTestImplementation libs.espresso.core

@@ -48,4 +48,21 @@
     <string name="title_share_no_style">Condividere senza stile?</string>
     <string name="msg_share_no_style">L\'immagine corrente non ha nessuno stile applicato. Condividerla come immagine originale?</string>
     <string name="badge_content_description">Modello non scaricato</string>
+    <string name="title_qr_censor">Censura i codici QR</string>
+    <string name="title_qr_scan">Scansiona i codici QR</string>
+    <string name="detecting_qr_progress">Rilevamento codici QR… (%1$d/%2$d)</string>
+    <string name="no_qr_detected">Nessun codice QR rilevato</string>
+    <string name="no_qr_detected_">Nessun codice QR rilevato: %s</string>
+    <string name="no_qr_selected_">Nessun codice QR selezionato: %s</string>
+    <string name="censor_all">Censura tutti</string>
+    <string name="msg_discard_qr_changes">La selezione dei codici QR da censurare non è stata salvata. Scartare le modifiche?</string>
+    <string name="title_share_no_censor">Nessun codice QR censurato</string>
+    <string name="msg_share_no_censor">Nessun codice QR censurato in questa immagine. Condividere comunque l\'originale?</string>
+    <string name="title_qr_scan_result">Risultato della scansione QR</string>
+    <string name="no_qr_result">Nessun codice QR trovato</string>
+    <string name="copy">Copia</string>
+    <string name="copied_to_clipboard">Copiato negli appunti</string>
+    <string name="scan_from_image">Scansiona da immagine</string>
+    <string name="copy_all">Copia tutto</string>
+    <string name="msg_camera_permission_missing">L\'autorizzazione alla fotocamera è necessaria per scansionare i codici QR</string>
 </resources>

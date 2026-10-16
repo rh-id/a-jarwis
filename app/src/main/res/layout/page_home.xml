@@ -41,6 +41,28 @@
                 android:gravity="center"
                 android:text="@string/title_nst_apply_image"
                 app:icon="@drawable/ic_palette_black" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_qr_censor"
+                style="@style/Theme.Asnapblur.HomeMenuButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:gravity="center"
+                android:text="@string/title_qr_censor"
+                app:icon="@drawable/ic_qr_code_black" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_qr_scan"
+                style="@style/Theme.Asnapblur.HomeMenuButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:gravity="center"
+                android:text="@string/title_qr_scan"
+                app:icon="@drawable/ic_qr_code_scanner_black" />
         </GridLayout>
     </LinearLayout>
 </androidx.drawerlayout.widget.DrawerLayout>
