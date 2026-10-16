@@ -1,0 +1,9 @@
+Release 2.1.0+13
+
+Nýjar aðgerðir:
+* Nýtt QR-kóðamóðunartól sem finnur QR-kóða á mynd og móðar þá með stillanlegri lögun og styrk svo hægt er ekki lengur að skanna þá
+* Nýr QR-kóðalesari í rauntíma sem les QR-kóða með myndavélunni strax eða af mynd, með afritun einstakrar niðurstöðu og afritun allra niðurstöða
+* Material You litir sem breytast: útlit forritsins fylgir nú litum bakgrunnmyndarinnar á tækjum sem styðja það, kveikt sjálfgefið
+
+Breytingar:
+* QR-kóðalesarinn notar myndavélina, svo forritið biður nú um heimild myndavélarinnar

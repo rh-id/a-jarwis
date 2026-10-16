@@ -1,0 +1,9 @@
+Release 2.1.0+13
+
+Nouveautés:
+* Nouvel éditeur de censure de QR codes qui détecte les QR codes sur une photo et les floute avec des formes et une intensité réglables pour qu'ils ne puissent plus être scannés
+* Nouveau scanner de QR codes en direct qui lit les QR codes avec l'appareil photo en temps réel ou depuis une photo, avec copie individuelle et copie de tous les résultats
+* Couleurs dynamiques Material You : le thème de l'application suit désormais les couleurs de votre fond d'écran sur les appareils compatibles, activé par défaut
+
+Modifications:
+* Le scanner de QR codes utilise l'appareil photo, l'application demande donc désormais l'autorisation de la caméra

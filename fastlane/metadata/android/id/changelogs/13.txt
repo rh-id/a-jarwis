@@ -1,0 +1,9 @@
+Release 2.1.0+13
+
+Fitur:
+* Editor sensor QR baru yang mendeteksi kode QR di dalam foto dan mengaburkannya dengan bentuk dan kekuatan yang dapat diatur agar tidak dapat dipindai lagi
+* Pemindai QR langsung baru yang membaca kode QR dengan kamera secara real time atau dari foto, dengan menyalin satu dan menyalin semua hasil
+* Warna dinamis Material You: tema aplikasi kini mengikuti warna wallpaper pada perangkat yang mendukung, aktif secara bawaan
+
+Perubahan:
+* Pemindai QR menggunakan kamera, sehingga aplikasi kini meminta izin kamera

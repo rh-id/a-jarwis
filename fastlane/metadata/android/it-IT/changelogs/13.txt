@@ -1,0 +1,9 @@
+Release 2.1.0+13
+
+Novità:
+* Nuovo editor per la censura dei codici QR che rileva i codici QR in una foto e li sfoca con forme e intensità regolabili in modo che non possano più essere scansionati
+* Nuovo scanner QR live che legge i codici QR con la fotocamera in tempo reale o da una foto, con copia singola e copia di tutti i risultati
+* Colori dinamici Material You: il tema dell'app ora segue i colori dello sfondo sui dispositivi compatibili, attivato per impostazione predefinita
+
+Modifiche:
+* Lo scanner QR usa la fotocamera, quindi l'app ora richiede il permesso della fotocamera

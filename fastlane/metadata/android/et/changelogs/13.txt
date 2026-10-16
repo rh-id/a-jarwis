@@ -1,0 +1,9 @@
+Release 2.1.0+13
+
+Uued funktsioonid:
+* Uus QR-koodi tsenseerimise redaktor tuvastab fotol olevad QR-koodid ja hägustab neid reguleeritava kuju ja tugevusega, nii et neid ei saa enam skannida
+* Uus reaalajas QR-skanner loeb QR-koode kaameraga reaalajas või fotolt, tulemuste kopeerimisega ühe kaupa ja kõigi kaupa
+* Material You dünaamilised värvid: rakenduse kujundus järgib nüüd taustapildi värve toetatud seadmetes ning on vaikimisi sisse lülitatud
+
+Muudatused:
+* QR-skanner kasutab kaamerat, seetõttu küsib rakendus nüüd kaameraloa

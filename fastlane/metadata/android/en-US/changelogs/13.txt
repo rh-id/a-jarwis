@@ -1,0 +1,9 @@
+Release 2.1.0+13
+
+Feature:
+* New QR code censor editor that detects QR codes in a photo and blurs them with adjustable shapes and strength so they can no longer be scanned
+* New live QR scanner that reads QR codes with the camera in real time or from a photo, with copy single and copy all results
+* Material You dynamic colors: the app theme now follows your wallpaper colors on supported devices, enabled by default
+
+Changes:
+* The QR scanner uses the camera, so the app now asks for the camera permission

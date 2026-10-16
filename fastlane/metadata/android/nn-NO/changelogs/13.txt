@@ -1,0 +1,9 @@
+Release 2.1.0+13
+
+Nye funksjonar:
+* Nytt QR-kodesensurverktøy som oppdagar QR-kodar i eit bilete og uklarar dei med justerbare former og styrke slik at dei ikkje lenger kan skannast
+* Ny live QR-lesar som les QR-kodar med kameraet i sanntid eller frå eit bilete, med kopier éin og kopier alle resultat
+* Material You dynamiske fargar: app-temaet følgjer no bakgrunnsfargane dine på einingar som støttar det, slått på som standard
+
+Endringar:
+* QR-lesaren brukar kameraet, så appen ber no om kameraløyve

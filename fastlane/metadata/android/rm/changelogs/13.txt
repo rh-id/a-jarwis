@@ -1,0 +1,9 @@
+Release 2.1.0+13
+
+Novitads:
+* Il nov editor da codes QR per censurar tschertga els en ina fotografia e els sfuma cun formas e intensitad reglabils, uschia ch'els pon betg pli vegnir scansads
+* Il nov scanner QR direct scanna ils codes QR cun la camera en temps real od da ina fotografia, cun copiar in resultat e copiar tut
+* Colurs dinamicas Material You: il tema da l'app suonda ussa las colurs dal sistem, activà per standard sui dispositivs che sustegnan Material You
+
+Midadas:
+* Il scanner QR duvra la camera, dumanda donc l'app ussa l'autorassun da la camera

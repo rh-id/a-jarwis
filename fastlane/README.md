@@ -33,7 +33,7 @@ fastlane/
 ## Locale Content Policy
 
 - **Descriptions** (`short_description.txt`, `full_description.txt`): translated per locale.
-- **Changelogs**: kept in English in every locale (not translated).
+- **Changelogs**: translated into each locale's language.
 - **Images**: `icon.png` and `featureGraphic.png` are identical copies of the en-US images; `phoneScreenshots/` are captured per locale in that locale's language (see Screenshots).
 
 ## Screenshots
@@ -59,7 +59,7 @@ Changelog files are named by `versionCode` (e.g., `11.txt` corresponds to `versi
 
 1. Bump `versionCode` and `versionName` in `app/build.gradle`
 2. Create a new changelog file: `metadata/android/en-US/changelogs/{newVersionCode}.txt`
-3. Copy the new changelog file into every other locale's `changelogs/` folder (English, untranslated)
+3. Copy the new changelog file into every other locale's `changelogs/` folder, translated into that locale's language
 4. Update `full_description.txt` or `short_description.txt` if features have changed, and translate the change into every locale
 5. Replace screenshots in `images/phoneScreenshots/` if the UI has changed, and copy them to every locale
 

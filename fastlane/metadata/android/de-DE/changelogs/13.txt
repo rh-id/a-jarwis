@@ -1,0 +1,9 @@
+Release 2.1.0+13
+
+Neue Funktionen:
+* Neuer QR-Code-Zensureditor, der QR-Codes auf einem Foto erkennt und sie mit anpassbarer Form und Stärke weichzeichnet, damit sie nicht mehr gescannt werden können
+* Neuer Live-QR-Scanner, der QR-Codes in Echtzeit mit der Kamera oder aus einem Foto liest, mit Kopieren einzelner und aller Ergebnisse
+* Material You – Dynamische Farben: Das App-Design folgt jetzt den Farben Ihres Hintergrundbilds auf unterstützten Geräten und ist standardmäßig aktiviert
+
+Änderungen:
+* Der QR-Scanner verwendet die Kamera, daher fragt die App jetzt die Kamera-Berechtigung an
