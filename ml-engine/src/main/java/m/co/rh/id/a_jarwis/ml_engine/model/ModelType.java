@@ -65,7 +65,18 @@ public enum ModelType {
     NST_POINTILISM("nst-pointilism",
             "Neural Style: Pointilism",
             "~6.4 MB",
-            "https://huggingface.co/onnxmodelzoo/pointilism-9/resolve/main/pointilism-9.onnx");
+            "https://huggingface.co/onnxmodelzoo/pointilism-9/resolve/main/pointilism-9.onnx"),
+    /**
+     * PP-HumanSeg portrait segmentation model (OpenCV Zoo, Apache-2.0),
+     * from https://huggingface.co/opencv/human_segmentation_pphumanseg.
+     * The INT8 "bq" build is required: the larger float build is noticeably
+     * slower on device for no visible gain, while other quantizations of this
+     * checkpoint degrade heavily (mIoU tests are in the repo's document table)
+     */
+    PERSON_SEG("person-segmentation",
+            "Portrait Segmentation (PP-HumanSeg)",
+            "~1.7 MB",
+            "https://huggingface.co/opencv/human_segmentation_pphumanseg/resolve/main/human_segmentation_pphumanseg_2023mar_int8bq.onnx");
 
     private final String mId;
     private final String mDisplayName;

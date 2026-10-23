@@ -69,4 +69,13 @@
     <string name="scan_from_image">Scan from image</string>
     <string name="copy_all">Copy all</string>
     <string name="msg_camera_permission_missing">Camera permission is required to scan QR codes</string>
+    <string name="title_portrait_mode">Portrait Mode</string>
+    <string name="blur_background">Blur background</string>
+    <string name="remove_background">Remove background</string>
+    <string name="detecting_people_progress">Detecting people… (%1$d/%2$d)</string>
+    <string name="no_person_detected">No person detected</string>
+    <string name="no_person_detected_">No person detected: %s</string>
+    <string name="msg_discard_portrait_changes">Your portrait selection has not been saved. Discard the changes?</string>
+    <string name="title_share_no_portrait">No person detected</string>
+    <string name="msg_share_no_portrait">No person detected on this image. Share the original anyway?</string>
 </resources>

@@ -6,8 +6,8 @@ Shared infra; exposes common libs to all modules via `api` (a-provider, a-naviga
 - `BaseApplication`: `of(Context)` accessor, abstract `getProvider()`/`getNavigator(Activity)`, default WorkManager config
 - `BaseProviderModule`: ExecutorService = WeightedThreadPool (maxWeight 5, from concurrent-utils), ScheduledExecutorService (cores), main Handler, ILogger = CompositeLogger(Android + File(cache/alogger/app.log) + Toast; VERBOSE in debug), WorkManager, NavExtDialogConfig, FileHelper, ImageHelper, MediaHelper(lazy); `dispose()` shuts executors with 1.5s grace
 - `FileHelper`: pure file ops — temp files under `cache/tmp/<uuid>/`, `createTempFile` overloads (`(name, uri)` = raw byte copy of content), `copyFile(src, dst)`, `atomicMove(src, dst)` (rename with copy fallback — used by ModelDownloader to finalize downloaded models), `deleteTempFiles(prefix[, maxAgeMillis])` (best-effort, age-cutoff), `createImageTempFile(name)`, log file accessor
-- `ImageHelper`: decode helpers (`decodeFullBitmap` OOM-capped to 4096 longest side, `decodeDownscaledBitmap(uri, maxDim)`, `decodeImageDimension` — all EXIF-rotation aware), `cropBitmap`, temp-file creators (JPEG), `copyImage` (try-with-resources)
-- `MediaHelper`: `insertImage(Bitmap, title, desc)` saves to device gallery (MediaStore) — editor pages use this for output; thumbnail failure isolated
+- `ImageHelper`: decode helpers (`decodeFullBitmap` OOM-capped to 4096 longest side, `decodeDownscaledBitmap(uri, maxDim)`, `decodeImageDimension` — all EXIF-rotation aware), `cropBitmap`, temp-file creators (JPEG default, `CompressFormat` overload for PNG), `copyImage` (try-with-resources)
+- `MediaHelper`: `insertImage(Bitmap, title, desc)` saves to device gallery (MediaStore, JPEG) with a `CompressFormat` overload storing PNG as `image/png` (alpha cutouts) — editor pages use this for output; thumbnail failure isolated
 - `SerializeUtils`: java-serialization ↔ byte[] (kept for tests/serialization; no longer used by workers)
 - `RxDisposer`: dispose subscriptions for SVs
 - `ui/component/AppBarSV`: shared app bar SV

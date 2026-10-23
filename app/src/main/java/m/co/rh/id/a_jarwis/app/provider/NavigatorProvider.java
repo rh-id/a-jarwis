@@ -20,6 +20,7 @@ import m.co.rh.id.a_jarwis.app.ui.page.QrScannerPage;
 import m.co.rh.id.a_jarwis.app.ui.page.SplashPage;
 import m.co.rh.id.a_jarwis.app.ui.page.common.ModelDownloadDialog;
 import m.co.rh.id.a_jarwis.app.ui.page.editor.FaceEditorPage;
+import m.co.rh.id.a_jarwis.app.ui.page.editor.PortraitEditorPage;
 import m.co.rh.id.a_jarwis.app.ui.page.editor.QrCensorEditorPage;
 import m.co.rh.id.a_jarwis.app.ui.page.editor.StyleEditorPage;
 import m.co.rh.id.a_jarwis.base.constants.Routes;
@@ -61,6 +62,7 @@ public class NavigatorProvider implements ProviderDisposable {
         navMap.put(Routes.FACE_EDITOR_PAGE, (args, activity) -> new FaceEditorPage());
         navMap.put(Routes.QR_CENSOR_EDITOR_PAGE, (args, activity) -> new QrCensorEditorPage());
         navMap.put(Routes.QR_SCANNER_PAGE, (args, activity) -> new QrScannerPage());
+        navMap.put(Routes.PORTRAIT_EDITOR_PAGE, (args, activity) -> new PortraitEditorPage());
         navMap.put(Routes.STYLE_EDITOR_PAGE, (args, activity) -> new StyleEditorPage());
         navMap.put(Routes.MODEL_DOWNLOAD_PAGE, (args, activity) -> new ModelDownloadDialog());
         navMap.put(Routes.SETTINGS_PAGE, (args, activity) -> new SettingsPage());

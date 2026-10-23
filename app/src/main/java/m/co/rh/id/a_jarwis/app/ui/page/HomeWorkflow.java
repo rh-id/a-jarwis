@@ -30,6 +30,7 @@ class HomeWorkflow implements Serializable {
     private static final int REQUEST_CODE_IMAGE_NST_APPLY_PICTURE = 4;
     private static final int REQUEST_CODE_IMAGE_QR_CENSOR = 5;
     private static final int REQUEST_CODE_QR_SCAN = 6;
+    private static final int REQUEST_CODE_IMAGE_PORTRAIT = 7;
 
     private transient INavigator mNavigator;
 
@@ -56,6 +57,11 @@ class HomeWorkflow implements Serializable {
         // no model download is needed
         requestWriteExternalStoragePermission(() ->
                 pickImage(REQUEST_CODE_IMAGE_QR_CENSOR), REQUEST_CODE_IMAGE_QR_CENSOR);
+    }
+
+    public void startPortrait() {
+        requestWriteExternalStoragePermission(() -> startIfPortraitModelsAvailable(() ->
+                pickImage(REQUEST_CODE_IMAGE_PORTRAIT)), REQUEST_CODE_IMAGE_PORTRAIT);
     }
 
     public void startQrScan() {
@@ -105,6 +111,19 @@ class HomeWorkflow implements Serializable {
         }
     }
 
+    private void startIfPortraitModelsAvailable(ContinueAction continueAction) {
+        Activity activity = mNavigator.getActivity();
+        ArrayList<ModelType> missingModels = new ArrayList<>();
+        if (!ModelCatalog.isAvailable(activity, ModelType.PERSON_SEG)) {
+            missingModels.add(ModelType.PERSON_SEG);
+        }
+        if (missingModels.isEmpty()) {
+            continueAction.run();
+        } else {
+            startModelDownload(missingModels, continueAction);
+        }
+    }
+
     private void startModelDownload(ArrayList<ModelType> missingModels, ContinueAction continueAction) {
         mNavigator.push(Routes.MODEL_DOWNLOAD_PAGE, new ModelDownloadDialog.ModelList(missingModels),
                 (navigator, navRoute, activity1, currentView) -> {
@@ -137,6 +156,8 @@ class HomeWorkflow implements Serializable {
             startQrCensor();
         } else if (requestCode == REQUEST_CODE_QR_SCAN) {
             startQrScan();
+        } else if (requestCode == REQUEST_CODE_IMAGE_PORTRAIT) {
+            startPortrait();
         }
     }
 
@@ -150,6 +171,8 @@ class HomeWorkflow implements Serializable {
             pushStyleEditor(data);
         } else if (requestCode == REQUEST_CODE_IMAGE_QR_CENSOR) {
             pushQrCensorEditor(data);
+        } else if (requestCode == REQUEST_CODE_IMAGE_PORTRAIT) {
+            pushPortraitEditor(data);
         }
     }
 
@@ -196,6 +219,21 @@ class HomeWorkflow implements Serializable {
             uris.add(uri.toString());
         }
         mNavigator.push(Routes.QR_CENSOR_EDITOR_PAGE, new UriList(uris));
+    }
+
+    /**
+     * Push the interactive portrait editor page for the picked images
+     */
+    private void pushPortraitEditor(Intent data) {
+        List<Uri> pickedUris = collectPickedUris(data);
+        if (pickedUris.isEmpty()) {
+            return;
+        }
+        ArrayList<String> uris = new ArrayList<>();
+        for (Uri uri : pickedUris) {
+            uris.add(uri.toString());
+        }
+        mNavigator.push(Routes.PORTRAIT_EDITOR_PAGE, new UriList(uris));
     }
 
     /**

@@ -26,6 +26,15 @@ This is AI utility app for Android device, it basically uses AI model directly o
     </li>
 </ul>
 
+### Background Blur & Removal (Portrait Segmentation)
+<ul>
+    <li>Pick a photo and segment the human inside it with the on-device PP-HumanSeg model
+        (downloaded on demand)</li>
+    <li>Blur everything except the person for a bokeh/portrait effect</li>
+    <li>Cut the person out with a fully transparent background</li>
+    <li>Remove mode exports a PNG preserving the alpha channel; blur mode exports the usual JPEG</li>
+</ul>
+
 ### On-Demand AI Model Download
 <ul>
     <li>AI models are not bundled with the app; when a feature is used for the first time, the
@@ -116,6 +125,22 @@ sequenceDiagram
 2.  **StyleEditorPage**: Interactive editor showing each picked image with a row of style tiles (Mosaic, Candy, Rain Princess, Udnie, Pointilism). Tapping a style renders a live stylized preview of the image; missing style models are prompted for download on demand.
 3.  **STEngine**: Applies the selected theme by delegating to the cached per-theme `STProcessor` (OpenCV DNN) on a downscaled preview while editing, and at full resolution on save/share.
 4.  **Save/Share**: Saves each stylized image to the gallery via `MediaHelper` or writes a temp JPEG for the Android share sheet.
+
+### Deep Dive: Portrait Segmentation Flow
+
+1.  **HomePage**: Checks `PERSON_SEG` model availability first (`HomeWorkflow` triggers the
+    `ModelDownloadDialog` download on first use), then pushes the picked images to `PortraitEditorPage`.
+2.  **PortraitEditorPage**: Interactive editor showing each picked image with a Blur/Remove mode
+    toggle plus a strength slider (blur mode). Mask inference runs once per image; the result is
+    engine-cached so mode/strength changes re-composite without re-running the model.
+3.  **PersonSegEngine/PersonSegProcessor**: The PP-HumanSeg ONNX runs through OpenCV DNN
+    (192x192 input); a soft person mask is derived from the two output channels, feathered at
+    model resolution, then bilinear-upsampled so edges stay clean without haloing.
+4.  **Effects**: Blur mode composites a Gaussian-blurred copy of the full image behind the person.
+    Remove mode turns the mask into the alpha channel, exporting a **PNG** whose transparency
+    survives the round trip.
+5.  **Save/Share**: Saves each image to the gallery via `MediaHelper` (PNG in remove mode,
+    JPEG in blur mode) or writes a temp file for the Android share sheet with the matching mime.
 
 ## Screenshots
 <img src="https://github.com/rh-id/a-jarwis/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" height="512"/>

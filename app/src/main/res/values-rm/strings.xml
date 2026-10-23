@@ -65,4 +65,13 @@
     <string name="scan_from_image">Scannar dal maletg</string>
     <string name="copy_all">Copiar tut</string>
     <string name="msg_camera_permission_missing">L\'autorassun da la camera è necessaria per scannar codes QR</string>
+    <string name="title_portrait_mode">Modus da ritratscha</string>
+    <string name="blur_background">Sfumar il fund</string>
+    <string name="remove_background">Stizzar il fund</string>
+    <string name="detecting_people_progress">Tschertgar persunas… (%1$d/%2$d)</string>
+    <string name="no_person_detected">Nagina persuna chattada</string>
+    <string name="no_person_detected_">Nagina persuna chattada: %s</string>
+    <string name="msg_discard_portrait_changes">Vossa selecziun da ritratscha n\'è betg vegnida memorisada. Vulais sbutter las midadas?</string>
+    <string name="title_share_no_portrait">Nagina persuna chattada</string>
+    <string name="msg_share_no_portrait">Nagina persuna chattada sin quest maletg. Vulais parturar tuttina l\'original?</string>
 </resources>

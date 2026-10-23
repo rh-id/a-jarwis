@@ -65,4 +65,13 @@
     <string name="scan_from_image">Skanna af mynd</string>
     <string name="copy_all">Afrita allt</string>
     <string name="msg_camera_permission_missing">Myndavélaheimild er nauðsynleg til að skanna QR-kóða</string>
+    <string name="title_portrait_mode">Portrétthamur</string>
+    <string name="blur_background">Móða bakgrunninn</string>
+    <string name="remove_background">Fjarlægja bakgrunninn</string>
+    <string name="detecting_people_progress">Greini fólk… (%1$d/%2$d)</string>
+    <string name="no_person_detected">Ekkert fólk fannst</string>
+    <string name="no_person_detected_">Ekkert fólk fannst: %s</string>
+    <string name="msg_discard_portrait_changes">Valið þitt á portréttham hefur ekki verið vistað. Viltu fleygja breytingunum?</string>
+    <string name="title_share_no_portrait">Ekkert fólk fannst</string>
+    <string name="msg_share_no_portrait">Ekkert fólk fannst á þessari mynd. Viltu samt deila upprunalegu myndinni?</string>
 </resources>

@@ -33,13 +33,36 @@ public class MediaHelper {
     public String insertImage(Bitmap source,
                               String title,
                               String description) {
+        return insertImage(source, title, description, Bitmap.CompressFormat.JPEG);
+    }
+
+    /**
+     * Insert the given bitmap into the media store gallery compressed with the
+     * given compress format. A PNG format keeps the bitmap alpha channel so a
+     * transparent result (e.g. remove background mode) is stored as is,
+     * while JPEG exports flatten it opaque.
+     *
+     * @param source      bitmap to be stored, null deletes the inserted entry
+     * @param title       title of the image entry
+     * @param description description of the image entry
+     * @param format      compress format of the stored image,
+     *                    e.g. {@link Bitmap.CompressFormat#JPEG} or
+     *                    {@link Bitmap.CompressFormat#PNG}
+     * @return url string to the inserted image or null when failed
+     */
+    @RequiresPermission(WRITE_EXTERNAL_STORAGE)
+    public String insertImage(Bitmap source,
+                              String title,
+                              String description,
+                              Bitmap.CompressFormat format) {
         ContentResolver cr = mAppContext.getContentResolver();
         long currentMillis = System.currentTimeMillis();
         ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.TITLE, title);
         values.put(MediaStore.Images.Media.DISPLAY_NAME, title);
         values.put(MediaStore.Images.Media.DESCRIPTION, description);
-        values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+        values.put(MediaStore.Images.Media.MIME_TYPE,
+                format == Bitmap.CompressFormat.PNG ? "image/png" : "image/jpeg");
         // Add the date meta data to ensure the image is added at the front of the gallery
         values.put(MediaStore.Images.Media.DATE_ADDED, currentMillis / 1000);
         values.put(MediaStore.Images.Media.DATE_TAKEN, currentMillis);
@@ -53,7 +76,7 @@ public class MediaHelper {
             if (source != null) {
                 OutputStream imageOut = cr.openOutputStream(url);
                 try {
-                    source.compress(Bitmap.CompressFormat.JPEG, 100, imageOut);
+                    source.compress(format, 100, imageOut);
                 } finally {
                     imageOut.close();
                 }

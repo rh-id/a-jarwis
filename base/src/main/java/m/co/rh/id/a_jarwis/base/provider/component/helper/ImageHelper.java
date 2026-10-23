@@ -66,10 +66,28 @@ public class ImageHelper {
      * @throws IOException when failed to create file
      */
     public File createImageTempFile(String fileName, Bitmap bitmap) throws IOException {
+        return createImageTempFile(fileName, bitmap, Bitmap.CompressFormat.JPEG);
+    }
+
+    /**
+     * Create a temp file under the temp root and compress the given bitmap into it
+     * with the given compress format (quality 100). PNG keeps the bitmap alpha channel
+     * so transparent results (e.g. remove background mode) survive the round trip.
+     * The file is deleted on best effort when the compression fails.
+     *
+     * @param fileName file name for this file
+     * @param bitmap   bitmap to be compressed into the file
+     * @param format   compress format of the file, e.g. {@link Bitmap.CompressFormat#JPEG}
+     *                 or {@link Bitmap.CompressFormat#PNG}
+     * @return temporary file
+     * @throws IOException when failed to create file
+     */
+    public File createImageTempFile(String fileName, Bitmap bitmap,
+                                    Bitmap.CompressFormat format) throws IOException {
         File outFile = mFileHelper.createImageTempFile(fileName);
         try (OutputStream outputStream = new BufferedOutputStream(
                 new FileOutputStream(outFile))) {
-            boolean compressed = bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+            boolean compressed = bitmap.compress(format, 100, outputStream);
             if (!compressed) {
                 throw new IOException("Failed to compress the bitmap into: "
                         + outFile.getAbsolutePath());

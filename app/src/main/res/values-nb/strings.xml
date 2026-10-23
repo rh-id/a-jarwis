@@ -65,4 +65,13 @@
     <string name="scan_from_image">Skann fra bilde</string>
     <string name="copy_all">Kopier alle</string>
     <string name="msg_camera_permission_missing">Kameratillatelse er nødvendig for å skanne QR-koder</string>
+    <string name="title_portrait_mode">Portrettmodus</string>
+    <string name="blur_background">Slør bakgrunnen</string>
+    <string name="remove_background">Fjern bakgrunnen</string>
+    <string name="detecting_people_progress">Oppdager personer… (%1$d/%2$d)</string>
+    <string name="no_person_detected">Ingen person oppdaget</string>
+    <string name="no_person_detected_">Ingen person oppdaget: %s</string>
+    <string name="msg_discard_portrait_changes">Valgene dine for portrettmodus er ikke lagret. Vil du forkaste endringene?</string>
+    <string name="title_share_no_portrait">Ingen person oppdaget</string>
+    <string name="msg_share_no_portrait">Ingen person oppdaget på dette bildet. Vil du dele originalen likevel?</string>
 </resources>

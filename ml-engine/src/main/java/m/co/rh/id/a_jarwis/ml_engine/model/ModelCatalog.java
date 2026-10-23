@@ -40,6 +40,9 @@ public final class ModelCatalog {
             case NST_POINTILISM:
                 return new File(filesDir, MLEngineInstance.NEURAL_STYLE_TRANSFER_PATH
                         + "/" + MLEngineInstance.NST_POINTILISM_FILE);
+            case PERSON_SEG:
+                return new File(filesDir, MLEngineInstance.PERSON_SEGMENTATION_PATH
+                        + "/" + MLEngineInstance.PERSON_SEGMENTATION_FILE);
             default:
                 throw new IllegalArgumentException("Unknown model type: " + modelType);
         }

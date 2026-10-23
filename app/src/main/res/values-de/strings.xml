@@ -65,4 +65,13 @@
     <string name="scan_from_image">Aus Bild scannen</string>
     <string name="copy_all">Alle kopieren</string>
     <string name="msg_camera_permission_missing">Kameraberechtigung wird zum Scannen von QR-Codes benötigt</string>
+    <string name="title_portrait_mode">Porträtmodus</string>
+    <string name="blur_background">Hintergrund weichzeichnen</string>
+    <string name="remove_background">Hintergrund entfernen</string>
+    <string name="detecting_people_progress">Personen werden erkannt… (%1$d/%2$d)</string>
+    <string name="no_person_detected">Keine Person erkannt</string>
+    <string name="no_person_detected_">Keine Person erkannt: %s</string>
+    <string name="msg_discard_portrait_changes">Ihre Porträtauswahl wurde nicht gespeichert. Möchten Sie die Änderungen verwerfen?</string>
+    <string name="title_share_no_portrait">Keine Person erkannt</string>
+    <string name="msg_share_no_portrait">Auf diesem Bild wurde keine Person erkannt. Möchten Sie das Original trotzdem teilen?</string>
 </resources>

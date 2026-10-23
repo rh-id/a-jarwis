@@ -7,6 +7,7 @@ public class Routes {
     public static final String FACE_EDITOR_PAGE = "/editor/faceEditor";
     public static final String QR_CENSOR_EDITOR_PAGE = "/editor/qrCensorEditor";
     public static final String QR_SCANNER_PAGE = "/qrScanner";
+    public static final String PORTRAIT_EDITOR_PAGE = "/editor/portraitEditor";
     public static final String STYLE_EDITOR_PAGE = "/editor/styleEditor";
     public static final String MODEL_DOWNLOAD_PAGE = "/common/modelDownload";
     public static final String SETTINGS_PAGE = "/settings";

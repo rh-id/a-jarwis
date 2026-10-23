@@ -65,4 +65,13 @@
     <string name="scan_from_image">Pindai dari Gambar</string>
     <string name="copy_all">Salin semua</string>
     <string name="msg_camera_permission_missing">Izin kamera diperlukan untuk memindai kode QR</string>
+    <string name="title_portrait_mode">Mode Potret</string>
+    <string name="blur_background">Buramkan latar belakang</string>
+    <string name="remove_background">Hapus latar belakang</string>
+    <string name="detecting_people_progress">Mendeteksi orang… (%1$d/%2$d)</string>
+    <string name="no_person_detected">Tidak ada orang terdeteksi</string>
+    <string name="no_person_detected_">Tidak ada orang terdeteksi: %s</string>
+    <string name="msg_discard_portrait_changes">Pilihan mode potret Anda belum disimpan. Buang perubahannya?</string>
+    <string name="title_share_no_portrait">Tidak ada orang terdeteksi</string>
+    <string name="msg_share_no_portrait">Tidak ada orang yang terdeteksi pada gambar ini. Tetap bagikan gambar aslinya?</string>
 </resources>

@@ -12,18 +12,19 @@ Entry module, namespace `m.co.rh.id.a_jarwis`. See `core` for module graph.
 - To add a page: constant in `:base` `Routes` + factory here + page class in `ui/page`
 
 ## Pages (`ui/page`)
-- `SplashPage` (start route) → `HomePage` (route `/`, drawer menu: settings, donations; 2 feature buttons: Blur Face, Apply Neural Style Transfer)
-- `HomeWorkflow` (helper held by HomePage): WRITE_EXTERNAL_STORAGE request (≤ S_V2), blur flow checks FACE_DETECT model availability first, then ACTION_GET_CONTENT multi-pick → pushes an editor with `UriList`
+- `SplashPage` (start route) → `HomePage` (route `/`, drawer menu: settings, donations; 5 feature buttons: Blur Face, Apply Neural Style Transfer, QR Censor, QR Scan, Portrait)
+- `HomeWorkflow` (helper held by HomePage): WRITE_EXTERNAL_STORAGE request (≤ S_V2), blur flow checks FACE_DETECT, portrait flow checks PERSON_SEG model availability first (missing → pushes `ModelDownloadDialog` and continues on POSITIVE), then ACTION_GET_CONTENT multi-pick → pushes an editor with `UriList`
 - `editor/FaceEditorPage` (route `/editor/faceEditor`): interactive face-blur editor — FaceEngine.detectFace on a downscaled preview, tap a face to toggle its blur, per-image `BlurConfig` (ellipse/square + strength 1..5), full-res composite on save/share
 - `editor/StyleEditorPage` (route `/editor/styleEditor`): interactive NST editor — per-image style tiles (0=original, `STEngine.THEME_*` 1..5), live preview via `STEngine.apply`, apply-to-all (disabled while original selected), on-demand model download per style (checks `ModelCatalog.isAvailable`, pushes ModelDownloadDialog, re-renders on POSITIVE)
-- `common/`: only `ModelDownloadDialog` (pushed dialog for on-demand model download with progress; pops `SelectedChoice.POSITIVE` when done) — used by both editors + HomeWorkflow
+- `editor/PortraitEditorPage` (route `/editor/portraitEditor`): background blur / remove-background editor — per-image mode (blur/remove) + blur strength on downscaled preview; masks come from `PersonSegEngine.getMask` (`PersonSegMask` handle, engine-cached so toggles are instant, handle non-Serializable → rebuilt via getMask on restore, `releaseAllMasks` on dispose); Blur mode exports JPEG, Remove mode exports PNG with preserved alpha (`image/png` share mime); no-person state persisted per image
+- `common/`: only `ModelDownloadDialog` (pushed dialog for on-demand model download with progress; pops `SelectedChoice.POSITIVE` when done) — used by the editors + HomeWorkflow
 - params in `ui/page/nav/param`: `UriList`, `SelectedChoice` (Serializable; uris stored as strings)
 
-## Editor page architecture (shared by both editors)
+## Editor page architecture (shared by the editors)
 - `StatefulView` + `RequireComponent<Provider>` + `NavOnBackPressed`; deps pulled in `provideComponent()` via `IStatefulViewProvider`
 - Single non-transient `final SerialBehaviorSubject<EditorState>` holding ONLY-Serializable state (String uris, ints, Booleans); views/bitmaps stay transient, never in the navigator snapshot
 - Background work via `mRxDisposer.add("<unique key>", ...)` + `Schedulers.from(mExecutorService)`, observed on main thread with stale-guard re-check
 - Copy-on-pick: content uris → temp files (prefix `editor_source_` / `st_editor_source_`, 1h age purge on createView, deleted on dispose)
-- Modal progress dialog = busy-guard (`isWorking()`); save via `MediaHelper.insertImage`, share via `ImageHelper.createImageTempFile(String,Bitmap)` + `UiUtils.shareFile`
+- Modal progress dialog = busy-guard (`isWorking()`); save via `MediaHelper.insertImage` (CompressFormat overload adds PNG for alpha cutouts), share via `ImageHelper.createImageTempFile(String,Bitmap[,CompressFormat])` + `UiUtils.shareFile`
 
 No tests in :app.

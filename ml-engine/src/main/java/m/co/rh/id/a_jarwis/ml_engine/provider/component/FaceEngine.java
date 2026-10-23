@@ -51,9 +51,10 @@ public class FaceEngine {
     private static final float[] STRENGTH_KERNEL_FACTOR = {0.35f, 0.50f, 0.67f, 0.85f, 1.00f};
     /**
      * Gaussian blur sigma relative to its kernel size, the previous fixed
-     * kernel 201 / sigma 100 look is preserved with the same ratio
+     * kernel 201 / sigma 100 look is preserved with the same ratio.
+     * Package-private so the portrait background blur reuses the same look
      */
-    private static final float BLUR_SIGMA_SCALE = 0.5f;
+    static final float BLUR_SIGMA_SCALE = 0.5f;
     /**
      * Feather width of the shape mask relative to the face crop min dimension
      */
@@ -275,7 +276,7 @@ public class FaceEngine {
      *                       out of range values are clamped
      * @return the Gaussian blur kernel size to be used
      */
-    private static int computeFullKernelSize(int fullFaceMinDim, int strength) {
+    static int computeFullKernelSize(int fullFaceMinDim, int strength) {
         int strengthIndex = strength - 1;
         if (strengthIndex < 0) {
             strengthIndex = 0;

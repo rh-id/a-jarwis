@@ -34,6 +34,8 @@ public class MLEngineInstance {
     public static final String NST_RAIN_PRINCESS_FILE = "rain-princess-9.onnx";
     public static final String NST_UDNIE_FILE = "udnie-9.onnx";
     public static final String NST_POINTILISM_FILE = "pointilism-9.onnx";
+    public static final String PERSON_SEGMENTATION_PATH = BASE_PATH + "/person-segmentation";
+    public static final String PERSON_SEGMENTATION_FILE = "human_segmentation_pphumanseg_2023mar_int8bq.onnx";
     private final Context mAppContext;
     private final ILogger mLogger;
     /**
@@ -43,11 +45,19 @@ public class MLEngineInstance {
      * never deleted once downloaded
      */
     private final ConcurrentHashMap<Integer, STProcessor> mSTProcessors;
+    /**
+     * Lazy portrait segmentation processor cache (keyed by model type for
+     * future person segmentation variants), an instance holds its ONNX model
+     * loaded in the native memory (the file is ~1.7 MB) for the app lifetime
+     * because the model is never deleted once downloaded
+     */
+    private final ConcurrentHashMap<ModelType, PersonSegProcessor> mPersonSegProcessors;
 
     public MLEngineInstance(Provider provider) {
         mAppContext = provider.getContext().getApplicationContext();
         mLogger = provider.get(ILogger.class);
         mSTProcessors = new ConcurrentHashMap<>();
+        mPersonSegProcessors = new ConcurrentHashMap<>();
         if (OpenCVLoader.initLocal()) {
             mLogger.d("OpenCV", "OpenCV loaded");
         } else {
@@ -71,6 +81,20 @@ public class MLEngineInstance {
                         mLogger));
     }
 
+    /**
+     * Returns the portrait segmentation processor, creating and caching it on
+     * first access. A processor instance must never have its
+     * computeMask() invoked concurrently, callers are expected to serialize
+     * their calls on one instance (e.g. through a single-thread executor)
+     *
+     * @return the cached portrait segmentation processor
+     */
+    public PersonSegProcessor getPersonSegProcessor() {
+        return mPersonSegProcessors.computeIfAbsent(ModelType.PERSON_SEG,
+                modelType -> new PersonSegProcessor(
+                        requireModelFile(modelType).getAbsolutePath(), mLogger));
+    }
+
     public FaceRecognizerSF getFaceRecognizerModel() {
         return FaceRecognizerSF.create(
                 requireModelFile(ModelType.FACE_RECOGNIZER).getAbsolutePath(), "");
@@ -92,6 +116,10 @@ public class MLEngineInstance {
 
     public boolean isNSTAvailable(int theme) {
         return ModelCatalog.isAvailable(mAppContext, ModelCatalog.fromTheme(theme));
+    }
+
+    public boolean isPersonSegAvailable() {
+        return ModelCatalog.isAvailable(mAppContext, ModelType.PERSON_SEG);
     }
 
     /**

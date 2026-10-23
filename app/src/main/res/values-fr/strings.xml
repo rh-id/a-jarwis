@@ -65,4 +65,13 @@
     <string name="scan_from_image">Scanner depuis une image</string>
     <string name="copy_all">Tout copier</string>
     <string name="msg_camera_permission_missing">L\'autorisation d\'accéder à la caméra est requise pour scanner des codes QR</string>
+    <string name="title_portrait_mode">Mode portrait</string>
+    <string name="blur_background">Flouter l\'arrière-plan</string>
+    <string name="remove_background">Supprimer l\'arrière-plan</string>
+    <string name="detecting_people_progress">Détection des personnes… (%1$d/%2$d)</string>
+    <string name="no_person_detected">Aucune personne détectée</string>
+    <string name="no_person_detected_">Aucune personne détectée : %s</string>
+    <string name="msg_discard_portrait_changes">Votre sélection de mode portrait n\'a pas été enregistrée. Abandonner les modifications ?</string>
+    <string name="title_share_no_portrait">Aucune personne détectée</string>
+    <string name="msg_share_no_portrait">Aucune personne n\'est détectée sur cette image. Partager l\'original quand même ?</string>
 </resources>

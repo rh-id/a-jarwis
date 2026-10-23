@@ -74,6 +74,8 @@ public class HomePage extends StatefulView<Activity> implements RequireComponent
         qrCensorButton.setOnClickListener(this);
         Button qrScanButton = rootLayout.findViewById(R.id.button_qr_scan);
         qrScanButton.setOnClickListener(this);
+        Button portraitButton = rootLayout.findViewById(R.id.button_portrait_mode);
+        portraitButton.setOnClickListener(this);
         ViewGroup containerAppBar = rootLayout.findViewById(R.id.container_app_bar);
         containerAppBar.addView(mAppBarSV.buildView(activity, container));
         return rootLayout;
@@ -120,6 +122,8 @@ public class HomePage extends StatefulView<Activity> implements RequireComponent
             mWorkflow.startQrCensor();
         } else if (id == R.id.button_qr_scan) {
             mWorkflow.startQrScan();
+        } else if (id == R.id.button_portrait_mode) {
+            mWorkflow.startPortrait();
         }
     }
 

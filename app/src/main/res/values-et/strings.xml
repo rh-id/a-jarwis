@@ -65,4 +65,13 @@
     <string name="scan_from_image">Skanni pildilt</string>
     <string name="copy_all">Kopeeri kõik</string>
     <string name="msg_camera_permission_missing">QR-koodide skannimiseks on vaja kaamera luba</string>
+    <string name="title_portrait_mode">Portreerežiim</string>
+    <string name="blur_background">Hägusta tausta</string>
+    <string name="remove_background">Eemalda taust</string>
+    <string name="detecting_people_progress">Isikute tuvastamine… (%1$d/%2$d)</string>
+    <string name="no_person_detected">Isikuid ei tuvastatud</string>
+    <string name="no_person_detected_">Isikuid ei tuvastatud: %s</string>
+    <string name="msg_discard_portrait_changes">Portreerežiimi valikuid pole salvestatud. Kas loobuda muudatustest?</string>
+    <string name="title_share_no_portrait">Isikuid ei tuvastatud</string>
+    <string name="msg_share_no_portrait">Sellel pildil ei tuvastatud isikuid. Kas jagada siiski algset pilti?</string>
 </resources>
