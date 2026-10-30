@@ -29,6 +29,7 @@
     <string name="loading_image">Memuat gambar…</string>
     <string name="preparing_share">Menyiapkan gambar untuk dibagikan…</string>
     <string name="share_failed">Gagal membagikan gambar</string>
+    <string name="failed_to_load_image">Gagal memuat gambar</string>
     <string name="title_share_no_blur">Tidak ada wajah yang diburamkan</string>
     <string name="msg_share_no_blur">Tidak ada wajah yang diburamkan pada gambar ini. Tetap bagikan gambar aslinya?</string>
     <string name="no_face_detected">Tidak ada wajah terdeteksi</string>
@@ -74,4 +75,16 @@
     <string name="msg_discard_portrait_changes">Pilihan mode potret Anda belum disimpan. Buang perubahannya?</string>
     <string name="title_share_no_portrait">Tidak ada orang terdeteksi</string>
     <string name="msg_share_no_portrait">Tidak ada orang yang terdeteksi pada gambar ini. Tetap bagikan gambar aslinya?</string>
+    <string name="detecting_progress">Mendeteksi objek…</string>
+    <string name="title_magic_eraser">Penghapus Ajaib</string>
+    <string name="erase">Hapus</string>
+    <string name="removing_progress">Menghapus objek…</string>
+    <string name="no_object_detected">Tidak ada objek terdeteksi</string>
+    <string name="msg_discard_magic_eraser_changes">Hasil edit penghapus ajaib Anda belum disimpan. Buang perubahannya?</string>
+    <string name="restoring_progress">Memulihkan hasil edit…</string>
+    <string name="brush_size">Ukuran kuas</string>
+    <string name="undo">Urungkan</string>
+    <string name="reset">Setel ulang</string>
+    <string name="apply_history_full">Riwayat sudah penuh. Simpan atau bagikan hasilnya untuk memulai edit baru.</string>
+    <string name="error_insufficient_memory">Memori tidak cukup untuk memproses gambar ini</string>
 </resources>

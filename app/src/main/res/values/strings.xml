@@ -33,6 +33,7 @@
     <string name="loading_image">Loading image…</string>
     <string name="preparing_share">Preparing image to share…</string>
     <string name="share_failed">Failed to share image</string>
+    <string name="failed_to_load_image">Failed to load image</string>
     <string name="title_share_no_blur">No blurred faces</string>
     <string name="msg_share_no_blur">No blurred faces on this image. Share the original anyway?</string>
     <string name="no_face_detected">No face detected</string>
@@ -78,4 +79,16 @@
     <string name="msg_discard_portrait_changes">Your portrait selection has not been saved. Discard the changes?</string>
     <string name="title_share_no_portrait">No person detected</string>
     <string name="msg_share_no_portrait">No person detected on this image. Share the original anyway?</string>
+    <string name="title_magic_eraser">Magic Eraser</string>
+    <string name="detecting_progress">Detecting object…</string>
+    <string name="erase">Erase</string>
+    <string name="removing_progress">Removing object…</string>
+    <string name="no_object_detected">No object detected</string>
+    <string name="msg_discard_magic_eraser_changes">Your magic eraser edits have not been saved. Discard the changes?</string>
+    <string name="restoring_progress">Restoring edits…</string>
+    <string name="brush_size">Brush size</string>
+    <string name="undo">Undo</string>
+    <string name="reset">Reset</string>
+    <string name="apply_history_full">The erase history is full. Save or share the result to start a new edit.</string>
+    <string name="error_insufficient_memory">Not enough memory to process this image</string>
 </resources>

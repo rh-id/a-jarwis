@@ -21,6 +21,7 @@ import org.opencv.core.Mat;
 import java.io.IOException;
 import java.util.List;
 
+import m.co.rh.id.a_jarwis.ml_engine.model.ModelType;
 import m.co.rh.id.a_jarwis.ml_engine.provider.MLEngineTestProviderModule;
 import m.co.rh.id.a_jarwis.ml_engine.test.R;
 import m.co.rh.id.aprovider.Provider;
@@ -40,7 +41,8 @@ public class FaceEngineTest {
     public static void beforeAnyTest() throws IOException {
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
         mMLEngineProvider = Provider.createProvider(appContext, new MLEngineTestProviderModule());
-        ModelTestHelper.installModels(mMLEngineProvider);
+        ModelTestHelper.installModels(mMLEngineProvider,
+                ModelType.FACE_DETECT, ModelType.FACE_RECOGNIZER);
         mFaceEngine = mMLEngineProvider.get(FaceEngine.class);
     }
 

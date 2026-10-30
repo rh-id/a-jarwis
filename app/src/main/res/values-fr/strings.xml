@@ -29,6 +29,7 @@
     <string name="loading_image">Chargement de l\'image…</string>
     <string name="preparing_share">Préparation de l\'image à partager…</string>
     <string name="share_failed">Échec du partage de l\'image</string>
+    <string name="failed_to_load_image">Échec du chargement de l\'image</string>
     <string name="title_share_no_blur">Aucun visage flouté</string>
     <string name="msg_share_no_blur">Aucun visage n\'est flouté sur cette image. Partager l\'original quand même ?</string>
     <string name="no_face_detected">Aucun visage détecté</string>
@@ -74,4 +75,16 @@
     <string name="msg_discard_portrait_changes">Votre sélection de mode portrait n\'a pas été enregistrée. Abandonner les modifications ?</string>
     <string name="title_share_no_portrait">Aucune personne détectée</string>
     <string name="msg_share_no_portrait">Aucune personne n\'est détectée sur cette image. Partager l\'original quand même ?</string>
+    <string name="detecting_progress">Détection de l\'objet…</string>
+    <string name="title_magic_eraser">Gomme magique</string>
+    <string name="erase">Effacer</string>
+    <string name="removing_progress">Suppression de l\'objet…</string>
+    <string name="no_object_detected">Aucun objet détecté</string>
+    <string name="msg_discard_magic_eraser_changes">Vos modifications de gomme magique n\'ont pas été enregistrées. Abandonner les modifications ?</string>
+    <string name="restoring_progress">Restauration des modifications…</string>
+    <string name="brush_size">Taille du pinceau</string>
+    <string name="undo">Annuler</string>
+    <string name="reset">Réinitialiser</string>
+    <string name="apply_history_full">L\'historique est plein. Enregistrez ou partagez le résultat pour commencer une nouvelle modification.</string>
+    <string name="error_insufficient_memory">Mémoire insuffisante pour traiter cette image</string>
 </resources>

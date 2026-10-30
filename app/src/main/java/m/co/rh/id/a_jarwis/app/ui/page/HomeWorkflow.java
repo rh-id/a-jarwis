@@ -31,6 +31,7 @@ class HomeWorkflow implements Serializable {
     private static final int REQUEST_CODE_IMAGE_QR_CENSOR = 5;
     private static final int REQUEST_CODE_QR_SCAN = 6;
     private static final int REQUEST_CODE_IMAGE_PORTRAIT = 7;
+    private static final int REQUEST_CODE_IMAGE_MAGIC_ERASER = 8;
 
     private transient INavigator mNavigator;
 
@@ -62,6 +63,13 @@ class HomeWorkflow implements Serializable {
     public void startPortrait() {
         requestWriteExternalStoragePermission(() -> startIfPortraitModelsAvailable(() ->
                 pickImage(REQUEST_CODE_IMAGE_PORTRAIT)), REQUEST_CODE_IMAGE_PORTRAIT);
+    }
+
+    public void startMagicEraser() {
+        requestWriteExternalStoragePermission(() ->
+                startIfMagicEraserModelsAvailable(() ->
+                        pickImage(REQUEST_CODE_IMAGE_MAGIC_ERASER, false)),
+                REQUEST_CODE_IMAGE_MAGIC_ERASER);
     }
 
     public void startQrScan() {
@@ -124,6 +132,22 @@ class HomeWorkflow implements Serializable {
         }
     }
 
+    private void startIfMagicEraserModelsAvailable(ContinueAction continueAction) {
+        Activity activity = mNavigator.getActivity();
+        ArrayList<ModelType> missingModels = new ArrayList<>();
+        if (!ModelCatalog.isAvailable(activity, ModelType.EFFICIENT_SAM)) {
+            missingModels.add(ModelType.EFFICIENT_SAM);
+        }
+        if (!ModelCatalog.isAvailable(activity, ModelType.LAMA)) {
+            missingModels.add(ModelType.LAMA);
+        }
+        if (missingModels.isEmpty()) {
+            continueAction.run();
+        } else {
+            startModelDownload(missingModels, continueAction);
+        }
+    }
+
     private void startModelDownload(ArrayList<ModelType> missingModels, ContinueAction continueAction) {
         mNavigator.push(Routes.MODEL_DOWNLOAD_PAGE, new ModelDownloadDialog.ModelList(missingModels),
                 (navigator, navRoute, activity1, currentView) -> {
@@ -137,10 +161,23 @@ class HomeWorkflow implements Serializable {
     }
 
     private void pickImage(int requestCode) {
+        pickImage(requestCode, true);
+    }
+
+    /**
+     * Open the system image picker.
+     *
+     * @param allowMultiple true to allow a multi image pick, false to restrict
+     *                      the pick to a single image (the EXTRA_ALLOW_MULTIPLE
+     *                      extra is omitted)
+     */
+    private void pickImage(int requestCode, boolean allowMultiple) {
         Activity activity = mNavigator.getActivity();
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        if (allowMultiple) {
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        }
         activity.startActivityForResult(intent, requestCode);
     }
 
@@ -158,6 +195,8 @@ class HomeWorkflow implements Serializable {
             startQrScan();
         } else if (requestCode == REQUEST_CODE_IMAGE_PORTRAIT) {
             startPortrait();
+        } else if (requestCode == REQUEST_CODE_IMAGE_MAGIC_ERASER) {
+            startMagicEraser();
         }
     }
 
@@ -173,6 +212,8 @@ class HomeWorkflow implements Serializable {
             pushQrCensorEditor(data);
         } else if (requestCode == REQUEST_CODE_IMAGE_PORTRAIT) {
             pushPortraitEditor(data);
+        } else if (requestCode == REQUEST_CODE_IMAGE_MAGIC_ERASER) {
+            pushMagicEraserEditor(data);
         }
     }
 
@@ -234,6 +275,20 @@ class HomeWorkflow implements Serializable {
             uris.add(uri.toString());
         }
         mNavigator.push(Routes.PORTRAIT_EDITOR_PAGE, new UriList(uris));
+    }
+
+    /**
+     * Push the interactive magic eraser editor page, the edit works on a
+     * single image so only the first picked uri is taken
+     */
+    private void pushMagicEraserEditor(Intent data) {
+        List<Uri> pickedUris = collectPickedUris(data);
+        if (pickedUris.isEmpty()) {
+            return;
+        }
+        ArrayList<String> uris = new ArrayList<>();
+        uris.add(pickedUris.get(0).toString());
+        mNavigator.push(Routes.MAGIC_ERASER_EDITOR_PAGE, new UriList(uris));
     }
 
     /**

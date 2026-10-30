@@ -8,13 +8,12 @@ import android.graphics.PorterDuffXfermode;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import m.co.rh.id.a_jarwis.ml_engine.model.BlurConfig;
@@ -282,21 +281,36 @@ public class PersonSegEngine {
      * Convert the CV_8U single channel mask to a white ARGB_8888 bitmap with the
      * mask value as alpha channel, ready to be drawn as a Porter-Duff mask.
      * matToBitmap supports the verified CV_8UC4 &lt;-&gt; ARGB_8888 pair, so the
-     * single channel mask is merged into a white RGBA Mat first.
+     * single channel mask is merged into an RGBA Mat first. All four merged
+     * channels are the mask itself (RGB = alpha = mask value): Android
+     * ARGB_8888 bitmaps are premultiplied by default and matToBitmap copies
+     * the Mat bytes straight into that premultiplied storage, so merging
+     * constant white would produce INVALID premultiplied data (RGB=255 under
+     * alpha=0) which the framework composites as full white on every pixel
+     * of the draw rect. RGB = alpha is exactly the valid premultiplied
+     * representation of white with the mask opacity: it contributes white at
+     * alpha strength and nothing where the mask is 0.
      */
     private static Bitmap toMaskBitmap(Mat mask) {
         int width = mask.cols();
         int height = mask.rows();
-        Mat white = new Mat(height, width, CvType.CV_8U, new Scalar(255));
         Mat rgba = new Mat();
         try {
-            Core.merge(Arrays.asList(white, white, white, mask), rgba);
+            // every list handed to an org.opencv API must be a real
+            // java.util.ArrayList instance (see EfficientSamProcessor: the
+            // OpenCV 5 JNI list handling aborts under CheckJNI on an
+            // Arrays.asList view)
+            List<Mat> rgbaChannels = new ArrayList<>();
+            rgbaChannels.add(mask);
+            rgbaChannels.add(mask);
+            rgbaChannels.add(mask);
+            rgbaChannels.add(mask);
+            Core.merge(rgbaChannels, rgba);
             Bitmap maskBitmap = Bitmap.createBitmap(width, height,
                     Bitmap.Config.ARGB_8888);
             Utils.matToBitmap(rgba, maskBitmap);
             return maskBitmap;
         } finally {
-            white.release();
             rgba.release();
         }
     }

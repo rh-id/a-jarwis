@@ -19,6 +19,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import m.co.rh.id.a_jarwis.base.provider.component.helper.FileHelper;
+import m.co.rh.id.a_jarwis.ml_engine.model.ModelType;
 import m.co.rh.id.a_jarwis.ml_engine.provider.MLEngineTestProviderModule;
 import m.co.rh.id.a_jarwis.ml_engine.test.R;
 import m.co.rh.id.aprovider.Provider;
@@ -38,7 +39,10 @@ public class STEngineTest {
     public static void beforeAnyTest() throws IOException {
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
         mMLEngineProvider = Provider.createProvider(appContext, new MLEngineTestProviderModule());
-        ModelTestHelper.installModels(mMLEngineProvider);
+        ModelTestHelper.installModels(mMLEngineProvider,
+                ModelType.NST_MOSAIC, ModelType.NST_CANDY,
+                ModelType.NST_RAIN_PRINCESS, ModelType.NST_UDNIE,
+                ModelType.NST_POINTILISM);
         mSTEngine = mMLEngineProvider.get(STEngine.class);
     }
 

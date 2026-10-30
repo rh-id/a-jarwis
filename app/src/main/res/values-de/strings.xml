@@ -29,6 +29,7 @@
     <string name="loading_image">Bild wird geladen…</string>
     <string name="preparing_share">Bild zum Teilen wird vorbereitet…</string>
     <string name="share_failed">Bild konnte nicht geteilt werden</string>
+    <string name="failed_to_load_image">Bild konnte nicht geladen werden</string>
     <string name="title_share_no_blur">Keine weichgezeichneten Gesichter</string>
     <string name="msg_share_no_blur">Auf diesem Bild gibt es keine weichgezeichneten Gesichter. Möchten Sie das Original trotzdem teilen?</string>
     <string name="no_face_detected">Kein Gesicht erkannt</string>
@@ -74,4 +75,16 @@
     <string name="msg_discard_portrait_changes">Ihre Porträtauswahl wurde nicht gespeichert. Möchten Sie die Änderungen verwerfen?</string>
     <string name="title_share_no_portrait">Keine Person erkannt</string>
     <string name="msg_share_no_portrait">Auf diesem Bild wurde keine Person erkannt. Möchten Sie das Original trotzdem teilen?</string>
+    <string name="detecting_progress">Objekt wird erkannt…</string>
+    <string name="title_magic_eraser">Magischer Radierer</string>
+    <string name="erase">Radieren</string>
+    <string name="removing_progress">Objekt wird entfernt…</string>
+    <string name="no_object_detected">Kein Objekt erkannt</string>
+    <string name="msg_discard_magic_eraser_changes">Ihre Magische-Radierer-Bearbeitungen wurden nicht gespeichert. Möchten Sie die Änderungen verwerfen?</string>
+    <string name="restoring_progress">Bearbeitungen werden wiederhergestellt…</string>
+    <string name="brush_size">Pinselgröße</string>
+    <string name="undo">Rückgängig</string>
+    <string name="reset">Zurücksetzen</string>
+    <string name="apply_history_full">Der Verlauf ist voll. Speichern oder teilen Sie das Ergebnis, um eine neue Bearbeitung zu starten.</string>
+    <string name="error_insufficient_memory">Nicht genügend Arbeitsspeicher, um dieses Bild zu verarbeiten</string>
 </resources>

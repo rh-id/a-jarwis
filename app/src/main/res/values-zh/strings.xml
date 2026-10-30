@@ -29,6 +29,7 @@
     <string name="loading_image">正在加载图片…</string>
     <string name="preparing_share">正在准备分享图片…</string>
     <string name="share_failed">分享图片失败</string>
+    <string name="failed_to_load_image">图片加载失败</string>
     <string name="title_share_no_blur">暂无模糊人脸</string>
     <string name="msg_share_no_blur">此图片上没有已模糊的人脸。仍要分享原图吗？</string>
     <string name="no_face_detected">未检测到人脸</string>
@@ -74,4 +75,16 @@
     <string name="msg_discard_portrait_changes">您的人像选择尚未保存。要放弃这些更改吗？</string>
     <string name="title_share_no_portrait">未检测到人物</string>
     <string name="msg_share_no_portrait">此图片上没有检测到人物。仍要分享原图吗？</string>
+    <string name="detecting_progress">正在检测对象…</string>
+    <string name="title_magic_eraser">魔法橡皮擦</string>
+    <string name="erase">擦除</string>
+    <string name="removing_progress">正在移除对象…</string>
+    <string name="no_object_detected">未检测到对象</string>
+    <string name="msg_discard_magic_eraser_changes">您的魔法橡皮擦编辑尚未保存。要放弃这些更改吗？</string>
+    <string name="restoring_progress">正在恢复编辑…</string>
+    <string name="brush_size">画笔大小</string>
+    <string name="undo">撤销</string>
+    <string name="reset">重置</string>
+    <string name="apply_history_full">历史记录已满。请保存或分享结果后再开始新的编辑。</string>
+    <string name="error_insufficient_memory">内存不足，无法处理此图片</string>
 </resources>

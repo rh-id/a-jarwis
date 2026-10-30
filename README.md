@@ -35,6 +35,17 @@ This is AI utility app for Android device, it basically uses AI model directly o
     <li>Remove mode exports a PNG preserving the alpha channel; blur mode exports the usual JPEG</li>
 </ul>
 
+### Magic Eraser (Object Removal)
+<ul>
+    <li>Pick a photo and paint brush strokes over the object to remove, then press
+        Detect object to segment it with the on-device EfficientSAM model
+        (downloaded on demand)</li>
+    <li>The segmented object is inpainted away with the on-device LaMa model so the
+        background fills the hole</li>
+    <li>Multiple erases per photo (adjust the strokes and re-detect, undo/reset for
+        the current marking), the full resolution result is rebuilt on save/share</li>
+</ul>
+
 ### On-Demand AI Model Download
 <ul>
     <li>AI models are not bundled with the app; when a feature is used for the first time, the

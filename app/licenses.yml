@@ -535,3 +535,13 @@
   license: Apache-2.0
   licenseUrl: https://www.apache.org/licenses/LICENSE-2.0.txt
   url: https://huggingface.co/opencv/human_segmentation_pphumanseg
+- name: EfficientSAM image segmentation model
+  copyrightHolder: EfficientSAM authors (yformer)
+  license: Apache-2.0
+  licenseUrl: https://www.apache.org/licenses/LICENSE-2.0.txt
+  url: https://huggingface.co/opencv/image_segmentation_efficientsam
+- name: LaMa image inpainting model
+  copyrightHolder: Samsung Research
+  license: Apache-2.0
+  licenseUrl: https://www.apache.org/licenses/LICENSE-2.0.txt
+  url: https://huggingface.co/opencv/inpainting_lama

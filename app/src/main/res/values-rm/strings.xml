@@ -29,6 +29,7 @@
     <string name="loading_image">Chargiar il maletg…</string>
     <string name="preparing_share">Preparar il maletg per parturir…</string>
     <string name="share_failed">Parturir il maletg n\'è betg reussì</string>
+    <string name="failed_to_load_image">Chargiar il maletg n\'è betg reussì</string>
     <string name="title_share_no_blur">Naginas ftgnas sfumadas</string>
     <string name="msg_share_no_blur">Naginas ftgnas sfumadas sin quest maletg. Vulais parturar tuttina l\'original?</string>
     <string name="no_face_detected">Nagina ftgna chattada</string>
@@ -74,4 +75,16 @@
     <string name="msg_discard_portrait_changes">Vossa selecziun da ritratscha n\'è betg vegnida memorisada. Vulais sbutter las midadas?</string>
     <string name="title_share_no_portrait">Nagina persuna chattada</string>
     <string name="msg_share_no_portrait">Nagina persuna chattada sin quest maletg. Vulais parturar tuttina l\'original?</string>
+    <string name="detecting_progress">Detecziun da l\'object…</string>
+    <string name="title_magic_eraser">Radiera magica</string>
+    <string name="erase">Radunar</string>
+    <string name="removing_progress">Allontanament da l\'object…</string>
+    <string name="no_object_detected">Nagin object chattà</string>
+    <string name="msg_discard_magic_eraser_changes">Vossas midadas da radiera magica n\'èn betg vegnidas memorisadas. Vulais sbutter las midadas?</string>
+    <string name="restoring_progress">Restauraziun da las midadas…</string>
+    <string name="brush_size">Grondezza dal pincel</string>
+    <string name="undo">Disfar</string>
+    <string name="reset">Reavi</string>
+    <string name="apply_history_full">L\'archiv è plain. Memorisai u parturai il resultat per cumenzar ina nova midada.</string>
+    <string name="error_insufficient_memory">Memoria insuffizienta per elavurar quest maletg</string>
 </resources>

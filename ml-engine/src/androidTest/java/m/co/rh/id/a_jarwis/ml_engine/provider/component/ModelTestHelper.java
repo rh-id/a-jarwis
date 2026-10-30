@@ -21,10 +21,26 @@ public final class ModelTestHelper {
     private ModelTestHelper() {
     }
 
+    /**
+     * Install every {@link ModelType} (the full catalog), used by the tests
+     * that need all models
+     */
     public static void installModels(Provider provider) throws IOException {
+        installModels(provider, ModelType.values());
+    }
+
+    /**
+     * Install only the given model types, so a test does not wait for the
+     * multi-megabyte downloads of the models it never touches.
+     *
+     * @param provider   provider with the {@link ModelDownloader} registered
+     * @param modelTypes model types to install
+     */
+    public static void installModels(Provider provider, ModelType... modelTypes)
+            throws IOException {
         Context context = provider.getContext().getApplicationContext();
         ModelDownloader modelDownloader = provider.get(ModelDownloader.class);
-        for (ModelType modelType : ModelType.values()) {
+        for (ModelType modelType : modelTypes) {
             if (ModelCatalog.isAvailable(context, modelType)) {
                 continue;
             }

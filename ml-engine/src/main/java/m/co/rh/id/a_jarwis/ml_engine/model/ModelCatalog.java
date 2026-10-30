@@ -43,6 +43,12 @@ public final class ModelCatalog {
             case PERSON_SEG:
                 return new File(filesDir, MLEngineInstance.PERSON_SEGMENTATION_PATH
                         + "/" + MLEngineInstance.PERSON_SEGMENTATION_FILE);
+            case EFFICIENT_SAM:
+                return new File(filesDir, MLEngineInstance.OBJECT_SEGMENTATION_PATH
+                        + "/" + MLEngineInstance.EFFICIENT_SAM_FILE);
+            case LAMA:
+                return new File(filesDir, MLEngineInstance.INPAINTING_PATH
+                        + "/" + MLEngineInstance.LAMA_FILE);
             default:
                 throw new IllegalArgumentException("Unknown model type: " + modelType);
         }

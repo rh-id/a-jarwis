@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatImageButton;
@@ -29,6 +28,7 @@ import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import m.co.rh.id.a_jarwis.R;
+import m.co.rh.id.a_jarwis.app.ui.component.EditorProgressDialog;
 import m.co.rh.id.a_jarwis.app.ui.page.nav.param.UriList;
 import m.co.rh.id.a_jarwis.base.provider.IStatefulViewProvider;
 import m.co.rh.id.a_jarwis.base.provider.component.helper.FileHelper;
@@ -223,9 +223,12 @@ public class PortraitEditorPage extends StatefulView<Activity> implements Requir
     private transient MaterialButtonToggleGroup mTogglePortraitMode;
     private transient Slider mSliderBlurStrength;
     private transient AppCompatTextView mTextNoPerson;
-    private transient AlertDialog mProgressDialog;
-    private transient ProgressBar mProgressBar;
-    private transient AppCompatTextView mTextProgress;
+    /**
+     * Busy-guard progress dialog of the editor pipelines (see
+     * {@link EditorProgressDialog}), its isWorking is the gate every
+     * pipeline relies on
+     */
+    private transient EditorProgressDialog mProgressDialog;
 
     // runtime
     private transient ResultCache mResultCache;
@@ -274,6 +277,9 @@ public class PortraitEditorPage extends StatefulView<Activity> implements Requir
     @Override
     protected View createView(Activity activity, ViewGroup container) {
         View rootView = activity.getLayoutInflater().inflate(R.layout.page_portrait_editor, container, false);
+        // the busy-guard progress dialog component is created before the
+        // first pipeline can start (the segmentation below shows it)
+        mProgressDialog = new EditorProgressDialog(activity, R.string.title_portrait_mode);
         MaterialToolbar toolbar = rootView.findViewById(R.id.toolbar);
         toolbar.setNavigationOnClickListener(v -> handleBack());
         mImageView = rootView.findViewById(R.id.imageView);
@@ -358,13 +364,9 @@ public class PortraitEditorPage extends StatefulView<Activity> implements Requir
     public void dispose(Activity activity) {
         super.dispose(activity);
         if (mProgressDialog != null) {
-            if (mProgressDialog.isShowing()) {
-                mProgressDialog.dismiss();
-            }
+            mProgressDialog.dispose();
             mProgressDialog = null;
         }
-        mProgressBar = null;
-        mTextProgress = null;
         if (mResultCache != null && mResultCache.mResult != null
                 && mResultCache.mResult != mDisplayBitmap) {
             mResultCache.mResult.recycle();
@@ -511,7 +513,7 @@ public class PortraitEditorPage extends StatefulView<Activity> implements Requir
         int total = pendingIndexes.size();
         mIsSegmenting = true;
         mSegmentationProgressCount = 0;
-        showProgressDialog(true, total,
+        mProgressDialog.show(true, total,
                 activity.getString(R.string.detecting_people_progress,
                         mSegmentationProgressCount, total));
         mRxDisposer.add("startSegmentation", Flowable.fromIterable(pendingIndexes)
@@ -522,13 +524,13 @@ public class PortraitEditorPage extends StatefulView<Activity> implements Requir
                         segmentedImage -> {
                             onImageSegmented(editorState, segmentedImage);
                             mSegmentationProgressCount++;
-                            updateProgressDialog(mSegmentationProgressCount, total,
+                            mProgressDialog.update(mSegmentationProgressCount, total,
                                     activity.getString(R.string.detecting_people_progress,
                                             mSegmentationProgressCount, total));
                         },
                         throwable -> {
                             mIsSegmenting = false;
-                            hideProgressDialog();
+                            mProgressDialog.hide();
                             // a catastrophic scheduler error must not leave a blank editor,
                             // the remaining images keep their states untouched
                             displayCurrentImage(mEditorState.getValue());
@@ -536,7 +538,7 @@ public class PortraitEditorPage extends StatefulView<Activity> implements Requir
                         },
                         () -> {
                             mIsSegmenting = false;
-                            hideProgressDialog();
+                            mProgressDialog.hide();
                             displayCurrentImage(mEditorState.getValue());
                         }
                 ));
@@ -555,7 +557,8 @@ public class PortraitEditorPage extends StatefulView<Activity> implements Requir
             // image to a private cache file once so the editor still works after a
             // process restart (the snapshot persists the file uri, see onImageSegmented)
             if (!"file".equals(sourceUri.getScheme())) {
-                segmentedImage.mSourceFile = copySourceToTempFile(sourceUri, index);
+                segmentedImage.mSourceFile = mFileHelper.copySourceToTempFile(
+                        EDITOR_SOURCE_PREFIX + index + ".jpg", sourceUri);
             }
             Uri uri = segmentedImage.mSourceFile != null
                     ? Uri.fromFile(segmentedImage.mSourceFile) : sourceUri;
@@ -577,38 +580,6 @@ public class PortraitEditorPage extends StatefulView<Activity> implements Requir
             }
         }
         return segmentedImage;
-    }
-
-    /**
-     * Copy the given source image to a private cache temp file, a raw buffered
-     * byte copy so the original quality and EXIF stay intact for the save path.
-     *
-     * @param sourceUri ephemeral source uri of the picked image
-     * @param index     image index, used for the temp file name
-     * @return the created temp file or null when the copy failed
-     * (the original uri keeps being used, same as before the copy existed)
-     */
-    private File copySourceToTempFile(Uri sourceUri, int index) {
-        String fileName = EDITOR_SOURCE_PREFIX + index + ".jpg";
-        try {
-            String lastSegment = sourceUri.getLastPathSegment();
-            if (lastSegment != null) {
-                int dotIndex = lastSegment.lastIndexOf('.');
-                if (dotIndex >= 0) {
-                    String extension = lastSegment.substring(dotIndex + 1);
-                    // keep the original extension only when it is a plausible one,
-                    // the file name must stay a safe single path segment
-                    if (!extension.isEmpty() && extension.length() <= 4
-                            && extension.matches("[A-Za-z0-9]+")) {
-                        fileName = EDITOR_SOURCE_PREFIX + index + "." + extension;
-                    }
-                }
-            }
-            return mFileHelper.createTempFile(fileName, sourceUri);
-        } catch (Exception | OutOfMemoryError e) {
-            mLogger.e(TAG, e.getMessage(), e);
-            return null;
-        }
     }
 
     private void onImageSegmented(EditorState editorState, SegmentedImage segmentedImage) {
@@ -638,13 +609,13 @@ public class PortraitEditorPage extends StatefulView<Activity> implements Requir
      */
     private void prepareResult(EditorState editorState, int index, int mode, int strength) {
         Activity activity = mNavigator.getActivity();
-        showProgressDialog(false, 0, activity.getString(R.string.loading_image));
+        mProgressDialog.show(false, 0, activity.getString(R.string.loading_image));
         mRxDisposer.add("prepareResult", Single.fromCallable(() ->
                         buildResult(editorState, index, mode, strength))
                 .subscribeOn(Schedulers.from(mExecutorService))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe((resultCache, throwable) -> {
-                    hideProgressDialog();
+                    mProgressDialog.hide();
                     if (throwable != null) {
                         mLogger.e(TAG, throwable.getMessage(), throwable);
                         return;
@@ -754,7 +725,7 @@ public class PortraitEditorPage extends StatefulView<Activity> implements Requir
     }
 
     private void switchImage(int direction) {
-        if (isWorking()) {
+        if (mProgressDialog.isWorking()) {
             return;
         }
         EditorState editorState = mEditorState.getValue();
@@ -799,7 +770,7 @@ public class PortraitEditorPage extends StatefulView<Activity> implements Requir
      * state emission
      */
     private void changeMode(int mode) {
-        if (isWorking() || mIsUpdatingModeControls) {
+        if (mProgressDialog.isWorking() || mIsUpdatingModeControls) {
             return;
         }
         EditorState editorState = mEditorState.getValue();
@@ -821,7 +792,7 @@ public class PortraitEditorPage extends StatefulView<Activity> implements Requir
      * state emission
      */
     private void changeBlurStrength(int strength) {
-        if (isWorking() || mIsUpdatingModeControls) {
+        if (mProgressDialog.isWorking() || mIsUpdatingModeControls) {
             return;
         }
         EditorState editorState = mEditorState.getValue();
@@ -864,7 +835,7 @@ public class PortraitEditorPage extends StatefulView<Activity> implements Requir
     }
 
     private void handleBack() {
-        if (isWorking()) {
+        if (mProgressDialog.isWorking()) {
             // a segmentation/prepare/save is running, the back press is ignored
             return;
         }
@@ -883,14 +854,14 @@ public class PortraitEditorPage extends StatefulView<Activity> implements Requir
     }
 
     private void saveImages() {
-        if (isWorking()) {
+        if (mProgressDialog.isWorking()) {
             return;
         }
         Activity activity = mNavigator.getActivity();
         EditorState editorState = mEditorState.getValue();
         int total = editorState.mUris.size();
         mSaveResults = new ArrayList<>();
-        showProgressDialog(true, total,
+        mProgressDialog.show(true, total,
                 activity.getString(R.string.saving_progress, 1, total));
         mRxDisposer.add("saveImages", Flowable.range(0, total)
                 .subscribeOn(Schedulers.from(mExecutorService))
@@ -899,16 +870,16 @@ public class PortraitEditorPage extends StatefulView<Activity> implements Requir
                 .subscribe(
                         saveResult -> {
                             mSaveResults.add(saveResult);
-                            updateProgressDialog(saveResult.mIndex + 1, total,
+                            mProgressDialog.update(saveResult.mIndex + 1, total,
                                     activity.getString(R.string.saving_progress,
                                             saveResult.mIndex + 1, total));
                         },
                         throwable -> {
-                            hideProgressDialog();
+                            mProgressDialog.hide();
                             mLogger.e(TAG, throwable.getMessage(), throwable);
                         },
                         () -> {
-                            hideProgressDialog();
+                            mProgressDialog.hide();
                             updateUnsavedChangesState(editorState);
                             showSaveSummary(activity, total);
                         }
@@ -1028,7 +999,7 @@ public class PortraitEditorPage extends StatefulView<Activity> implements Requir
     }
 
     private void shareImage() {
-        if (isWorking()) {
+        if (mProgressDialog.isWorking()) {
             return;
         }
         Activity activity = mNavigator.getActivity();
@@ -1052,13 +1023,13 @@ public class PortraitEditorPage extends StatefulView<Activity> implements Requir
         EditorState editorState = mEditorState.getValue();
         int index = editorState.mCurrentIndex;
         int mode = getImageMode(editorState, index);
-        showProgressDialog(false, 0, activity.getString(R.string.preparing_share));
+        mProgressDialog.show(false, 0, activity.getString(R.string.preparing_share));
         mRxDisposer.add("shareImage", Single.fromCallable(() ->
                         buildShareFile(editorState, index))
                 .subscribeOn(Schedulers.from(mExecutorService))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe((file, throwable) -> {
-                    hideProgressDialog();
+                    mProgressDialog.hide();
                     if (throwable != null) {
                         mLogger.e(TAG, throwable.getMessage(), throwable);
                         mLogger.i(TAG, activity.getString(R.string.share_failed));
@@ -1120,55 +1091,5 @@ public class PortraitEditorPage extends StatefulView<Activity> implements Requir
             // so it is handled as a share failure
             throw new RuntimeException(e.getMessage(), e);
         }
-    }
-
-    private boolean isWorking() {
-        return mProgressDialog != null && mProgressDialog.isShowing();
-    }
-
-    /**
-     * @param determinate true to show a determinate progress bar with the given max,
-     *                    false to show an indeterminate one
-     */
-    private void showProgressDialog(boolean determinate, int max, String message) {
-        if (mProgressDialog == null) {
-            Activity activity = mNavigator.getActivity();
-            View contentView = activity.getLayoutInflater()
-                    .inflate(R.layout.dialog_face_editor_progress, null);
-            mProgressBar = contentView.findViewById(R.id.progressBar);
-            mTextProgress = contentView.findViewById(R.id.text_progress);
-            mProgressDialog = new AlertDialog.Builder(activity)
-                    .setTitle(R.string.title_portrait_mode)
-                    .setView(contentView)
-                    .setCancelable(false)
-                    .create();
-            mProgressDialog.show();
-        }
-        mProgressBar.setIndeterminate(!determinate);
-        if (determinate) {
-            mProgressBar.setMax(max);
-            mProgressBar.setProgress(0);
-        }
-        mTextProgress.setText(message);
-    }
-
-    private void updateProgressDialog(int progress, int max, String message) {
-        if (mProgressBar != null) {
-            mProgressBar.setIndeterminate(false);
-            mProgressBar.setMax(max);
-            mProgressBar.setProgress(progress);
-        }
-        if (mTextProgress != null) {
-            mTextProgress.setText(message);
-        }
-    }
-
-    private void hideProgressDialog() {
-        if (mProgressDialog != null && mProgressDialog.isShowing()) {
-            mProgressDialog.dismiss();
-        }
-        mProgressDialog = null;
-        mProgressBar = null;
-        mTextProgress = null;
     }
 }

@@ -257,6 +257,9 @@ public class ImageHelper {
                 .openFileDescriptor(content, "r")) {
             bitmap = BitmapFactory.decodeFileDescriptor(pfd.getFileDescriptor(), null, bmOptions);
         }
+        if (bitmap == null) {
+            throw new IOException("Failed to decode image: " + content);
+        }
         if (rotation != 0) {
             Matrix matrix = new Matrix();
             matrix.setRotate(rotation);

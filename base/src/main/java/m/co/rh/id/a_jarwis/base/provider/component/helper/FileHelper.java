@@ -162,6 +162,43 @@ public class FileHelper {
         return tmpFile;
     }
 
+    /**
+     * Copy the given source image uri to a private cache temp file, a raw
+     * buffered byte copy so the original quality and EXIF stay intact for
+     * the save path. The original uri's extension is kept on the temp file
+     * name only when it is a plausible one, the file name must stay a safe
+     * single path segment.
+     *
+     * @param fileName  default file name for this file (e.g.
+     *                  "&lt;prefix&gt;&lt;index&gt;.jpg"), its extension is replaced by the
+     *                  source uri's extension when that one is plausible
+     * @param sourceUri ephemeral source uri of the picked image
+     * @return the created temp file or null when the copy failed
+     * (the original uri keeps being used, same as before the copy existed)
+     */
+    public File copySourceToTempFile(String fileName, Uri sourceUri) {
+        try {
+            String lastSegment = sourceUri.getLastPathSegment();
+            if (lastSegment != null) {
+                int dotIndex = lastSegment.lastIndexOf('.');
+                if (dotIndex >= 0) {
+                    String extension = lastSegment.substring(dotIndex + 1);
+                    // keep the original extension only when it is a plausible one,
+                    // the file name must stay a safe single path segment
+                    if (!extension.isEmpty() && extension.length() <= 4
+                            && extension.matches("[A-Za-z0-9]+")) {
+                        fileName = fileName.substring(0, fileName.lastIndexOf('.'))
+                                + "." + extension;
+                    }
+                }
+            }
+            return createTempFile(fileName, sourceUri);
+        } catch (Exception | OutOfMemoryError e) {
+            mLogger.get().e(TAG, e.getMessage(), e);
+            return null;
+        }
+    }
+
     public void clearLogFile() {
         if (mLogFile.exists()) {
             mLogFile.delete();

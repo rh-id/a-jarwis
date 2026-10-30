@@ -29,6 +29,7 @@
     <string name="loading_image">Laster inn bilde…</string>
     <string name="preparing_share">Forbereder bilde for deling…</string>
     <string name="share_failed">Kunne ikke dele bildet</string>
+    <string name="failed_to_load_image">Kunne ikke laste inn bildet</string>
     <string name="title_share_no_blur">Ingen slørte ansikter</string>
     <string name="msg_share_no_blur">Ingen slørte ansikter på dette bildet. Vil du dele originalen likevel?</string>
     <string name="no_face_detected">Ingen ansikt oppdaget</string>
@@ -74,4 +75,16 @@
     <string name="msg_discard_portrait_changes">Valgene dine for portrettmodus er ikke lagret. Vil du forkaste endringene?</string>
     <string name="title_share_no_portrait">Ingen person oppdaget</string>
     <string name="msg_share_no_portrait">Ingen person oppdaget på dette bildet. Vil du dele originalen likevel?</string>
+    <string name="detecting_progress">Oppdager objekt…</string>
+    <string name="title_magic_eraser">Magisk viskelær</string>
+    <string name="erase">Viske ut</string>
+    <string name="removing_progress">Fjerner objekt…</string>
+    <string name="no_object_detected">Intet objekt oppdaget</string>
+    <string name="msg_discard_magic_eraser_changes">Endringene dine fra magisk viskelær er ikke lagret. Vil du forkaste endringene?</string>
+    <string name="restoring_progress">Gjenoppretter endringer…</string>
+    <string name="brush_size">Penselstørrelse</string>
+    <string name="undo">Angre</string>
+    <string name="reset">Tilbakestill</string>
+    <string name="apply_history_full">Historikken er full. Lagre eller del resultatet for å starte en ny endring.</string>
+    <string name="error_insufficient_memory">Ikke nok minne til å behandle dette bildet</string>
 </resources>

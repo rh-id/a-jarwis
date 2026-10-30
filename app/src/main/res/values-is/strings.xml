@@ -29,6 +29,7 @@
     <string name="loading_image">Hleð inn mynd…</string>
     <string name="preparing_share">Undirbý mynd til deilingar…</string>
     <string name="share_failed">Tókst ekki að deila mynd</string>
+    <string name="failed_to_load_image">Tókst ekki að hlaða inn mynd</string>
     <string name="title_share_no_blur">Engin móðuð andlit</string>
     <string name="msg_share_no_blur">Engin móðuð andlit eru á þessari mynd. Viltu samt deila upprunalegu myndinni?</string>
     <string name="no_face_detected">Ekkert andlit fannst</string>
@@ -74,4 +75,16 @@
     <string name="msg_discard_portrait_changes">Valið þitt á portréttham hefur ekki verið vistað. Viltu fleygja breytingunum?</string>
     <string name="title_share_no_portrait">Ekkert fólk fannst</string>
     <string name="msg_share_no_portrait">Ekkert fólk fannst á þessari mynd. Viltu samt deila upprunalegu myndinni?</string>
+    <string name="detecting_progress">Greini hlut…</string>
+    <string name="title_magic_eraser">Galdraeyðari</string>
+    <string name="erase">Eyða</string>
+    <string name="removing_progress">Fjarlægi hlut…</string>
+    <string name="no_object_detected">Engur hlutur fannst</string>
+    <string name="msg_discard_magic_eraser_changes">Breytingarnar þínar á galdraeyðara hafa ekki verið vistaðar. Viltu fleygja breytingunum?</string>
+    <string name="restoring_progress">Endurheimti breytingar…</string>
+    <string name="brush_size">Pensilstærð</string>
+    <string name="undo">Afturkalla</string>
+    <string name="reset">Endurstilla</string>
+    <string name="apply_history_full">Ferillinn er fullur. Vistaðu eða deildu niðurstöðunni til að byrja nýja breytingu.</string>
+    <string name="error_insufficient_memory">Ekki nægt minni til að vinna úr þessari mynd</string>
 </resources>

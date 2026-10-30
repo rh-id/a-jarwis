@@ -29,6 +29,7 @@
     <string name="loading_image">Pildi laadimine…</string>
     <string name="preparing_share">Pildi ettevalmistamine jagamiseks…</string>
     <string name="share_failed">Pildi jagamine ebaõnnestus</string>
+    <string name="failed_to_load_image">Pildi laadimine ebaõnnestus</string>
     <string name="title_share_no_blur">Hägustatud nägusid pole</string>
     <string name="msg_share_no_blur">Sellel pildil pole hägustatud nägusid. Kas jagada siiski algset pilti?</string>
     <string name="no_face_detected">Nägusid ei tuvastatud</string>
@@ -74,4 +75,16 @@
     <string name="msg_discard_portrait_changes">Portreerežiimi valikuid pole salvestatud. Kas loobuda muudatustest?</string>
     <string name="title_share_no_portrait">Isikuid ei tuvastatud</string>
     <string name="msg_share_no_portrait">Sellel pildil ei tuvastatud isikuid. Kas jagada siiski algset pilti?</string>
+    <string name="detecting_progress">Objekti tuvastatakse…</string>
+    <string name="title_magic_eraser">Võlukustutaja</string>
+    <string name="erase">Kustuta</string>
+    <string name="removing_progress">Objekti eemaldatakse…</string>
+    <string name="no_object_detected">Objekti ei tuvastatud</string>
+    <string name="msg_discard_magic_eraser_changes">Sinu võlukustutaja muudatusi pole salvestatud. Kas loobuda muudatustest?</string>
+    <string name="restoring_progress">Muudatuste taastamine…</string>
+    <string name="brush_size">Harja suurus</string>
+    <string name="undo">Võta tagasi</string>
+    <string name="reset">Lähtesta</string>
+    <string name="apply_history_full">Ajalugu on täis. Salvesta või jaga tulemust, et alustada uut muudatust.</string>
+    <string name="error_insufficient_memory">Mälu ei piisa selle pildi töötlemiseks</string>
 </resources>

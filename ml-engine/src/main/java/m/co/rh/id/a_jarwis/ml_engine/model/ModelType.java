@@ -76,7 +76,30 @@ public enum ModelType {
     PERSON_SEG("person-segmentation",
             "Portrait Segmentation (PP-HumanSeg)",
             "~1.7 MB",
-            "https://huggingface.co/opencv/human_segmentation_pphumanseg/resolve/main/human_segmentation_pphumanseg_2023mar_int8bq.onnx");
+            "https://huggingface.co/opencv/human_segmentation_pphumanseg/resolve/main/human_segmentation_pphumanseg_2023mar_int8bq.onnx"),
+    /**
+     * EfficientSAM promptable object segmentation model (OpenCV Zoo, Apache-2.0),
+     * from https://huggingface.co/opencv/image_segmentation_efficientsam.
+     * Both the fp32 and the int8 build are verified on device through OpenCV 5
+     * DNN (int8 is functionally correct — the original all-zero observation
+     * was the n-dim bulk blob access bug, fixed by reading every blob through
+     * a reshaped 2-D view). The fp32 build ships: on the verification device
+     * (x86_64 emulator) it is ~2.4x faster and more accurate than int8
+     * (6.9 s vs 16.4 s per inference, IOU 0.99 vs 0.87), int8's only advantage
+     * is the one-time download (20 vs 46 MB), and the best on-device
+     * speed/quality trade-off wins (the PERSON_SEG precedent). The int8 URL
+     * is recorded for re-evaluation on real ARM hardware:
+     * https://huggingface.co/opencv/image_segmentation_efficientsam/resolve/main/image_segmentation_efficientsam_ti_2025april_int8.onnx
+     */
+    EFFICIENT_SAM("efficient-sam", "Object Mask (EfficientSAM)", "~46 MB",
+            "https://huggingface.co/opencv/image_segmentation_efficientsam/resolve/main/image_segmentation_efficientsam_ti_2025april.onnx"),
+    /**
+     * LaMa image inpainting model (OpenCV Zoo, Apache-2.0),
+     * from https://huggingface.co/opencv/inpainting_lama,
+     * the reference requires OpenCV >= 5.0
+     */
+    LAMA("lama", "LaMa Inpainting", "~93 MB",
+            "https://huggingface.co/opencv/inpainting_lama/resolve/main/inpainting_lama_2025jan.onnx");
 
     private final String mId;
     private final String mDisplayName;
