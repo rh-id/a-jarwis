@@ -1,0 +1,10 @@
+Release 2.2.0+14
+
+Feature:
+* New Portrait Mode editor powered by on-device PP-HumanSeg segmentation: blur the background or remove it entirely from photos with people
+* New Magic Eraser editor that removes unwanted objects: brush over an object, EfficientSAM segments it and LaMa inpainting fills the area so it looks like the object was never there
+* New AI Image Detector that estimates how likely a photo is AI-generated with a confidence band (Likely AI-generated / Unclear / Likely camera-original) and a probability percentage
+
+Changes:
+* The new AI features download their models once on demand over the internet on first use
+* Reduced and bounded ML memory usage for improved stability on low-memory devices

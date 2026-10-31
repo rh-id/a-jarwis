@@ -1,0 +1,10 @@
+Release 2.2.0+14
+
+Nye funksjonar:
+* Ny Portrettmodus-redigerar driven av PP-HumanSeg-segmentering på eininga: uklar bakgrunnen eller fjern han heilt frå bilete med menneske
+* Ny Magisk viskeler-redigerar som fjernar uønska objekt: målar over eit objekt, EfficientSAM segmenterer det og LaMa inpainting fyller området slik at det ser ut som objektet aldri var der
+* Ny AI-biletdetektor som anslår kor sannsynleg det er at eit bilete er AI-generert, med eit konfidensnivå (Sannsynlegvis AI-generert / Uklart / Sannsynlegvis originalt frå kamera) og ein sannsynsprosent
+
+Endringar:
+* De nye AI-funksjonane lastar ned modellane sine éin gong ved behov via internett ved fyrste bruk
+* Redusert og avgrensa ML-minnebruk for betre stabilitet på einingar med lite minne

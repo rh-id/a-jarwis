@@ -1,0 +1,10 @@
+Release 2.2.0+14
+
+Novità:
+* Nuovo editor Modalità ritratto basato sulla segmentazione PP-HumanSeg eseguita sul dispositivo: sfoca lo sfondo o lo elimina completamente dalle foto con persone
+* Nuova Gomma magica che rimuove gli oggetti indesiderati: passa il pennello su un oggetto, EfficientSAM lo segmenta e l'inpainting di LaMa riempie l'area, così sembra che l'oggetto non sia mai esistito
+* Nuovo Rilevatore di immagini IA che stima la probabilità che una foto sia generata da IA, con una fascia di confidenza (Probabilmente generata da IA / Non chiaro / Probabilmente originale da fotocamera) e una percentuale di probabilità
+
+Modifiche:
+* Le nuove funzionalità IA scaricano i loro modelli una sola volta su richiesta tramite Internet al primo utilizzo
+* Utilizzo di memoria ML ridotto e limitato per una maggiore stabilità sui dispositivi con poca memoria

@@ -1,0 +1,10 @@
+Release 2.2.0+14
+
+Nouveautés:
+* Nouvel éditeur Mode portrait propulsé par la segmentation PP-HumanSeg sur l'appareil : flouter l'arrière-plan ou le supprimer entièrement des photos avec des personnes
+* Nouvelle Gomme magique qui supprime les objets indésirables : passer le pinceau sur un objet, EfficientSAM le segmente et l'inpainting LaMa remplit la zone, si bien qu'on dirait que l'objet n'y a jamais été
+* Nouveau Détecteur d'images IA qui estime la probabilité qu'une photo soit générée par IA, avec un niveau de confiance (Probablement générée par IA / Indéterminé / Probablement d'origine caméra) et un pourcentage de probabilité
+
+Modifications:
+* Les nouvelles fonctionnalités IA téléchargent leurs modèles une seule fois, à la demande via Internet, lors de la première utilisation
+* Utilisation mémoire du ML réduite et plafonnée pour une meilleure stabilité sur les appareils à faible mémoire

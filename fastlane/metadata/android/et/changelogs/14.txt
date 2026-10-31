@@ -1,0 +1,10 @@
+Release 2.2.0+14
+
+Uued funktsioonid:
+* Uus Portreerežiimi redaktor, mis põhineb seadmesisesel PP-HumanSeg segmenteerimisel: hägustab inimestega fotodel tausta või eemaldab selle täielikult
+* Uus Võlukustutaja redaktor, mis eemaldab soovimatud objektid: tõmba objektile pintsliga peale, EfficientSAM segmenteerib selle ja LaMa inpainting täidab ala, nii et näib, nagu poleks objekti seal kunagi olnud
+* Uus AI-pildituvastaja, mis hindab, kui tõenäoliselt on foto tehisintellekti genereeritud, koos usaldusvahemikuga (Tõenäoliselt AI-genereritud / Ebaselge / Tõenäoliselt kaamerast pärinev) ja tõenäosusprotsendiga
+
+Muudatused:
+* Uued AI-funktsioonid laadivad oma mudelid esmakasutusel vajadusel interneti kaudu ühe korra alla
+* ML-i mälukasutus on vähendatud ja piiratud, et parandada stabiilsust väikese mäluga seadmetel

@@ -1,0 +1,10 @@
+Release 2.2.0+14
+
+Neue Funktionen:
+* Neuer Porträtmodus-Editor mit PP-HumanSeg-Segmentierung direkt auf dem Gerät: zeichnet den Hintergrund von Fotos mit Personen weich oder entfernt ihn vollständig
+* Neuer Magischer Radierer-Editor, der unerwünschte Objekte entfernt: einfach über ein Objekt streichen, EfficientSAM segmentiert es und LaMa-Inpainting füllt die Stelle, sodass es aussieht, als wäre das Objekt nie dagewesen
+* Neue KI-Bilderkennung, die einschätzt, wie wahrscheinlich ein Foto KI-generiert ist, mit einem Konfidenzbereich (Wahrscheinlich KI-generiert / Unklar / Wahrscheinlich Kamera-Original) und einer Wahrscheinlichkeitsangabe in Prozent
+
+Änderungen:
+* Die neuen KI-Funktionen laden ihre Modelle einmalig bei Bedarf über das Internet beim ersten Verwenden herunter
+* Reduzierte und begrenzte ML-Speichernutzung für mehr Stabilität auf Geräten mit wenig Arbeitsspeicher

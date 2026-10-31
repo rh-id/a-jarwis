@@ -1,0 +1,10 @@
+Release 2.2.0+14
+
+Novitads:
+* Il nov editor Modus da ritratscha cun la segmentaziun PP-HumanSeg sin l'apparat: sfumar il fund od eliminar el cumplettamain da fotografias cun persunas
+* Il nov editor Radiera magica che eliminescha objects indesiderads: sfregar sur in object, EfficientSAM segmentescha l'object e LaMa inpainting emplenescha il lieu, uschia ch'el para sco che l'object n'avess mai existì
+* Il nov detector da maletgs IA che stimescha co probabel ch'ina fotografia è generada d'IA, cun ina banda da confidenza (Probabel generada d'IA / Malclar / Probabel originala da la camera) ed ina procent da probabilitad
+
+Midadas:
+* Las novas funcziuns IA telechargian leurs models ina giada sin dumonda sur l'internet tar l'emprima utilisaziun
+* La memoria ML reducida e limitada per pli gronda stabilitad sin dispositivs cun poca memoria

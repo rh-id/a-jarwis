@@ -1,0 +1,10 @@
+Release 2.2.0+14
+
+Fitur:
+* Editor Mode Potret baru yang didukung segmentasi PP-HumanSeg di perangkat: buramkan latar belakang atau hilangkan sepenuhnya pada foto yang ada orangnya
+* Editor Penghapus Ajaib baru yang menghapus objek yang tidak diinginkan: sapukan kuas pada objek, EfficientSAM menyegmentasinya dan inpainting LaMa mengisi area tersebut sehingga seolah-olah objek itu tidak pernah ada
+* Detektor Gambar AI baru yang memperkirakan seberapa besar kemungkinan foto dihasilkan AI, dengan rentang keyakinan (Kemungkinan dihasilkan AI / Tidak jelas / Kemungkinan asli dari kamera) dan persentase probabilitas
+
+Perubahan:
+* Fitur AI yang baru mengunduh modelnya satu kali melalui internet sesuai permintaan saat pertama kali digunakan
+* Penggunaan memori ML dikurangi dan dibatasi untuk stabilitas yang lebih baik di perangkat dengan memori kecil

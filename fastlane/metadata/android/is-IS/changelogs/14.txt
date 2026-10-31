@@ -1,0 +1,10 @@
+Release 2.2.0+14
+
+Nýjar aðgerðir:
+* Nýr ritill fyrir Portréttham sem byggir á PP-HumanSeg aðgreiningu á tækinu: móðaðu bakgrunninn eða fjarlægðu hann algerlega af myndum með fólki
+* Nýr Galdraeyðari sem fjarlægir óþarfa hluti: penslaðu yfir hlut, EfficientSAM greinir hann út og LaMa inpainting fyllir svæðið svo það lítur út eins og hluturinn hafi aldrei verið þar
+* Nýr gervigreindarmyndaskynjari sem metur hversu líklegt er að mynd sé gerð með gervigreind, með líkindabili (Líklega gerð með gervigreind / Óljóst / Líklega upprunaleg mynd úr myndavél) og líkindaprósentu
+
+Breytingar:
+* Nýju gervigreindaraðgerðirnar sækja módel sín einu sinni um internetið eftir þörfum þegar þau eru notuð í fyrsta skipti
+* Minnisnotkun ML minnkað og takmörkuð fyrir betri stöðugleika á tækjum með lítið minni
