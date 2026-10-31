@@ -87,4 +87,13 @@
     <string name="reset">重置</string>
     <string name="apply_history_full">历史记录已满。请保存或分享结果后再开始新的编辑。</string>
     <string name="error_insufficient_memory">内存不足，无法处理此图片</string>
+    <string name="title_ai_detect">AI 图像检测器</string>
+    <string name="band_likely_ai">可能为 AI 生成</string>
+    <string name="band_unclear">不明确</string>
+    <string name="band_likely_real">可能为相机原图</string>
+    <string name="msg_ai_detect_probability">AI 生成概率：%1$d%%</string>
+    <string name="msg_ai_detect_disclaimer">此结果仅为概率估计，并非证明。检测器可能出错：风格化的艺术作品和经过大量编辑的照片可能被双向误判，压缩或裁剪过的图片会降低可靠性。切勿将结果当作证据。</string>
+    <string name="msg_ai_detect_analyze_busy">正在分析图片…</string>
+    <string name="error_ai_detect_failed">图片分析失败</string>
+    <string name="action_ai_detect_pick_another">检测另一张图片</string>
 </resources>

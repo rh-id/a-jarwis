@@ -87,4 +87,13 @@
     <string name="reset">Reavi</string>
     <string name="apply_history_full">L\'archiv è plain. Memorisai u parturai il resultat per cumenzar ina nova midada.</string>
     <string name="error_insufficient_memory">Memoria insuffizienta per elavurar quest maletg</string>
+    <string name="title_ai_detect">Detector da maletgs IA</string>
+    <string name="band_likely_ai">Probabel generada d\'IA</string>
+    <string name="band_unclear">Malclar</string>
+    <string name="band_likely_real">Probabel originala da la camera</string>
+    <string name="msg_ai_detect_probability">Probabilitad da generaziun d\'IA: %1$d%%</string>
+    <string name="msg_ai_detect_disclaimer">Quest resultat è ina stima da probabilitad, betg ina cumprova. Ils detectors faun sbagls: ovras d\'art stilisadas e fotografias fitg elavuradas pon vegnir giuditgadas mal en omaduas direcziuns, e maletgs cumprimids u tagliads reduxeschan la fidabilitad. Mai tractar in resultat sco cumprova.</string>
+    <string name="msg_ai_detect_analyze_busy">Analizar il maletg…</string>
+    <string name="error_ai_detect_failed">Analizar il maletg n\'è betg reussì</string>
+    <string name="action_ai_detect_pick_another">Controllar in auter maletg</string>
 </resources>

@@ -87,4 +87,13 @@
     <string name="reset">Setel ulang</string>
     <string name="apply_history_full">Riwayat sudah penuh. Simpan atau bagikan hasilnya untuk memulai edit baru.</string>
     <string name="error_insufficient_memory">Memori tidak cukup untuk memproses gambar ini</string>
+    <string name="title_ai_detect">Detektor Gambar AI</string>
+    <string name="band_likely_ai">Kemungkinan dihasilkan AI</string>
+    <string name="band_unclear">Tidak jelas</string>
+    <string name="band_likely_real">Kemungkinan asli dari kamera</string>
+    <string name="msg_ai_detect_probability">Probabilitas dihasilkan AI: %1$d%%</string>
+    <string name="msg_ai_detect_disclaimer">Hasil ini adalah perkiraan probabilistik, bukan bukti. Detektor bisa keliru: karya seni bergaya dan foto yang diedit berat bisa salah dinilai dalam kedua arah, dan gambar yang dikompresi atau dipotong mengurangi keandalan. Jangan pernah menganggap hasil sebagai bukti.</string>
+    <string name="msg_ai_detect_analyze_busy">Menganalisis gambar…</string>
+    <string name="error_ai_detect_failed">Gagal menganalisis gambar</string>
+    <string name="action_ai_detect_pick_another">Periksa gambar lain</string>
 </resources>

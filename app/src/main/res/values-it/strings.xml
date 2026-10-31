@@ -87,4 +87,13 @@
     <string name="reset">Reimposta</string>
     <string name="apply_history_full">La cronologia è piena. Salvare o condividere il risultato per iniziare una nuova modifica.</string>
     <string name="error_insufficient_memory">Memoria insufficiente per elaborare questa immagine</string>
+    <string name="title_ai_detect">Rilevatore di immagini IA</string>
+    <string name="band_likely_ai">Probabilmente generata da IA</string>
+    <string name="band_unclear">Non chiaro</string>
+    <string name="band_likely_real">Probabilmente originale da fotocamera</string>
+    <string name="msg_ai_detect_probability">Probabilità di generazione con IA: %1$d%%</string>
+    <string name="msg_ai_detect_disclaimer">Questo risultato è una stima probabilistica, non una prova. I rilevatori sbagliano: le opere d\'arte stilizzate e le foto fortemente modificate possono essere giudicate male in entrambe le direzioni, e le immagini compresse o ritagliate riducono l\'affidabilità. Non trattare mai un risultato come una prova.</string>
+    <string name="msg_ai_detect_analyze_busy">Analisi dell\'immagine…</string>
+    <string name="error_ai_detect_failed">Analisi dell\'immagine non riuscita</string>
+    <string name="action_ai_detect_pick_another">Verifica un\'altra immagine</string>
 </resources>

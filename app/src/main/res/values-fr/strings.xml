@@ -87,4 +87,13 @@
     <string name="reset">Réinitialiser</string>
     <string name="apply_history_full">L\'historique est plein. Enregistrez ou partagez le résultat pour commencer une nouvelle modification.</string>
     <string name="error_insufficient_memory">Mémoire insuffisante pour traiter cette image</string>
+    <string name="title_ai_detect">Détecteur d\'images IA</string>
+    <string name="band_likely_ai">Probablement générée par IA</string>
+    <string name="band_unclear">Indéterminé</string>
+    <string name="band_likely_real">Probablement d\'origine caméra</string>
+    <string name="msg_ai_detect_probability">Probabilité de génération par IA : %1$d%%</string>
+    <string name="msg_ai_detect_disclaimer">Ce résultat est une estimation probabiliste, pas une preuve. Les détecteurs se trompent : les œuvres d\'art stylisées et les photos fortement retouchées peuvent être mal évaluées dans les deux sens, et les images compressées ou recadrées réduisent la fiabilité. Ne considérez jamais un résultat comme une preuve.</string>
+    <string name="msg_ai_detect_analyze_busy">Analyse de l\'image…</string>
+    <string name="error_ai_detect_failed">Échec de l\'analyse de l\'image</string>
+    <string name="action_ai_detect_pick_another">Vérifier une autre image</string>
 </resources>

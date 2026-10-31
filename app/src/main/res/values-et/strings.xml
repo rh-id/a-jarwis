@@ -87,4 +87,13 @@
     <string name="reset">Lähtesta</string>
     <string name="apply_history_full">Ajalugu on täis. Salvesta või jaga tulemust, et alustada uut muudatust.</string>
     <string name="error_insufficient_memory">Mälu ei piisa selle pildi töötlemiseks</string>
+    <string name="title_ai_detect">AI-pildituvastaja</string>
+    <string name="band_likely_ai">Tõenäoliselt AI-genereritud</string>
+    <string name="band_unclear">Ebaselge</string>
+    <string name="band_likely_real">Tõenäoliselt kaamerast pärinev</string>
+    <string name="msg_ai_detect_probability">Tõenäosus, et pilt on AI-genereritud: %1$d%%</string>
+    <string name="msg_ai_detect_disclaimer">See tulemus on tõenäosuslik hinnang, mitte tõend. Tuvastajad teevad vigu: stiliseeritud kunstiteoseid ja tugevasti töödeldud fotosid võidakse hinnata mõlemas suunas valesti, ning tihendatud või lõigatud pildid vähendavad usaldusväärsust. Ära kunagi kohtle tulemust tõendina.</string>
+    <string name="msg_ai_detect_analyze_busy">Pildi analüüsimine…</string>
+    <string name="error_ai_detect_failed">Pildi analüüsimine ebaõnnestus</string>
+    <string name="action_ai_detect_pick_another">Kontrolli teist pilti</string>
 </resources>

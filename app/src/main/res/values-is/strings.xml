@@ -87,4 +87,13 @@
     <string name="reset">Endurstilla</string>
     <string name="apply_history_full">Ferillinn er fullur. Vistaðu eða deildu niðurstöðunni til að byrja nýja breytingu.</string>
     <string name="error_insufficient_memory">Ekki nægt minni til að vinna úr þessari mynd</string>
+    <string name="title_ai_detect">Gervigreindarmyndaskynjari</string>
+    <string name="band_likely_ai">Líklega gerð með gervigreind</string>
+    <string name="band_unclear">Óljóst</string>
+    <string name="band_likely_real">Líklega upprunaleg mynd úr myndavél</string>
+    <string name="msg_ai_detect_probability">Líkur á að myndin sé gerð með gervigreind: %1$d%%</string>
+    <string name="msg_ai_detect_disclaimer">Þessi niðurstaða er líkindamat, ekki sönnun. Skynjarar gera mistök: stílfærð listaverk og ljósmyndir sem hafa verið mikið breytt geta verið metin rangt í báðar áttir, og þjappaðar eða útskornar myndir draga úr áreiðanleika. Meðhöndlaðu aldrei niðurstöðu sem sönnun.</string>
+    <string name="msg_ai_detect_analyze_busy">Greini mynd…</string>
+    <string name="error_ai_detect_failed">Tókst ekki að greina mynd</string>
+    <string name="action_ai_detect_pick_another">Athuga aðra mynd</string>
 </resources>

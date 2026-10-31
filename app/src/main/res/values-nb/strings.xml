@@ -87,4 +87,13 @@
     <string name="reset">Tilbakestill</string>
     <string name="apply_history_full">Historikken er full. Lagre eller del resultatet for å starte en ny endring.</string>
     <string name="error_insufficient_memory">Ikke nok minne til å behandle dette bildet</string>
+    <string name="title_ai_detect">AI-bilddetektor</string>
+    <string name="band_likely_ai">Sannsynligvis AI-generert</string>
+    <string name="band_unclear">Uklart</string>
+    <string name="band_likely_real">Sannsynligvis originalt fra kamera</string>
+    <string name="msg_ai_detect_probability">Sannsynlighet for AI-generering: %1$d%%</string>
+    <string name="msg_ai_detect_disclaimer">Dette resultatet er et sannsynlighetsestimat, ikke et bevis. Detektorer gjør feil: Stiliserte kunstverk og kraftig redigerte bilder kan feilvurderes i begge retninger, og komprimerte eller beskårne bilder reduserer påliteligheten. Behandle aldri et resultat som bevis.</string>
+    <string name="msg_ai_detect_analyze_busy">Analyserer bilde…</string>
+    <string name="error_ai_detect_failed">Kunne ikke analysere bildet</string>
+    <string name="action_ai_detect_pick_another">Sjekk et annet bilde</string>
 </resources>

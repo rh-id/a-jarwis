@@ -87,4 +87,13 @@
     <string name="reset">Tilbakestill</string>
     <string name="apply_history_full">Historikken er full. Lagra eller del resultatet for å starte ei ny endring.</string>
     <string name="error_insufficient_memory">Ikkje nok minne til å handsame dette biletet</string>
+    <string name="title_ai_detect">AI-biletdetektor</string>
+    <string name="band_likely_ai">Sannsynlegvis AI-generert</string>
+    <string name="band_unclear">Uklart</string>
+    <string name="band_likely_real">Sannsynlegvis originalt frå kamera</string>
+    <string name="msg_ai_detect_probability">Sannsyn for AI-generering: %1$d%%</string>
+    <string name="msg_ai_detect_disclaimer">Dette resultatet er eit sannsynsestimat, ikkje eit prov. Detektorar gjer feil: Stiliserte kunstverk og kraftig redigerte bilete kan feilvurderast i begge retningar, og komprimerte eller beskorne bilete reduserer pålitelegheita. Bruk aldri eit resultat som prov.</string>
+    <string name="msg_ai_detect_analyze_busy">Analyserer bilete…</string>
+    <string name="error_ai_detect_failed">Klarte ikkje å analysera biletet</string>
+    <string name="action_ai_detect_pick_another">Sjekk eit anna bilete</string>
 </resources>
