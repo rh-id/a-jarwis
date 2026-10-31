@@ -5,7 +5,7 @@ No formatter/linter/static analyzer configured — do not invent or add commands
 1. Compile + lint everything (CI-equivalent): `.\gradlew.bat build`
    - Minimum for touched modules: `.\gradlew.bat :app:assembleDebug` (pulls :base/:settings/:ml-engine)
    - No native/CMake modules anymore (OpenCV is a prebuilt Maven AAR since 2026-09)
-2. Tests: only instrumented tests exist (`base` ImageHelperDecodeTest/SerializeUtilsTest; `ml-engine` FaceEngineTest/MagicEraserTest/PersonSegEngineTest/QREngineTest/STEngineTest — ONE class per engine component). They need an emulator AND network (AI models auto-download on first run):
+2. Tests: only instrumented tests exist (`base` ImageHelperDecodeTest/SerializeUtilsTest; `ml-engine` FaceEngineTest/MagicEraserTest/PersonSegEngineTest/QREngineTest/STEngineTest/AiImageDetectProcessorTest — ONE class per engine component). They need an emulator AND network (AI models auto-download on first run; AiImageDetectProcessorTest installs the ~87MB AI model):
    `.\gradlew.bat connectedCheck`
 3. If release intended: bump versionCode/versionName in `app/build.gradle` AND create `fastlane/metadata/android/en-US/changelogs/<versionCode>.txt` (its absence breaks release-artifact changelog generation in CI).
 

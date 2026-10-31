@@ -13,7 +13,7 @@ The power of AI in the palm of my hands!
 This is AI utility app for Android device, it basically uses AI model directly on-device to help on performing some tasks.  
 
 ## Features
-### Face Detection & Recognition
+### Face Blur
 <ul>
     <li>Detect and add blur effect on people face and export the result to gallery</li>
     <li>Detect and select which face to be blurred and export the result to gallery</li>
@@ -46,6 +46,25 @@ This is AI utility app for Android device, it basically uses AI model directly o
         the current marking), the full resolution result is rebuilt on save/share</li>
 </ul>
 
+### QR Code Censor
+<ul>
+    <li>Pick one or more photos and every detected QR code is outlined — tap a code to toggle
+        its censor blur, then export the result to gallery</li>
+    <li>Uses OpenCV's <code>QRCodeDetector</code> running in-box, so no AI model download is
+        needed</li>
+    <li>Reuses the face editor's blur controls: ellipse or square shape with strength 1..5
+        (per-image <code>BlurConfig</code>)</li>
+</ul>
+
+### QR Scanner
+<ul>
+    <li>Live camera scanning — frames are decoded in real time on-device using CameraX
+        (Preview + ImageAnalysis) with an OpenCV-backed decoder, no AI model download needed</li>
+    <li>Results accumulate in a list with per-line copy, "copy all" and tappable URL links,
+        and can be shared</li>
+    <li>A "scan from image" option decodes a QR code from an existing gallery photo</li>
+</ul>
+
 ### AI Image Detector
 <ul>
     <li>Pick an image and the app estimates how likely it was AI-generated with the
@@ -62,14 +81,23 @@ This is AI utility app for Android device, it basically uses AI model directly o
         model is kept for the session and released when the page closes</li>
 </ul>
 
+### Settings & Theming
+<ul>
+    <li>Light / dark / follow-system theme, plus Material You dynamic colors (toggle, on by
+        default on Android 12+)</li>
+    <li>In-app settings page with a log viewer, open-source licenses list, version info, and
+        a donations page</li>
+</ul>
+
 ### On-Demand AI Model Download
 <ul>
     <li>AI models are not bundled with the app; when a feature is used for the first time, the
         required models are downloaded once over the internet from their official Hugging Face
         repositories (<code>ModelDownloadDialog</code> enqueues <code>ModelDownloadWorker</code>,
         which runs <code>ModelDownloader</code>)</li>
-    <li>Each model is verified against its known sha256 checksum before use, and the download
-        progress is streamed live to the UI via <code>ModelChangeNotifier</code> (RxJava)</li>
+    <li>Each model is verified against the sha256 checksum reported by its Hugging Face repository
+        before use (downloads are resumable), and the download progress is streamed live to the
+        UI via <code>ModelChangeNotifier</code> (RxJava)</li>
     <li>An internet connection is only needed for the initial download; afterwards all features
         work fully offline</li>
 </ul>
@@ -80,9 +108,10 @@ The project follows a modular, layered architecture designed to separate concern
 
 ### Modules
 
-*   **`:app`**: The entry point. Contains the UI, Navigation, and Command implementations. It manages user interaction and delegates tasks.
-*   **`:ml-engine`**: The core intelligence. Encapsulates the logic engines (`FaceEngine`, `STEngine`), the AI model catalog with on-demand model download from Hugging Face, and background workers (`WorkManager`).
-*   **`:base`**: Shared infrastructure. Contains DI setup (`a-provider` modules), utilities (`FileHelper`, `MediaHelper`), and common UI components.
+*   **`:app`**: The entry point. Contains all UI pages (home, the five editors, QR scanner, AI detector), navigation registration, and the feature workflows.
+*   **`:ml-engine`**: The core intelligence. Encapsulates the logic engines (`FaceEngine`, `STEngine`, `QREngine`, `PersonSegEngine`, `MagicEraserEngine`, `AiDetectEngine`), the AI model catalog with on-demand model download from Hugging Face, and background workers (`WorkManager`).
+*   **`:base`**: Shared infrastructure. Contains DI setup (`a-provider` modules), utilities (`FileHelper`, `ImageHelper`, `MediaHelper`), common UI components, and the navigation route constants.
+*   **`:settings`**: In-app settings. Theme selection (light/dark/system, Material You dynamic colors), in-app log viewer, open-source licenses page (auto-generated at build time), and version info.
 
 ### Key Libraries
 
@@ -91,7 +120,8 @@ The project follows a modular, layered architecture designed to separate concern
 *   **StatefulView**: A framework for building state-aware UI components.
 *   **RxAndroid (RxJava 3)**: Manages asynchronous events and threading in the UI layer.
 *   **WorkManager**: Handles deferrable, guaranteed background work (on-demand AI model download).
-*   **OpenCV**: Powers the face detection and recognition capabilities.
+*   **OpenCV**: Powers the on-device computer vision — face detection, QR code detection, portrait segmentation, style transfer, object segmentation/inpainting and AI image detection (DNN).
+*   **CameraX**: Powers the live QR scanner camera preview and frame analysis.
 
 ## Logic Flow & Patterns
 
