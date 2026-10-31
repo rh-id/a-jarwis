@@ -15,76 +15,97 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <GridLayout
+        <!-- the scrollable home menu: the 7-tile grid overflows small
+             screens (e.g. 720x1280), the scroll view takes the space
+             below the fixed app bar -->
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:columnCount="@integer/grid_column_count">
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:fillViewport="true">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/button_blur_face"
-                style="@style/Theme.Asnapblur.HomeMenuButton"
-                android:layout_width="0dp"
+            <GridLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_columnWeight="1"
-                android:layout_gravity="fill"
-                android:gravity="center"
-                android:text="@string/title_blur_face"
-                app:icon="@drawable/ic_face_black" />
+                android:columnCount="@integer/grid_column_count">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/button_nst_apply_picture"
-                style="@style/Theme.Asnapblur.HomeMenuButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_columnWeight="1"
-                android:layout_gravity="fill"
-                android:gravity="center"
-                android:text="@string/title_nst_apply_image"
-                app:icon="@drawable/ic_palette_black" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/button_blur_face"
+                    style="@style/Theme.Asnapblur.HomeMenuButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_gravity="fill"
+                    android:gravity="center"
+                    android:text="@string/title_blur_face"
+                    app:icon="@drawable/ic_face_black" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/button_portrait_mode"
-                style="@style/Theme.Asnapblur.HomeMenuButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_columnWeight="1"
-                android:layout_gravity="fill"
-                android:gravity="center"
-                android:text="@string/title_portrait_mode"
-                app:icon="@drawable/ic_portrait_black" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/button_nst_apply_picture"
+                    style="@style/Theme.Asnapblur.HomeMenuButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_gravity="fill"
+                    android:gravity="center"
+                    android:text="@string/title_nst_apply_image"
+                    app:icon="@drawable/ic_palette_black" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/button_magic_eraser"
-                style="@style/Theme.Asnapblur.HomeMenuButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_columnWeight="1"
-                android:layout_gravity="fill"
-                android:gravity="center"
-                android:text="@string/title_magic_eraser"
-                app:icon="@drawable/ic_portrait_black" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/button_portrait_mode"
+                    style="@style/Theme.Asnapblur.HomeMenuButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_gravity="fill"
+                    android:gravity="center"
+                    android:text="@string/title_portrait_mode"
+                    app:icon="@drawable/ic_portrait_black" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/button_qr_censor"
-                style="@style/Theme.Asnapblur.HomeMenuButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_columnWeight="1"
-                android:layout_gravity="fill"
-                android:gravity="center"
-                android:text="@string/title_qr_censor"
-                app:icon="@drawable/ic_qr_code_black" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/button_magic_eraser"
+                    style="@style/Theme.Asnapblur.HomeMenuButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_gravity="fill"
+                    android:gravity="center"
+                    android:text="@string/title_magic_eraser"
+                    app:icon="@drawable/ic_portrait_black" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/button_qr_scan"
-                style="@style/Theme.Asnapblur.HomeMenuButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_columnWeight="1"
-                android:layout_gravity="fill"
-                android:gravity="center"
-                android:text="@string/title_qr_scan"
-                app:icon="@drawable/ic_qr_code_scanner_black" />
-        </GridLayout>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/button_ai_detect"
+                    style="@style/Theme.Asnapblur.HomeMenuButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_gravity="fill"
+                    android:gravity="center"
+                    android:text="@string/title_ai_detect"
+                    app:icon="@drawable/ic_ai_detect_black" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/button_qr_censor"
+                    style="@style/Theme.Asnapblur.HomeMenuButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_gravity="fill"
+                    android:gravity="center"
+                    android:text="@string/title_qr_censor"
+                    app:icon="@drawable/ic_qr_code_black" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/button_qr_scan"
+                    style="@style/Theme.Asnapblur.HomeMenuButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_gravity="fill"
+                    android:gravity="center"
+                    android:text="@string/title_qr_scan"
+                    app:icon="@drawable/ic_qr_code_scanner_black" />
+            </GridLayout>
+        </ScrollView>
     </LinearLayout>
 </androidx.drawerlayout.widget.DrawerLayout>

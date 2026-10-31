@@ -99,7 +99,37 @@ public enum ModelType {
      * the reference requires OpenCV >= 5.0
      */
     LAMA("lama", "LaMa Inpainting", "~93 MB",
-            "https://huggingface.co/opencv/inpainting_lama/resolve/main/inpainting_lama_2025jan.onnx");
+            "https://huggingface.co/opencv/inpainting_lama/resolve/main/inpainting_lama_2025jan.onnx"),
+    /**
+     * AI-generated-image detector, the CommunityForensics DeepfakeDet-ViT
+     * binary deepfake classifier, from
+     * https://huggingface.co/buildborderless/CommunityForensics-DeepfakeDet-ViT
+     * (the corrected fp32 build onnx/model.onnx), upstream project
+     * https://github.com/JeongsooP/Community-Forensics. Licence: MIT,
+     * primary source = the upstream GitHub LICENSE file (Copyright 2025
+     * Jeongsoo Park). Architecture: ViT-S/16 (hidden size 384, 6 heads,
+     * 12 layers, patch 16, intermediate 1536), 384x384 RGB input
+     * (shortest-edge resize to 440, center crop, CLIP normalization),
+     * num_labels=1 — a single output logit, pFake = sigmoid(logit).
+     * Training: 2.7M fakes across 4,803 generators against 2.7M reals with
+     * JPEG/resize/blur augmentation; paper cross-generator OOD eval
+     * 0.987 mAP / 0.892 accuracy (CVPR 2025, arXiv:2411.04125). Weights
+     * history: the hosted export is the CORRECTED 2026-07-22 regeneration —
+     * the stale artifacts (the deprecated ...-ONNX repos and the
+     * onnx_legacy/ folder of the model repo) hold WRONG weights and must
+     * not be used or re-exported. Quantized variants are a double NO-GO:
+     * OpenCV DNN cannot load them, and the model card itself documents
+     * 10-70 percentage-point OOD divergence for the int8/q4 builds.
+     * Spike status: Round 1 (jacoballessio distilled, 0/8 synthetic
+     * detected on-device): NO-GO 2026-10-31, model swapped; Round 2
+     * (this model): GO 2026-10-31 — 5/5 modern AI samples detected
+     * on-device (pFake 0.986-1.000), 0/9 false positives on the
+     * real+compressed group, 605 ms mean latency per image.
+     */
+    AI_IMAGE_DETECT("ai-image-detect",
+            "AI Image Detector (CommunityForensics)",
+            "~87 MB",
+            "https://huggingface.co/buildborderless/CommunityForensics-DeepfakeDet-ViT/resolve/main/onnx/model.onnx");
 
     private final String mId;
     private final String mDisplayName;

@@ -46,6 +46,22 @@ This is AI utility app for Android device, it basically uses AI model directly o
         the current marking), the full resolution result is rebuilt on save/share</li>
 </ul>
 
+### AI Image Detector
+<ul>
+    <li>Pick an image and the app estimates how likely it was AI-generated with the
+        on-device CommunityForensics DeepfakeDet-ViT model (~87 MB, downloaded on
+        demand): the result card shows a confidence band (likely AI-generated /
+        unclear / likely camera-original), the AI-generated percentage and a
+        disclaimer that the estimate is never evidence</li>
+    <li>The detector is deliberately conservative: stylized artwork and heavily
+        edited photos can be misjudged in either direction and compressed or
+        cropped images reduce reliability, so the result is always framed as a
+        probabilistic estimate with the uncertainty stated up front (a known
+        stylized-art blind spot was measured in the issue-#12 spike)</li>
+    <li>"Check another image" re-picks in place and re-runs the analysis, the
+        model is kept for the session and released when the page closes</li>
+</ul>
+
 ### On-Demand AI Model Download
 <ul>
     <li>AI models are not bundled with the app; when a feature is used for the first time, the

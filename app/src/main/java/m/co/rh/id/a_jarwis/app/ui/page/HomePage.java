@@ -78,6 +78,8 @@ public class HomePage extends StatefulView<Activity> implements RequireComponent
         portraitButton.setOnClickListener(this);
         Button magicEraserButton = rootLayout.findViewById(R.id.button_magic_eraser);
         magicEraserButton.setOnClickListener(this);
+        Button aiDetectButton = rootLayout.findViewById(R.id.button_ai_detect);
+        aiDetectButton.setOnClickListener(this);
         ViewGroup containerAppBar = rootLayout.findViewById(R.id.container_app_bar);
         containerAppBar.addView(mAppBarSV.buildView(activity, container));
         return rootLayout;
@@ -128,6 +130,8 @@ public class HomePage extends StatefulView<Activity> implements RequireComponent
             mWorkflow.startPortrait();
         } else if (id == R.id.button_magic_eraser) {
             mWorkflow.startMagicEraser();
+        } else if (id == R.id.button_ai_detect) {
+            mWorkflow.startAiDetect();
         }
     }
 

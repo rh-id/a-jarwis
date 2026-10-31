@@ -10,6 +10,7 @@ public class Routes {
     public static final String PORTRAIT_EDITOR_PAGE = "/editor/portraitEditor";
     public static final String MAGIC_ERASER_EDITOR_PAGE = "/editor/magicEraserEditor";
     public static final String STYLE_EDITOR_PAGE = "/editor/styleEditor";
+    public static final String AI_DETECT_PAGE = "/aiDetect";
     public static final String MODEL_DOWNLOAD_PAGE = "/common/modelDownload";
     public static final String SETTINGS_PAGE = "/settings";
     public static final String DONATIONS_PAGE = "/donations";

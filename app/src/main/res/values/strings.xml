@@ -91,4 +91,13 @@
     <string name="reset">Reset</string>
     <string name="apply_history_full">The erase history is full. Save or share the result to start a new edit.</string>
     <string name="error_insufficient_memory">Not enough memory to process this image</string>
+    <string name="title_ai_detect">AI Image Detector</string>
+    <string name="band_likely_ai">Likely AI-generated</string>
+    <string name="band_unclear">Unclear</string>
+    <string name="band_likely_real">Likely camera-original</string>
+    <string name="msg_ai_detect_probability">AI-generated probability: %1$d%%</string>
+    <string name="msg_ai_detect_disclaimer">This result is a probabilistic estimate, not proof. Detectors make mistakes: stylized artwork and heavily edited photos can be misjudged in either direction, and compressed or cropped images reduce reliability. Never treat a result as evidence.</string>
+    <string name="msg_ai_detect_analyze_busy">Analyzing image…</string>
+    <string name="error_ai_detect_failed">Image analysis failed</string>
+    <string name="action_ai_detect_pick_another">Check another image</string>
 </resources>

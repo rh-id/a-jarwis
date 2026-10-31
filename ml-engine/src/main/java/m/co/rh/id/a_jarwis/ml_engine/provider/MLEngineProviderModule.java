@@ -1,6 +1,7 @@
 package m.co.rh.id.a_jarwis.ml_engine.provider;
 
 import m.co.rh.id.a_jarwis.base.provider.component.helper.FileHelper;
+import m.co.rh.id.a_jarwis.ml_engine.provider.component.AiDetectEngine;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.FaceEngine;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.MLEngineInstance;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.MagicEraserEngine;
@@ -25,6 +26,8 @@ public class MLEngineProviderModule implements ProviderModule {
                 () -> new PersonSegEngine(provider));
         providerRegistry.registerLazy(MagicEraserEngine.class,
                 () -> new MagicEraserEngine(provider));
+        providerRegistry.registerLazy(AiDetectEngine.class,
+                () -> new AiDetectEngine(provider));
         providerRegistry.registerLazy(ModelDownloader.class,
                 () -> new ModelDownloader(provider.get(ILogger.class),
                         provider.get(FileHelper.class),

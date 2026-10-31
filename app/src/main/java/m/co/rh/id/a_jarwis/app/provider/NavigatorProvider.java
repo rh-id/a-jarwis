@@ -14,6 +14,7 @@ import java.util.Map;
 
 import m.co.rh.id.a_jarwis.R;
 import m.co.rh.id.a_jarwis.app.MainActivity;
+import m.co.rh.id.a_jarwis.app.ui.page.AiDetectPage;
 import m.co.rh.id.a_jarwis.settings.ui.page.DonationsPage;
 import m.co.rh.id.a_jarwis.app.ui.page.HomePage;
 import m.co.rh.id.a_jarwis.app.ui.page.QrScannerPage;
@@ -66,6 +67,7 @@ public class NavigatorProvider implements ProviderDisposable {
         navMap.put(Routes.PORTRAIT_EDITOR_PAGE, (args, activity) -> new PortraitEditorPage());
         navMap.put(Routes.MAGIC_ERASER_EDITOR_PAGE, (args, activity) -> new MagicEraserEditorPage());
         navMap.put(Routes.STYLE_EDITOR_PAGE, (args, activity) -> new StyleEditorPage());
+        navMap.put(Routes.AI_DETECT_PAGE, (args, activity) -> new AiDetectPage());
         navMap.put(Routes.MODEL_DOWNLOAD_PAGE, (args, activity) -> new ModelDownloadDialog());
         navMap.put(Routes.SETTINGS_PAGE, (args, activity) -> new SettingsPage());
         navMap.put(Routes.DONATIONS_PAGE, (args, activity) -> new DonationsPage());

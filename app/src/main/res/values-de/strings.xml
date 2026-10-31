@@ -87,4 +87,13 @@
     <string name="reset">Zurücksetzen</string>
     <string name="apply_history_full">Der Verlauf ist voll. Speichern oder teilen Sie das Ergebnis, um eine neue Bearbeitung zu starten.</string>
     <string name="error_insufficient_memory">Nicht genügend Arbeitsspeicher, um dieses Bild zu verarbeiten</string>
+    <string name="title_ai_detect">KI-Bilderkennung</string>
+    <string name="band_likely_ai">Wahrscheinlich KI-generiert</string>
+    <string name="band_unclear">Unklar</string>
+    <string name="band_likely_real">Wahrscheinlich Kamera-Original</string>
+    <string name="msg_ai_detect_probability">KI-generiert-Wahrscheinlichkeit: %1$d%%</string>
+    <string name="msg_ai_detect_disclaimer">Dieses Ergebnis ist eine Wahrscheinlichkeitsschätzung, kein Beweis. Erkennungsmodelle machen Fehler: Stilisierte Kunstwerke und stark bearbeitete Fotos können in beide Richtungen fehlbeurteilt werden, und komprimierte oder beschnittene Bilder verringern die Zuverlässigkeit. Behandeln Sie ein Ergebnis nie als Beweis.</string>
+    <string name="msg_ai_detect_analyze_busy">Bild wird analysiert…</string>
+    <string name="error_ai_detect_failed">Bildanalyse fehlgeschlagen</string>
+    <string name="action_ai_detect_pick_another">Weiteres Bild prüfen</string>
 </resources>

@@ -32,6 +32,7 @@ class HomeWorkflow implements Serializable {
     private static final int REQUEST_CODE_QR_SCAN = 6;
     private static final int REQUEST_CODE_IMAGE_PORTRAIT = 7;
     private static final int REQUEST_CODE_IMAGE_MAGIC_ERASER = 8;
+    private static final int REQUEST_CODE_IMAGE_AI_DETECT = 9;
 
     private transient INavigator mNavigator;
 
@@ -70,6 +71,11 @@ class HomeWorkflow implements Serializable {
                 startIfMagicEraserModelsAvailable(() ->
                         pickImage(REQUEST_CODE_IMAGE_MAGIC_ERASER, false)),
                 REQUEST_CODE_IMAGE_MAGIC_ERASER);
+    }
+
+    public void startAiDetect() {
+        requestWriteExternalStoragePermission(() -> startIfAiDetectModelsAvailable(() ->
+                pickImage(REQUEST_CODE_IMAGE_AI_DETECT, false)), REQUEST_CODE_IMAGE_AI_DETECT);
     }
 
     public void startQrScan() {
@@ -148,6 +154,19 @@ class HomeWorkflow implements Serializable {
         }
     }
 
+    private void startIfAiDetectModelsAvailable(ContinueAction continueAction) {
+        Activity activity = mNavigator.getActivity();
+        ArrayList<ModelType> missingModels = new ArrayList<>();
+        if (!ModelCatalog.isAvailable(activity, ModelType.AI_IMAGE_DETECT)) {
+            missingModels.add(ModelType.AI_IMAGE_DETECT);
+        }
+        if (missingModels.isEmpty()) {
+            continueAction.run();
+        } else {
+            startModelDownload(missingModels, continueAction);
+        }
+    }
+
     private void startModelDownload(ArrayList<ModelType> missingModels, ContinueAction continueAction) {
         mNavigator.push(Routes.MODEL_DOWNLOAD_PAGE, new ModelDownloadDialog.ModelList(missingModels),
                 (navigator, navRoute, activity1, currentView) -> {
@@ -197,6 +216,8 @@ class HomeWorkflow implements Serializable {
             startPortrait();
         } else if (requestCode == REQUEST_CODE_IMAGE_MAGIC_ERASER) {
             startMagicEraser();
+        } else if (requestCode == REQUEST_CODE_IMAGE_AI_DETECT) {
+            startAiDetect();
         }
     }
 
@@ -214,6 +235,8 @@ class HomeWorkflow implements Serializable {
             pushPortraitEditor(data);
         } else if (requestCode == REQUEST_CODE_IMAGE_MAGIC_ERASER) {
             pushMagicEraserEditor(data);
+        } else if (requestCode == REQUEST_CODE_IMAGE_AI_DETECT) {
+            pushAiDetect(data);
         }
     }
 
@@ -289,6 +312,20 @@ class HomeWorkflow implements Serializable {
         ArrayList<String> uris = new ArrayList<>();
         uris.add(pickedUris.get(0).toString());
         mNavigator.push(Routes.MAGIC_ERASER_EDITOR_PAGE, new UriList(uris));
+    }
+
+    /**
+     * Push the AI image detector page, the detection works on a single
+     * image so only the first picked uri is taken
+     */
+    private void pushAiDetect(Intent data) {
+        List<Uri> pickedUris = collectPickedUris(data);
+        if (pickedUris.isEmpty()) {
+            return;
+        }
+        ArrayList<String> uris = new ArrayList<>();
+        uris.add(pickedUris.get(0).toString());
+        mNavigator.push(Routes.AI_DETECT_PAGE, new UriList(uris));
     }
 
     /**

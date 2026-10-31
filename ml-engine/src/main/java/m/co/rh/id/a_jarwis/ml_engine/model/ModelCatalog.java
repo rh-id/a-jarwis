@@ -49,6 +49,9 @@ public final class ModelCatalog {
             case LAMA:
                 return new File(filesDir, MLEngineInstance.INPAINTING_PATH
                         + "/" + MLEngineInstance.LAMA_FILE);
+            case AI_IMAGE_DETECT:
+                return new File(filesDir, MLEngineInstance.AI_IMAGE_DETECT_PATH
+                        + "/" + MLEngineInstance.AI_IMAGE_DETECT_FILE);
             default:
                 throw new IllegalArgumentException("Unknown model type: " + modelType);
         }

@@ -41,6 +41,8 @@ public class MLEngineInstance implements ProviderDisposable {
     public static final String EFFICIENT_SAM_FILE = "image_segmentation_efficientsam_ti_2025april.onnx";
     public static final String INPAINTING_PATH = BASE_PATH + "/inpainting";
     public static final String LAMA_FILE = "inpainting_lama_2025jan.onnx";
+    public static final String AI_IMAGE_DETECT_PATH = BASE_PATH + "/ai-image-detect";
+    public static final String AI_IMAGE_DETECT_FILE = "community_forensics_deepfakedet_vit_fp32_2026july.onnx";
     private final Context mAppContext;
     private final ILogger mLogger;
     /**
@@ -79,6 +81,13 @@ public class MLEngineInstance implements ProviderDisposable {
      */
     private final ConcurrentHashMap<ModelType, LamaProcessor> mLamaProcessors;
     /**
+     * Lazy AI-generated-image detection processor cache (keyed by model type
+     * for future detector variants), an instance holds its ONNX model loaded
+     * in the native memory (the fp32 file is ~87 MB) for the app lifetime
+     * because the model is never deleted once downloaded
+     */
+    private final ConcurrentHashMap<ModelType, AiImageDetectProcessor> mAiImageDetectProcessors;
+    /**
      * Lazy cached YuNet face detector, created on first face detection and
      * kept for the provider lifetime like the dnn processor caches above.
      * Released only by {@link #releaseFaceModels()} and
@@ -100,6 +109,7 @@ public class MLEngineInstance implements ProviderDisposable {
         mPersonSegProcessors = new ConcurrentHashMap<>();
         mEfficientSamProcessors = new ConcurrentHashMap<>();
         mLamaProcessors = new ConcurrentHashMap<>();
+        mAiImageDetectProcessors = new ConcurrentHashMap<>();
         if (OpenCVLoader.initLocal()) {
             mLogger.d("OpenCV", "OpenCV loaded");
         } else {
@@ -166,6 +176,20 @@ public class MLEngineInstance implements ProviderDisposable {
     }
 
     /**
+     * Returns the AI-generated-image detection processor, creating and
+     * caching it on first access. A processor instance must never have its
+     * classify() invoked concurrently, callers are expected to serialize
+     * their calls on one instance (e.g. through a single-thread executor)
+     *
+     * @return the cached AI-generated-image detection processor
+     */
+    public AiImageDetectProcessor getAiImageDetectProcessor() {
+        return mAiImageDetectProcessors.computeIfAbsent(ModelType.AI_IMAGE_DETECT,
+                modelType -> new AiImageDetectProcessor(
+                        requireModelFile(modelType).getAbsolutePath(), mLogger));
+    }
+
+    /**
      * Release the cached object segmentation processor (frees its native
      * net, see {@link EfficientSamProcessor#release()}): OpenCV dnn retains
      * a large workspace inside the net after its inference, so an editor
@@ -193,6 +217,24 @@ public class MLEngineInstance implements ProviderDisposable {
      */
     public void releaseLamaProcessor() {
         LamaProcessor processor = mLamaProcessors.remove(ModelType.LAMA);
+        if (processor != null) {
+            processor.release();
+            nudgeNativeReclaim();
+        }
+    }
+
+    /**
+     * Release the cached AI-generated-image detection processor (frees its
+     * native net, see {@link AiImageDetectProcessor#release()}): OpenCV dnn
+     * retains a large workspace inside the net after its inference, so an
+     * editor page releases the processor when it is done detecting instead
+     * of keeping it for the app lifetime. The next
+     * {@link #getAiImageDetectProcessor()} lazily recreates the processor
+     * from the model file on demand.
+     */
+    public void releaseAiImageDetectProcessor() {
+        AiImageDetectProcessor processor =
+                mAiImageDetectProcessors.remove(ModelType.AI_IMAGE_DETECT);
         if (processor != null) {
             processor.release();
             nudgeNativeReclaim();
@@ -288,6 +330,10 @@ public class MLEngineInstance implements ProviderDisposable {
         return ModelCatalog.isAvailable(mAppContext, ModelType.PERSON_SEG);
     }
 
+    public boolean isAiImageDetectAvailable() {
+        return ModelCatalog.isAvailable(mAppContext, ModelType.AI_IMAGE_DETECT);
+    }
+
     /**
      * @return true only when BOTH the object segmentation model and the
      * inpainting model are downloaded, the magic eraser needs the two of them
@@ -347,10 +393,18 @@ public class MLEngineInstance implements ProviderDisposable {
                 mLogger.e(TAG, "Failed to release an inpainting processor", e);
             }
         }
+        for (AiImageDetectProcessor processor : mAiImageDetectProcessors.values()) {
+            try {
+                processor.release();
+            } catch (Exception e) {
+                mLogger.e(TAG, "Failed to release an AI image detection processor", e);
+            }
+        }
         mSTProcessors.clear();
         mPersonSegProcessors.clear();
         mEfficientSamProcessors.clear();
         mLamaProcessors.clear();
+        mAiImageDetectProcessors.clear();
         mFaceDetector = null;
         mFaceRecognizer = null;
         nudgeNativeReclaim();

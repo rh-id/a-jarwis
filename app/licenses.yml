@@ -545,3 +545,8 @@
   license: Apache-2.0
   licenseUrl: https://www.apache.org/licenses/LICENSE-2.0.txt
   url: https://huggingface.co/opencv/inpainting_lama
+- name: CommunityForensics DeepfakeDet-ViT model
+  copyrightHolder: Jeongsoo Park and Andrew Owens (University of Michigan)
+  license: MIT
+  licenseUrl: https://github.com/JeongsooP/Community-Forensics/blob/main/LICENSE
+  url: https://huggingface.co/buildborderless/CommunityForensics-DeepfakeDet-ViT
