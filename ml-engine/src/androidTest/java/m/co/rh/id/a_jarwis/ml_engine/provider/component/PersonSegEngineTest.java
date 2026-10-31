@@ -6,6 +6,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -20,16 +21,20 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opencv.core.CvType;
+import org.opencv.core.Mat;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import m.co.rh.id.a_jarwis.base.provider.component.helper.FileHelper;
 import m.co.rh.id.a_jarwis.ml_engine.model.BlurConfig;
+import m.co.rh.id.a_jarwis.ml_engine.model.ModelCatalog;
 import m.co.rh.id.a_jarwis.ml_engine.model.ModelType;
 import m.co.rh.id.a_jarwis.ml_engine.provider.MLEngineTestProviderModule;
 import m.co.rh.id.a_jarwis.ml_engine.test.R;
+import m.co.rh.id.alogger.ILogger;
 import m.co.rh.id.aprovider.Provider;
 
 /**
@@ -44,6 +49,7 @@ public class PersonSegEngineTest {
 
     private static PersonSegEngine mPersonSegEngine;
     private static Provider mMLEngineProvider;
+    private static ILogger mLogger;
 
     @BeforeClass
     public static void beforeAnyTest() throws IOException {
@@ -51,6 +57,7 @@ public class PersonSegEngineTest {
         mMLEngineProvider = Provider.createProvider(appContext, new MLEngineTestProviderModule());
         ModelTestHelper.installModels(mMLEngineProvider, ModelType.PERSON_SEG);
         mPersonSegEngine = mMLEngineProvider.get(PersonSegEngine.class);
+        mLogger = mMLEngineProvider.get(ILogger.class);
     }
 
     @AfterClass
@@ -278,11 +285,61 @@ public class PersonSegEngineTest {
     }
 
     /**
-     * Decode one of the instrumented test images from res/raw.
+     * The release contract of a directly constructed
+     * {@link PersonSegProcessor}: it must return a usable mask, must refuse
+     * further inference once released (fail fast instead of touching the
+     * freed native net) and releasing more than once must be a safe no-op.
+     * The processor is constructed directly (never through the engine
+     * instance) so the cached instance behind {@link #mPersonSegEngine} is
+     * never touched and the released instance is discarded here.
+     */
+    @Test
+    public void personSegProcessor_releaseContract() {
+        Context context = mMLEngineProvider.getContext();
+        PersonSegProcessor processor = new PersonSegProcessor(
+                ModelCatalog.getModelFile(context, ModelType.PERSON_SEG)
+                        .getAbsolutePath(), mLogger);
+        Bitmap input = Bitmap.createBitmap(64, 64, Bitmap.Config.ARGB_8888);
+        input.eraseColor(Color.RED);
+        try {
+            Mat mask = processor.computeMask(input);
+            try {
+                assertNotNull(mask);
+            } finally {
+                // the raw mask Mat is caller owned (see the processor contract)
+                mask.release();
+            }
+            processor.release();
+            try {
+                processor.computeMask(input);
+                fail("a released processor must refuse inference");
+            } catch (IllegalStateException expected) {
+                // the documented released-processor contract
+            }
+            // releasing more than once is a safe no-op
+            processor.release();
+        } finally {
+            input.recycle();
+            // the released net wrapper is deleted by its finalizer, nudge
+            // the runtime so the native reclamation happens here instead of
+            // an arbitrary later GC (same hygiene as the engine release
+            // tests of MagicEraserTest)
+            System.gc();
+            Runtime.getRuntime().runFinalization();
+        }
+    }
+
+    /**
+     * Decode one of the instrumented test images from res/raw, closing the
+     * resource stream (decodeStream does not close it).
      */
     private Bitmap decodeTestImage(int rawId) {
         Context context = mMLEngineProvider.getContext();
-        return BitmapFactory.decodeStream(context.getResources().openRawResource(rawId));
+        try (InputStream in = context.getResources().openRawResource(rawId)) {
+            return BitmapFactory.decodeStream(in);
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to decode raw resource", e);
+        }
     }
 
     /**

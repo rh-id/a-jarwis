@@ -32,4 +32,19 @@ public class MLEngineProviderModule implements ProviderModule {
         providerRegistry.registerLazy(ModelChangeNotifier.class,
                 () -> new ModelChangeNotifier());
     }
+
+    /**
+     * Drain the cached native processors of the engine instance
+     * synchronously: the registry entry dispose of
+     * {@link MLEngineInstance} runs asynchronously on DefaultProvider's
+     * static executor, which can still be pending when the next
+     * instrumentation class starts loading models on the memory-constrained
+     * CI emulator — draining synchronously here (the registry is still
+     * intact during the module dispose) makes that async call an idempotent
+     * no-op.
+     */
+    @Override
+    public void dispose(Provider provider) {
+        provider.get(MLEngineInstance.class).dispose(provider.getContext());
+    }
 }

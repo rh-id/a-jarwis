@@ -33,7 +33,10 @@ import m.co.rh.id.alogger.ILogger;
  * <p>
  * A processor instance must never have its {@link #computeMask(Bitmap)}
  * invoked concurrently, callers are expected to serialize their calls on one
- * instance (e.g. through a single-thread executor).
+ * instance (e.g. through a single-thread executor). Once
+ * {@link #release()} is invoked the instance is dead: it must be discarded
+ * and never used again, the {@link MLEngineInstance} cache recreates a fresh
+ * processor on demand.
  */
 class PersonSegProcessor {
     private static final String TAG = "PersonSegProcessor";
@@ -61,7 +64,7 @@ class PersonSegProcessor {
             toOdd(Math.round(MODEL_INPUT_SIZE * MASK_FEATHER_SCALE));
 
     private final ILogger mLogger;
-    private final Net mModelNet;
+    private Net mModelNet;
     private final String mTag;
 
     public PersonSegProcessor(String modelPath, ILogger logger) {
@@ -71,13 +74,55 @@ class PersonSegProcessor {
     }
 
     /**
+     * Release the native network of this processor: the parsed model weights
+     * plus the dnn workspace OpenCV retains inside the net after the
+     * forward() calls. The OpenCV 5.0.0.1 Java bindings expose no public
+     * native delete for cv::dnn::Net ({@code Net.finalizeNet()} only prepares
+     * the inference session, it frees nothing), the native peer is deleted by
+     * the net wrapper's finalizer once this processor drops its reference —
+     * {@link MLEngineInstance} nudges the runtime right after releasing so
+     * the reclamation happens at that predictable point instead of an
+     * arbitrary later GC.
+     * <p>
+     * A released processor is dead: it must be discarded and never used
+     * again, the {@link MLEngineInstance} cache recreates a fresh processor
+     * on demand (the model file is re-parsed, a seconds-long operation).
+     * Releasing more than once is a safe no-op. Synchronized on the same
+     * monitor as {@link #computeMask(Bitmap)}, so a release can never run
+     * concurrently with an inference (that would be a native use-after-free
+     * when a provider dispose races an in-flight task).
+     */
+    public synchronized void release() {
+        if (mModelNet == null) {
+            return;
+        }
+        // this was the last strong reference to the net wrapper
+        mModelNet = null;
+    }
+
+    /**
+     * A released processor holds no net anymore: using it would be a bug of
+     * the caller (a released instance must be discarded, the engine instance
+     * recreates it on demand), fail fast with a clear message instead of a
+     * null native pointer deep inside the inference
+     */
+    private void checkNotReleased() {
+        if (mModelNet == null) {
+            throw new IllegalStateException(TAG
+                    + " already released, a released processor must be"
+                    + " discarded (MLEngineInstance recreates it on demand)");
+        }
+    }
+
+    /**
      * Compute the soft alpha mask of the person in the given bitmap.
      *
      * @param input bitmap to be segmented, never recycled by this method
      * @return the native mask Mat (CV_8U single channel) matching the input
      * dimensions, the caller owns it and must release() it
      */
-    public Mat computeMask(Bitmap input) {
+    public synchronized Mat computeMask(Bitmap input) {
+        checkNotReleased();
         int width = input.getWidth();
         int height = input.getHeight();
         // bitmapToMat produces an RGBA-ordered CV_8UC4 (verified OpenCV 5 behavior)

@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.opencv.core.Mat;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import m.co.rh.id.a_jarwis.ml_engine.model.ModelType;
@@ -54,73 +55,153 @@ public class FaceEngineTest {
     }
 
     @Test
-    public void faceEngineDetect() {
+    public void faceEngineDetect() throws IOException {
         Context context = mMLEngineProvider.getContext();
-        Bitmap bitmap = BitmapFactory.decodeStream(context.getResources().
-                openRawResource(R.raw.abbas_kiarostami_0001));
-        List<Rect> rectList = mFaceEngine.detectFace(bitmap);
-        assertEquals(1, rectList.size());
+        Bitmap bitmap = null;
+        try {
+            try (InputStream in = context.getResources().
+                    openRawResource(R.raw.abbas_kiarostami_0001)) {
+                bitmap = BitmapFactory.decodeStream(in);
+            }
+            List<Rect> rectList = mFaceEngine.detectFace(bitmap);
+            assertEquals(1, rectList.size());
+        } finally {
+            if (bitmap != null) {
+                bitmap.recycle();
+            }
+        }
     }
 
     @Test
-    public void faceEngineRecognize() {
+    public void faceEngineRecognize() throws IOException {
         Context context = mMLEngineProvider.getContext();
-        Bitmap face1 = BitmapFactory.decodeStream(context.getResources().
-                openRawResource(R.raw.abel_pacheco_0001));
-        List<Rect> face1List = mFaceEngine.detectFace(face1);
-        assertEquals(1, face1List.size());
+        Bitmap face1 = null;
+        Bitmap face2 = null;
+        Bitmap face1Crop = null;
+        Bitmap face2Crop = null;
+        try {
+            try (InputStream in = context.getResources().
+                    openRawResource(R.raw.abel_pacheco_0001)) {
+                face1 = BitmapFactory.decodeStream(in);
+            }
+            List<Rect> face1List = mFaceEngine.detectFace(face1);
+            assertEquals(1, face1List.size());
 
-        Bitmap face2 = BitmapFactory.decodeStream(context.getResources().
-                openRawResource(R.raw.abel_pacheco_0002));
-        List<Rect> face2List = mFaceEngine.detectFace(face2);
-        assertEquals(1, face2List.size());
+            try (InputStream in = context.getResources().
+                    openRawResource(R.raw.abel_pacheco_0002)) {
+                face2 = BitmapFactory.decodeStream(in);
+            }
+            List<Rect> face2List = mFaceEngine.detectFace(face2);
+            assertEquals(1, face2List.size());
 
-        List<Rect> faceSimilar = mFaceEngine.searchFace(face1, face2);
-        assertEquals(1, faceSimilar.size());
+            List<Rect> faceSimilar = mFaceEngine.searchFace(face1, face2);
+            assertEquals(1, faceSimilar.size());
 
-        Rect face1Rect = face1List.get(0);
-        Rect face2Rect = face2List.get(0);
-        faceSimilar = mFaceEngine.searchFace(
-                Bitmap.createBitmap(face1, face1Rect.left, face1Rect.top, face1Rect.width(), face1Rect.height()),
-                Bitmap.createBitmap(face2, face2Rect.left, face2Rect.top, face2Rect.width(), face2Rect.height()));
-        assertEquals(1, faceSimilar.size());
+            Rect face1Rect = face1List.get(0);
+            Rect face2Rect = face2List.get(0);
+            face1Crop = Bitmap.createBitmap(face1, face1Rect.left, face1Rect.top,
+                    face1Rect.width(), face1Rect.height());
+            face2Crop = Bitmap.createBitmap(face2, face2Rect.left, face2Rect.top,
+                    face2Rect.width(), face2Rect.height());
+            faceSimilar = mFaceEngine.searchFace(face1Crop, face2Crop);
+            assertEquals(1, faceSimilar.size());
+        } finally {
+            if (face1Crop != null) {
+                face1Crop.recycle();
+            }
+            if (face2Crop != null) {
+                face2Crop.recycle();
+            }
+            if (face1 != null) {
+                face1.recycle();
+            }
+            if (face2 != null) {
+                face2.recycle();
+            }
+        }
     }
 
     @Test
-    public void faceEngineRecognize_faceNotSimilar() {
+    public void faceEngineRecognize_faceNotSimilar() throws IOException {
         Context context = mMLEngineProvider.getContext();
-        Bitmap face1 = BitmapFactory.decodeStream(context.getResources().
-                openRawResource(R.raw.abel_pacheco_0001));
-        List<Rect> face1List = mFaceEngine.detectFace(face1);
-        assertEquals(1, face1List.size());
+        Bitmap face1 = null;
+        Bitmap face2 = null;
+        try {
+            try (InputStream in = context.getResources().
+                    openRawResource(R.raw.abel_pacheco_0001)) {
+                face1 = BitmapFactory.decodeStream(in);
+            }
+            List<Rect> face1List = mFaceEngine.detectFace(face1);
+            assertEquals(1, face1List.size());
 
-        Bitmap face2 = BitmapFactory.decodeStream(context.getResources().
-                openRawResource(R.raw.abbas_kiarostami_0001));
-        List<Rect> face2List = mFaceEngine.detectFace(face2);
-        assertEquals(1, face2List.size());
+            try (InputStream in = context.getResources().
+                    openRawResource(R.raw.abbas_kiarostami_0001)) {
+                face2 = BitmapFactory.decodeStream(in);
+            }
+            List<Rect> face2List = mFaceEngine.detectFace(face2);
+            assertEquals(1, face2List.size());
 
-        List<Rect> faceSimilar = mFaceEngine.searchFace(face1, face2);
-        assertEquals(0, faceSimilar.size());
+            List<Rect> faceSimilar = mFaceEngine.searchFace(face1, face2);
+            assertEquals(0, faceSimilar.size());
+        } finally {
+            if (face1 != null) {
+                face1.recycle();
+            }
+            if (face2 != null) {
+                face2.recycle();
+            }
+        }
     }
 
     @Test
-    public void faceEngine_isFaceSimilar() {
+    public void faceEngine_isFaceSimilar() throws IOException {
         Context context = mMLEngineProvider.getContext();
-        Bitmap face1 = BitmapFactory.decodeStream(context.getResources().
-                openRawResource(R.raw.abel_pacheco_0001));
-        Mat face1List = mFaceEngine.detectFaceRaw(face1);
-        assertEquals(1, face1List.rows());
+        Bitmap face1 = null;
+        Bitmap face2 = null;
+        Mat face1List = null;
+        Mat face2List = null;
+        Mat face1Row = null;
+        Mat face2Row = null;
+        try {
+            try (InputStream in = context.getResources().
+                    openRawResource(R.raw.abel_pacheco_0001)) {
+                face1 = BitmapFactory.decodeStream(in);
+            }
+            face1List = mFaceEngine.detectFaceRaw(face1);
+            assertEquals(1, face1List.rows());
 
-        Bitmap face2 = BitmapFactory.decodeStream(context.getResources().
-                openRawResource(R.raw.abel_pacheco_0002));
-        Mat face2List = mFaceEngine.detectFaceRaw(face2);
-        assertEquals(1, face2List.rows());
+            try (InputStream in = context.getResources().
+                    openRawResource(R.raw.abel_pacheco_0002)) {
+                face2 = BitmapFactory.decodeStream(in);
+            }
+            face2List = mFaceEngine.detectFaceRaw(face2);
+            assertEquals(1, face2List.rows());
 
-        boolean faceSimilar = mFaceEngine.isFaceSimilar(
-                face1, face2,
-                face1List.row(0),
-                face2List.row(0)
-        );
-        assertTrue(faceSimilar);
+            face1Row = face1List.row(0);
+            face2Row = face2List.row(0);
+            boolean faceSimilar = mFaceEngine.isFaceSimilar(face1, face2,
+                    face1Row, face2Row);
+            assertTrue(faceSimilar);
+        } finally {
+            // detectFaceRaw documents a caller-owned result — release it like any Mat
+            if (face1Row != null) {
+                face1Row.release();
+            }
+            if (face2Row != null) {
+                face2Row.release();
+            }
+            if (face1List != null) {
+                face1List.release();
+            }
+            if (face2List != null) {
+                face2List.release();
+            }
+            if (face1 != null) {
+                face1.recycle();
+            }
+            if (face2 != null) {
+                face2.recycle();
+            }
+        }
     }
 }

@@ -1,5 +1,6 @@
 package m.co.rh.id.a_jarwis.ml_engine.provider.component;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -19,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import m.co.rh.id.a_jarwis.ml_engine.model.BlurConfig;
 import m.co.rh.id.alogger.ILogger;
 import m.co.rh.id.aprovider.Provider;
+import m.co.rh.id.aprovider.ProviderDisposable;
 import m.co.rh.id.aprovider.ProviderValue;
 
 /**
@@ -31,7 +33,7 @@ import m.co.rh.id.aprovider.ProviderValue;
  * The processing is a heavy native operation, callers are expected to run it
  * serialized (e.g. on a single background executor).
  */
-public class PersonSegEngine {
+public class PersonSegEngine implements ProviderDisposable {
     private static final String TAG = "PersonSegEngine";
     /**
      * Minimum Gaussian blur kernel size, OpenCV requires a positive odd kernel size
@@ -127,6 +129,21 @@ public class PersonSegEngine {
         for (Object cacheKey : mMaskCache.keySet()) {
             releaseMask(cacheKey);
         }
+    }
+
+    /**
+     * Drain every cached mask when the provider tears down (the engine
+     * releases the native-backed masks through their {@link PersonSegMask}):
+     * belt-and-braces — the editor page already releases its session masks
+     * on dispose (PortraitEditorPage), this drains any mask left cached when
+     * a page forgot, so no mask memory outlives the provider.
+     *
+     * @param context the context of the provider, unused here (draining the
+     *                mask cache needs no context)
+     */
+    @Override
+    public void dispose(Context context) {
+        releaseAllMasks();
     }
 
     /**

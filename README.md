@@ -74,61 +74,44 @@ The project follows a modular, layered architecture designed to separate concern
 *   **a-provider**: A lightweight Dependency Injection (DI) framework.
 *   **StatefulView**: A framework for building state-aware UI components.
 *   **RxAndroid (RxJava 3)**: Manages asynchronous events and threading in the UI layer.
-*   **WorkManager**: Handles deferrable, guaranteed background work (ML processing).
+*   **WorkManager**: Handles deferrable, guaranteed background work (on-demand AI model download).
 *   **OpenCV**: Powers the face detection and recognition capabilities.
 
 ## Logic Flow & Patterns
 
-The application heavily utilizes the **Command Pattern** to decouple the UI from the execution logic.
+Interactive ML runs synchronously inside state-aware **editor pages**; every heavy call runs via RxJava on the shared background executor behind a modal progress dialog, and **WorkManager** is used only for on-demand AI model download.
 
 ### High-Level Workflow
 
-1.  **User Interaction**: The user triggers an action (e.g., "Auto Blur Face") in the UI (`HomePage`).
-2.  **Command Execution**: The UI invokes a specific **Command** (e.g., `BlurFaceCommand`).
-3.  **Engine Delegation**: The Command prepares the data and delegates the task to a specific **Engine** (e.g., `FaceEngine`).
-4.  **Background Work**: The Engine serializes the request and enqueues it to the **WorkManager**.
-5.  **Processing**: The background **Worker** (`BlurFaceWorkRequest`) wakes up, deserializes the data, and runs the heavy ML algorithms.
-6.  **Result**: The processed image is saved to the gallery, and the user is notified.
+1.  **User Interaction**: The user picks image(s) in the UI (`HomePage`) and pushes them to an editor page (e.g., `FaceEditorPage`).
+2.  **Interactive Editing**: The page calls the engine (e.g., `FaceEngine`) on a downscaled preview; each heavy call runs via RxJava on the shared background executor with a progress dialog as busy-guard.
+3.  **Engine Execution**: The engine delegates to its cached processors (OpenCV DNN) — all heavy native work happens here.
+4.  **Result**: The edited image is composited at full resolution and saved to the gallery on save/share.
 
 ### Diagram
 
 ```mermaid
 sequenceDiagram
     participant UI as HomePage (UI)
-    participant Cmd as BlurFaceCommand
+    participant Page as FaceEditorPage
     participant Eng as FaceEngine
-    participant WM as WorkManager
-    participant Wkr as BlurFaceWorkRequest
     participant ML as OpenCV/ML Model
 
-    UI->>Cmd: execute(imageUri)
-    Cmd->>Eng: enqueueBlurFace(file, params)
-    Eng->>WM: enqueue(OneTimeWorkRequest)
-    Note over WM: Background Processing
-    WM->>Wkr: doWork()
-    Wkr->>Eng: blurFace(bitmap)
-    Eng->>ML: detect/recognize/blur
+    UI->>Page: push picked image(s)
+    Page->>Eng: detectFace(preview) / blurFacesAt(full-res)
+    Note over Page: RxJava Schedulers.from(executor), progress busy-guard
+    Eng->>ML: detect/blur (cached FaceDetectorYN)
     ML-->>Eng: Result Bitmap
-    Eng-->>Wkr: Result
-    Wkr->>UI: Save to Gallery / Notify
+    Eng-->>Page: Result
+    Page->>UI: Save to Gallery on save/share
 ```
 
 ### Deep Dive: Face Detection Flow
 
-1.  **HomePage**: Calls `mBlurFaceCommand.execute(uri)`.
-2.  **BlurFaceCommand**: Copies the image to a temp file and calls `mFaceEngine.enqueueBlurFace(...)`.
-3.  **FaceEngine**:
-    *   Creates a `BlurFaceSerialFile` object containing file paths and configuration.
-    *   Serializes this object to disk.
-    *   Creates a `OneTimeWorkRequest` pointing to `BlurFaceWorkRequest`, passing the serialized file path as input data.
-    *   Enqueues the request to `WorkManager`.
-4.  **BlurFaceWorkRequest** (Background):
-    *   Reads the serialized file.
-    *   Loads the image bitmaps.
-    *   Calls `faceEngine.blurFace()`.
-    *   `FaceEngine` uses `OpenCV`'s `FaceDetectorYN` to find faces and `FaceRecognizerSF` to match identities (if excluding faces).
-    *   Applies a blur effect to the detected regions.
-    *   Saves the final image using `MediaHelper`.
+1.  **HomePage**: Pushes the picked image to `FaceEditorPage`.
+2.  **FaceEditorPage**: Runs `FaceEngine.detectFace` on a downscaled preview; the user taps faces to toggle their blur, with per-image `BlurConfig` (ellipse/square + strength 1..5).
+3.  **FaceEngine**: OpenCV's `FaceDetectorYN` (cached shared instance, input size set per call) finds the faces; `blurFaceCrop`/`blurFacesAt` apply the configured blur.
+4.  **Save/Share**: The full-resolution composite runs on the background executor and is saved via `MediaHelper`; on page dispose the cached SFace/YuNet face models are released.
 
 ### Deep Dive: Neural Style Transfer (NST) Flow
 

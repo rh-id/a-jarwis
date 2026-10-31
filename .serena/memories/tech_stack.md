@@ -22,5 +22,5 @@
 
 ## CI (.github/workflows)
 - `gradlew-build.yml`: `./gradlew build` on push/PR → master
-- `android-emulator-test.yml`: `connectedCheck`, matrix api-level 26/29, macos runner
+- `android-emulator-test.yml`: `connectedCheck`, matrix api-level 26/31/36 on `ubuntu-latest` (KVM, emulator-runner v2.38, plain script — no heap hacks); failing jobs upload the connected test reports as artifacts (`androidTest-results-<api>`)
 - `android-release.yml`: on tag `v*` → build, GitHub Release with debug+release APKs + `app/build/changelog.txt` (generated from fastlane changelog, see `task_completion`)

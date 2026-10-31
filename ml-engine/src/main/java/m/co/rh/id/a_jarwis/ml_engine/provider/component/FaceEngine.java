@@ -27,6 +27,19 @@ import m.co.rh.id.alogger.ILogger;
 import m.co.rh.id.aprovider.Provider;
 import m.co.rh.id.aprovider.ProviderValue;
 
+/**
+ * Face engine of the module: detects faces in a bitmap, compares two faces
+ * for identity and composites a Gaussian blur over the detected or selected
+ * face regions.
+ * <p>
+ * All face operations are synchronized on the engine monitor: the face
+ * models will become shared cached instances (follow-up commit), and every
+ * detector call mutates the shared detector via setInputSize, so two
+ * concurrent face operations on one instance would race on the shared
+ * native detector. Callers already run them from background executors,
+ * the engine monitor makes the required serialization explicit instead of
+ * relying on that discipline.
+ */
 public class FaceEngine {
     private static final String TAG = "FaceEngine";
     /**
@@ -81,24 +94,42 @@ public class FaceEngine {
      * @param imageToBeSearch image to be scanned
      * @return list of rectangle that this engine recognize from imageToBeSearch
      */
-    public List<Rect> searchFace(Bitmap faceImage, Bitmap imageToBeSearch) {
+    public synchronized List<Rect> searchFace(Bitmap faceImage, Bitmap imageToBeSearch) {
         List<Rect> resultList = new ArrayList<>();
-        Mat faceLoc = detectFaceRaw(faceImage);
-        if (faceLoc.rows() > 1 || faceLoc.rows() < 1) {
-            throw new IllegalArgumentException("Face to be searched must be one only");
-        }
-        Mat imageSearch = detectFaceRaw(imageToBeSearch);
-        int rowSize = imageSearch.rows();
-        if (rowSize > 0) {
-            faceLoc = faceLoc.row(0);
-            for (int i = 0; i < rowSize; i++) {
-                Mat detectedFace = imageSearch.row(i);
-                boolean faceSimilar = isFaceSimilar(faceImage, imageToBeSearch,
-                        faceLoc, detectedFace);
-                if (faceSimilar) {
-                    resultList.add(faceDetectToRect(detectedFace));
+        Mat faceLocOwner = detectFaceRaw(faceImage);
+        Mat imageSearch = null;
+        try {
+            if (faceLocOwner.rows() > 1 || faceLocOwner.rows() < 1) {
+                throw new IllegalArgumentException("Face to be searched must be one only");
+            }
+            imageSearch = detectFaceRaw(imageToBeSearch);
+            int rowSize = imageSearch.rows();
+            if (rowSize > 0) {
+                // row() returns a view sharing the owner's memory, the owner
+                // stays alive until the views are released below
+                Mat faceLoc = faceLocOwner.row(0);
+                try {
+                    for (int i = 0; i < rowSize; i++) {
+                        Mat detectedFace = imageSearch.row(i);
+                        try {
+                            boolean faceSimilar = isFaceSimilar(faceImage, imageToBeSearch,
+                                    faceLoc, detectedFace);
+                            if (faceSimilar) {
+                                resultList.add(faceDetectToRect(detectedFace));
+                            }
+                        } finally {
+                            detectedFace.release();
+                        }
+                    }
+                } finally {
+                    faceLoc.release();
                 }
             }
+        } finally {
+            if (imageSearch != null) {
+                imageSearch.release();
+            }
+            faceLocOwner.release();
         }
         return resultList;
     }
@@ -106,12 +137,21 @@ public class FaceEngine {
     /**
      * Process bitmap using face detection engine and return a list of rectangle indicating location of faces
      */
-    public List<Rect> detectFace(Bitmap bitmap) {
+    public synchronized List<Rect> detectFace(Bitmap bitmap) {
         List<Rect> rectList = new ArrayList<>();
         Mat faceOutput = detectFaceRaw(bitmap);
-        int totalFace = faceOutput.rows();
-        for (int i = 0; i < totalFace; i++) {
-            rectList.add(faceDetectToRect(faceOutput.row(i)));
+        try {
+            int totalFace = faceOutput.rows();
+            for (int i = 0; i < totalFace; i++) {
+                Mat detectedFace = faceOutput.row(i);
+                try {
+                    rectList.add(faceDetectToRect(detectedFace));
+                } finally {
+                    detectedFace.release();
+                }
+            }
+        } finally {
+            faceOutput.release();
         }
         return rectList;
     }
@@ -124,53 +164,72 @@ public class FaceEngine {
      *
      * @return blurred image or null if face is not detected
      */
-    public Bitmap blurFace(Bitmap originalBitmap, Collection<Bitmap> faces, boolean isExclude) {
+    public synchronized Bitmap blurFace(Bitmap originalBitmap, Collection<Bitmap> faces, boolean isExclude) {
         Bitmap result = null;
         Mat rectList = detectFaceRaw(originalBitmap);
-        if (rectList.rows() > 0) {
-            result = Bitmap.createBitmap(originalBitmap.getWidth(), originalBitmap.getHeight(), Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(result);
-            canvas.drawBitmap(originalBitmap, 0, 0, null);
-            boolean excludedFaceEmpty = faces == null || faces.isEmpty();
-            int size = rectList.rows();
-            for (int i = 0; i < size; i++) {
-                Mat faceLoc = rectList.row(i);
-                if (!excludedFaceEmpty) {
-                    boolean skipBlur = false;
-                    for (Bitmap bitmap : faces) {
-                        Mat excludeFaceMat = detectFaceRaw(bitmap);
-                        boolean faceSimilar = isFaceSimilar(originalBitmap, bitmap,
-                                faceLoc,
-                                excludeFaceMat.row(0)
-                        );
-                        if (faceSimilar) {
-                            if (isExclude) {
-                                skipBlur = true;
-                                break;
+        try {
+            if (rectList.rows() > 0) {
+                result = Bitmap.createBitmap(originalBitmap.getWidth(), originalBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+                Canvas canvas = new Canvas(result);
+                canvas.drawBitmap(originalBitmap, 0, 0, null);
+                boolean excludedFaceEmpty = faces == null || faces.isEmpty();
+                int size = rectList.rows();
+                for (int i = 0; i < size; i++) {
+                    Mat faceLoc = rectList.row(i);
+                    try {
+                        if (!excludedFaceEmpty) {
+                            boolean skipBlur = false;
+                            for (Bitmap bitmap : faces) {
+                                Mat excludeFaceMat = detectFaceRaw(bitmap);
+                                try {
+                                    Mat excludeFaceLoc = excludeFaceMat.row(0);
+                                    try {
+                                        boolean faceSimilar = isFaceSimilar(originalBitmap, bitmap,
+                                                faceLoc, excludeFaceLoc);
+                                        if (faceSimilar) {
+                                            if (isExclude) {
+                                                skipBlur = true;
+                                                break;
+                                            }
+                                        } else {
+                                            if (!isExclude) {
+                                                skipBlur = true;
+                                                break;
+                                            }
+                                        }
+                                    } finally {
+                                        excludeFaceLoc.release();
+                                    }
+                                } finally {
+                                    excludeFaceMat.release();
+                                }
                             }
-                        } else {
-                            if (!isExclude) {
-                                skipBlur = true;
-                                break;
+                            if (skipBlur) {
+                                continue;
                             }
                         }
-                    }
-                    if (skipBlur) {
-                        continue;
+                        Rect faceLocRect = faceDetectToRect(faceLoc);
+                        Bitmap faceCrop = cropBitmap(originalBitmap, faceLocRect);
+                        Mat faceCropRaw = new Mat();
+                        try {
+                            Utils.bitmapToMat(faceCrop, faceCropRaw);
+                            Imgproc.GaussianBlur(faceCropRaw, faceCropRaw,
+                                    new Size(BLUR_KERNEL_SIZE, BLUR_KERNEL_SIZE), BLUR_KERNEL_SIGMA);
+                            Bitmap blurredFace = Bitmap.createBitmap(faceCropRaw.cols(), faceCropRaw.rows(), Bitmap.Config.ARGB_8888);
+                            Utils.matToBitmap(faceCropRaw, blurredFace);
+                            canvas.drawBitmap(blurredFace, null, faceLocRect, null);
+                            faceCrop.recycle();
+                            blurredFace.recycle();
+                        } finally {
+                            faceCropRaw.release();
+                        }
+                    } finally {
+                        faceLoc.release();
                     }
                 }
-                Rect faceLocRect = faceDetectToRect(faceLoc);
-                Bitmap faceCrop = cropBitmap(originalBitmap, faceLocRect);
-                Mat faceCropRaw = new Mat();
-                Utils.bitmapToMat(faceCrop, faceCropRaw);
-                Imgproc.GaussianBlur(faceCropRaw, faceCropRaw,
-                        new Size(BLUR_KERNEL_SIZE, BLUR_KERNEL_SIZE), BLUR_KERNEL_SIGMA);
-                Bitmap blurredFace = Bitmap.createBitmap(faceCropRaw.cols(), faceCropRaw.rows(), Bitmap.Config.ARGB_8888);
-                Utils.matToBitmap(faceCropRaw, blurredFace);
-                canvas.drawBitmap(blurredFace, null, faceLocRect, null);
-                faceCrop.recycle();
-                blurredFace.recycle();
             }
+        } finally {
+            rectList.release();
         }
         return result;
     }
@@ -186,7 +245,7 @@ public class FaceEngine {
      * @return a copy of the originalBitmap with the blur composited at the given rects,
      * or a copy of the originalBitmap when the given rects is null or empty
      */
-    public Bitmap blurFacesAt(Bitmap originalBitmap, List<Rect> rectsToBlur, BlurConfig config) {
+    public synchronized Bitmap blurFacesAt(Bitmap originalBitmap, List<Rect> rectsToBlur, BlurConfig config) {
         BlurConfig blurConfig = config == null ? new BlurConfig() : config;
         Bitmap result = Bitmap.createBitmap(originalBitmap.getWidth(),
                 originalBitmap.getHeight(), Bitmap.Config.ARGB_8888);
@@ -196,12 +255,12 @@ public class FaceEngine {
             for (Rect faceLocRect : rectsToBlur) {
                 Bitmap faceCrop = cropBitmap(originalBitmap, faceLocRect);
                 Bitmap blurredFace = null;
+                Mat faceCropRaw = new Mat();
                 try {
                     // the crop dimension is the face dimension at full resolution
                     int kernelSize = computeFullKernelSize(
                             Math.min(faceCrop.getWidth(), faceCrop.getHeight()),
                             blurConfig.getStrength());
-                    Mat faceCropRaw = new Mat();
                     Utils.bitmapToMat(faceCrop, faceCropRaw);
                     Imgproc.GaussianBlur(faceCropRaw, faceCropRaw,
                             new Size(kernelSize, kernelSize), kernelSize * BLUR_SIGMA_SCALE);
@@ -214,6 +273,7 @@ public class FaceEngine {
                     if (blurredFace != null) {
                         blurredFace.recycle();
                     }
+                    faceCropRaw.release();
                 }
             }
         }
@@ -235,7 +295,7 @@ public class FaceEngine {
      *                 null falls back to the default configuration
      * @return the blurred face crop
      */
-    public Bitmap blurFaceCrop(Bitmap faceCrop, float scale, BlurConfig config) {
+    public synchronized Bitmap blurFaceCrop(Bitmap faceCrop, float scale, BlurConfig config) {
         BlurConfig blurConfig = config == null ? new BlurConfig() : config;
         if (scale <= 0f) {
             // a failed dimension decode falls back to a full resolution crop
@@ -255,13 +315,17 @@ public class FaceEngine {
             kernelSize++;
         }
         Mat faceCropRaw = new Mat();
-        Utils.bitmapToMat(faceCrop, faceCropRaw);
-        Imgproc.GaussianBlur(faceCropRaw, faceCropRaw, new Size(kernelSize, kernelSize),
-                kernelSize * BLUR_SIGMA_SCALE);
-        Bitmap blurredFace = Bitmap.createBitmap(faceCropRaw.cols(), faceCropRaw.rows(), Bitmap.Config.ARGB_8888);
-        Utils.matToBitmap(faceCropRaw, blurredFace);
-        applyShapeMask(blurredFace, blurConfig.getShape());
-        return blurredFace;
+        try {
+            Utils.bitmapToMat(faceCrop, faceCropRaw);
+            Imgproc.GaussianBlur(faceCropRaw, faceCropRaw, new Size(kernelSize, kernelSize),
+                    kernelSize * BLUR_SIGMA_SCALE);
+            Bitmap blurredFace = Bitmap.createBitmap(faceCropRaw.cols(), faceCropRaw.rows(), Bitmap.Config.ARGB_8888);
+            Utils.matToBitmap(faceCropRaw, blurredFace);
+            applyShapeMask(blurredFace, blurConfig.getShape());
+            return blurredFace;
+        } finally {
+            faceCropRaw.release();
+        }
     }
 
     /**
@@ -339,34 +403,63 @@ public class FaceEngine {
     /**
      * Compare 2 faces and check if it is similar
      *
+     * @param face1Loc face location row of the detectFaceRaw output of image1Src,
+     * never released by this method
+     * @param face2Loc face location row of the detectFaceRaw output of image2Src,
+     * never released by this method
      * @return true if similar, otherwise false
      */
-    protected boolean isFaceSimilar(Bitmap image1Src, Bitmap image2Src,
-                                    Mat face1Loc, Mat face2Loc) {
+    protected synchronized boolean isFaceSimilar(Bitmap image1Src, Bitmap image2Src,
+                                                 Mat face1Loc, Mat face2Loc) {
         FaceRecognizerSF faceRecognizerSF = mEngineInstance.get().getFaceRecognizerModel();
         Mat image1 = new Mat();
         Mat image2 = new Mat();
-        Utils.bitmapToMat(image1Src, image1);
-        Utils.bitmapToMat(image2Src, image2);
-        Imgproc.cvtColor(image1, image1, Imgproc.COLOR_RGBA2RGB);
-        Imgproc.cvtColor(image2, image2, Imgproc.COLOR_RGBA2RGB);
         Mat alignedF1 = new Mat();
         Mat alignedF2 = new Mat();
-        faceRecognizerSF.alignCrop(image1, face1Loc, alignedF1);
-        faceRecognizerSF.alignCrop(image2, face2Loc, alignedF2);
         Mat feature1 = new Mat();
         Mat feature2 = new Mat();
-        faceRecognizerSF.feature(alignedF1, feature1);
-        feature1 = feature1.clone();
-        faceRecognizerSF.feature(alignedF2, feature2);
-        feature2 = feature2.clone();
-        double cosScore = faceRecognizerSF.match(feature1, feature2, FaceRecognizerSF.FR_COSINE);
-        /*
-            two faces have same identity if the cosine distance is greater than or equal to 0.363,
-            or the normL2 distance is less than or equal to 1.128.
-         */
-        mLogger.d(TAG, "score:" + cosScore);
-        return cosScore >= 0.363;
+        Mat feature1Match = null;
+        Mat feature2Match = null;
+        try {
+            Utils.bitmapToMat(image1Src, image1);
+            Utils.bitmapToMat(image2Src, image2);
+            Imgproc.cvtColor(image1, image1, Imgproc.COLOR_RGBA2RGB);
+            Imgproc.cvtColor(image2, image2, Imgproc.COLOR_RGBA2RGB);
+            faceRecognizerSF.alignCrop(image1, face1Loc, alignedF1);
+            faceRecognizerSF.alignCrop(image2, face2Loc, alignedF2);
+            // the feature() forward output aliases the net's internal buffer
+            // (OutputArray assign shares data by refcount), the next feature()
+            // call overwrites it — the clone takes the result out before that
+            // next forward
+            faceRecognizerSF.feature(alignedF1, feature1);
+            feature1Match = feature1.clone();
+            faceRecognizerSF.feature(alignedF2, feature2);
+            feature2Match = feature2.clone();
+            double cosScore = faceRecognizerSF.match(feature1Match, feature2Match, FaceRecognizerSF.FR_COSINE);
+            /*
+                two faces have same identity if the cosine distance is greater than or equal to 0.363,
+                or the normL2 distance is less than or equal to 1.128.
+             */
+            mLogger.d(TAG, "score:" + cosScore);
+            return cosScore >= 0.363;
+        } finally {
+            image1.release();
+            image2.release();
+            alignedF1.release();
+            alignedF2.release();
+            if (feature1 != null) {
+                feature1.release();
+            }
+            if (feature2 != null) {
+                feature2.release();
+            }
+            if (feature1Match != null) {
+                feature1Match.release();
+            }
+            if (feature2Match != null) {
+                feature2Match.release();
+            }
+        }
     }
 
     protected Rect faceDetectToRect(Mat detectedFace) {
@@ -377,14 +470,33 @@ public class FaceEngine {
         return new Rect(x, y, x + w, y + h);
     }
 
-    protected Mat detectFaceRaw(Bitmap bitmap) {
+    /**
+     * Detect faces in the given bitmap with the YuNet face detector, the
+     * detector input size is set from the bitmap dimensions on every call
+     * (see the class javadoc why the calls are synchronized).
+     *
+     * @param bitmap image to be scanned, never recycled by this method
+     * @return the raw detector output, one row per detected face (see
+     * faceDetectToRect for the row layout), the caller owns it and must
+     * release() it
+     */
+    protected synchronized Mat detectFaceRaw(Bitmap bitmap) {
         FaceDetectorYN faceDetectorYN = mEngineInstance.get().getFaceDetectModel();
         faceDetectorYN.setInputSize(new Size(bitmap.getWidth(), bitmap.getHeight()));
         Mat faceInput = new Mat();
-        Utils.bitmapToMat(bitmap, faceInput);
-        Imgproc.cvtColor(faceInput, faceInput, Imgproc.COLOR_RGBA2RGB);
         Mat faceOutput = new Mat();
-        faceDetectorYN.detect(faceInput, faceOutput);
+        try {
+            Utils.bitmapToMat(bitmap, faceInput);
+            Imgproc.cvtColor(faceInput, faceInput, Imgproc.COLOR_RGBA2RGB);
+            faceDetectorYN.detect(faceInput, faceOutput);
+        } catch (RuntimeException | OutOfMemoryError e) {
+            // the caller only receives a Mat on the success path, a failed
+            // detection must not leak the empty output header either
+            faceOutput.release();
+            throw e;
+        } finally {
+            faceInput.release();
+        }
         return faceOutput;
     }
 

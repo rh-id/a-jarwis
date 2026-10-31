@@ -16,8 +16,9 @@ import m.co.rh.id.a_jarwis.ml_engine.model.ModelCatalog;
 import m.co.rh.id.a_jarwis.ml_engine.model.ModelType;
 import m.co.rh.id.alogger.ILogger;
 import m.co.rh.id.aprovider.Provider;
+import m.co.rh.id.aprovider.ProviderDisposable;
 
-public class MLEngineInstance {
+public class MLEngineInstance implements ProviderDisposable {
     private static final String TAG = "MLEngineInstance";
 
     public static final String BASE_PATH = "/ml-engine/engine";
@@ -42,6 +43,13 @@ public class MLEngineInstance {
     public static final String LAMA_FILE = "inpainting_lama_2025jan.onnx";
     private final Context mAppContext;
     private final ILogger mLogger;
+    /**
+     * Set by {@link #dispose(Context)}: the provider dispose cascade invokes
+     * it twice (synchronously through the module dispose, asynchronously
+     * through this instance's registry entry), the flag makes the second
+     * invocation a no-op
+     */
+    private boolean mDisposed;
     /**
      * Lazy per-theme neural style transfer processor cache,
      * an instance holds its ONNX model loaded in the native memory
@@ -70,6 +78,20 @@ public class MLEngineInstance {
      * deleted once downloaded
      */
     private final ConcurrentHashMap<ModelType, LamaProcessor> mLamaProcessors;
+    /**
+     * Lazy cached YuNet face detector, created on first face detection and
+     * kept for the provider lifetime like the dnn processor caches above.
+     * Released only by {@link #releaseFaceModels()} and
+     * {@link #dispose(Context)}
+     */
+    private FaceDetectorYN mFaceDetector;
+    /**
+     * Lazy cached SFace face recognizer, created on first face comparison and
+     * kept for the provider lifetime like the dnn processor caches above.
+     * Released only by {@link #releaseFaceModels()} and
+     * {@link #dispose(Context)}
+     */
+    private FaceRecognizerSF mFaceRecognizer;
 
     public MLEngineInstance(Provider provider) {
         mAppContext = provider.getContext().getApplicationContext();
@@ -178,6 +200,25 @@ public class MLEngineInstance {
     }
 
     /**
+     * Release the cached face models (frees their native memory): the ~37 MB
+     * SFace recognizer plus the YuNet detector are only worth their native
+     * memory during face-editing sessions, so the face editor page releases
+     * them on dispose at the cost of a seconds-long model re-parse in the
+     * next face session (the same policy as the magic eraser's SAM/LaMa
+     * releases). The next {@link #getFaceDetectModel()} and
+     * {@link #getFaceRecognizerModel()} lazily recreate them from the model
+     * files on demand.
+     */
+    public synchronized void releaseFaceModels() {
+        if (mFaceDetector == null && mFaceRecognizer == null) {
+            return;
+        }
+        mFaceDetector = null;
+        mFaceRecognizer = null;
+        nudgeNativeReclaim();
+    }
+
+    /**
      * Make the runtime reclaim the native net a release() just dropped: the
      * net wrapper's finalizer deletes the native net (its large dnn
      * workspace included), and on a 32-bit device the address space is the
@@ -190,15 +231,45 @@ public class MLEngineInstance {
         Runtime.getRuntime().runFinalization();
     }
 
-    public FaceRecognizerSF getFaceRecognizerModel() {
-        return FaceRecognizerSF.create(
-                requireModelFile(ModelType.FACE_RECOGNIZER).getAbsolutePath(), "");
+    /**
+     * Returns the SFace face recognition model, creating and caching it on
+     * first access. Cached for the provider lifetime like the dnn processors
+     * (the seconds-long model re-parse is paid once per provider, not per
+     * call). The returned instances are SHARED — callers must serialize
+     * their face operations (FaceEngine's engine monitor does this), nobody
+     * but the engine and {@link #releaseFaceModels()} may hold or release
+     * this recognizer.
+     *
+     * @return the cached face recognition model
+     */
+    public synchronized FaceRecognizerSF getFaceRecognizerModel() {
+        if (mFaceRecognizer == null) {
+            mFaceRecognizer = FaceRecognizerSF.create(
+                    requireModelFile(ModelType.FACE_RECOGNIZER).getAbsolutePath(), "");
+        }
+        return mFaceRecognizer;
     }
 
-    public FaceDetectorYN getFaceDetectModel() {
-        return FaceDetectorYN.create(
-                requireModelFile(ModelType.FACE_DETECT).getAbsolutePath(), "",
-                new Size(FACE_DETECT_WIDTH, FACE_DETECT_HEIGHT), 0.6f, 0.5f);
+    /**
+     * Returns the YuNet face detection model, creating and caching it on
+     * first access. Cached for the provider lifetime like the dnn processors
+     * (the seconds-long model re-parse is paid once per provider, not per
+     * call). The detector is a stateful shared instance: FaceEngine sets its
+     * input size from the bitmap dimensions before every detect
+     * (setInputSize mutates the shared detector), so the returned instances
+     * are SHARED — callers must serialize their face operations (FaceEngine's
+     * engine monitor does this), nobody but the engine and
+     * {@link #releaseFaceModels()} may hold or release this detector.
+     *
+     * @return the cached face detection model
+     */
+    public synchronized FaceDetectorYN getFaceDetectModel() {
+        if (mFaceDetector == null) {
+            mFaceDetector = FaceDetectorYN.create(
+                    requireModelFile(ModelType.FACE_DETECT).getAbsolutePath(), "",
+                    new Size(FACE_DETECT_WIDTH, FACE_DETECT_HEIGHT), 0.6f, 0.5f);
+        }
+        return mFaceDetector;
     }
 
     public boolean isFaceDetectAvailable() {
@@ -224,6 +295,65 @@ public class MLEngineInstance {
     public boolean isMagicEraserAvailable() {
         return ModelCatalog.isAvailable(mAppContext, ModelType.EFFICIENT_SAM)
                 && ModelCatalog.isAvailable(mAppContext, ModelType.LAMA);
+    }
+
+    /**
+     * Dispose every cached processor, called from the provider dispose
+     * cascade: it runs synchronously through
+     * {@link MLEngineProviderModule#dispose(Provider)} and again
+     * asynchronously through this instance's ProviderDisposable entry in the
+     * provider registry (idempotent, the second call no-ops). It may run on
+     * the teardown caller thread (main or instrumentation), the final
+     * {@link #nudgeNativeReclaim()} at teardown is accepted, and it is safe
+     * against in-flight forwards because every release is a reference-drop
+     * under the processor's own monitor (see the processor release()
+     * contracts). Every cached processor is released inside its own
+     * try/catch so one failing entry cannot abort the rest of the cascade.
+     *
+     * @param context the context of the provider, unused here (releasing
+     *                the cached processors and face models needs no context)
+     */
+    @Override
+    public synchronized void dispose(Context context) {
+        if (mDisposed) {
+            return;
+        }
+        mDisposed = true;
+        for (STProcessor processor : mSTProcessors.values()) {
+            try {
+                processor.release();
+            } catch (Exception e) {
+                mLogger.e(TAG, "Failed to release a style transfer processor", e);
+            }
+        }
+        for (PersonSegProcessor processor : mPersonSegProcessors.values()) {
+            try {
+                processor.release();
+            } catch (Exception e) {
+                mLogger.e(TAG, "Failed to release a portrait segmentation processor", e);
+            }
+        }
+        for (EfficientSamProcessor processor : mEfficientSamProcessors.values()) {
+            try {
+                processor.release();
+            } catch (Exception e) {
+                mLogger.e(TAG, "Failed to release an object segmentation processor", e);
+            }
+        }
+        for (LamaProcessor processor : mLamaProcessors.values()) {
+            try {
+                processor.release();
+            } catch (Exception e) {
+                mLogger.e(TAG, "Failed to release an inpainting processor", e);
+            }
+        }
+        mSTProcessors.clear();
+        mPersonSegProcessors.clear();
+        mEfficientSamProcessors.clear();
+        mLamaProcessors.clear();
+        mFaceDetector = null;
+        mFaceRecognizer = null;
+        nudgeNativeReclaim();
     }
 
     /**
