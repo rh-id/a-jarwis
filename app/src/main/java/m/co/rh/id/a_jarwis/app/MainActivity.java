@@ -6,6 +6,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.TypedValue;
 
+import androidx.activity.BackEventCompat;
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -26,6 +27,9 @@ import m.co.rh.id.a_jarwis.base.BaseApplication;
 import m.co.rh.id.a_jarwis.base.provider.RxProviderModule;
 import m.co.rh.id.a_jarwis.base.rx.RxDisposer;
 import m.co.rh.id.a_jarwis.settings.provider.component.SettingsSharedPreferences;
+import m.co.rh.id.anavigator.component.INavigator;
+import m.co.rh.id.anavigator.component.NavBackEvent;
+import m.co.rh.id.anavigator.component.NavOnRouteChangedListener;
 import m.co.rh.id.aprovider.Provider;
 
 public class MainActivity extends AppCompatActivity {
@@ -34,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
     private RxDisposer mRxDisposer;
     private SettingsSharedPreferences mSettingsSharedPreferences;
     private PublishSubject<Boolean> mRebuildUi;
+    private INavigator mNavigator;
+    private NavOnRouteChangedListener mRouteChangedListener;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -87,14 +93,43 @@ public class MainActivity extends AppCompatActivity {
                 mSettingsSharedPreferences.getSelectedThemeFlow().observeOn(AndroidSchedulers.mainThread())
                         .subscribe(AppCompatDelegate::setDefaultNightMode));
 
-        getOnBackPressedDispatcher().addCallback(this,
-                new OnBackPressedCallback(true) {
-                    @Override
-                    public void handleOnBackPressed() {
-                        BaseApplication.of(MainActivity.this)
-                                .getNavigator(MainActivity.this).onBackPressed();
-                    }
-                });
+        // predictive back wiring: ONE OnBackPressedCallback is registered for
+        // the whole activity lifetime, the gesture events (start/progress/
+        // cancel) are forwarded to the navigator for the back preview while
+        // the commit rides navigator.onBackPressed() (no separate commit
+        // path). The callback's enabled state is synced from route changes
+        // (the single sync point) so the system shows its default
+        // back-to-home animation when the navigator cannot pop.
+        // MainApplication always registers a navigator for this activity, so
+        // resolve it directly
+        mNavigator = BaseApplication.of(this).getNavigator(this);
+        final OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                mNavigator.onBackPressed();
+            }
+
+            @Override
+            public void handleOnBackStarted(@NonNull BackEventCompat backEvent) {
+                mNavigator.onBackStarted(toNavBackEvent(backEvent));
+            }
+
+            @Override
+            public void handleOnBackProgressed(@NonNull BackEventCompat backEvent) {
+                mNavigator.onBackProgressed(toNavBackEvent(backEvent));
+            }
+
+            @Override
+            public void handleOnBackCancelled() {
+                mNavigator.onBackCancelled();
+            }
+        };
+        getOnBackPressedDispatcher().addCallback(this, callback);
+        // the single enabled-state sync point: fires on every push/pop AND
+        // once after a saved-state restore (previous == null)
+        mRouteChangedListener = (previous, current) -> callback.setEnabled(mNavigator.shouldInterceptBack());
+        mNavigator.addOnRouteChangedListener(mRouteChangedListener);
+        callback.setEnabled(mNavigator.shouldInterceptBack());
         super.onCreate(savedInstanceState);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content), (v, windowInsets) -> {
             Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -127,9 +162,22 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        // leak guard: the navigator is application-scoped and outlives this
+        // activity, the route-changed listener must not retain it
+        if (mRouteChangedListener != null && mNavigator != null) {
+            mNavigator.removeOnRouteChangedListener(mRouteChangedListener);
+            mRouteChangedListener = null;
+        }
         mProvider.dispose();
         mProvider = null;
         mRebuildUi.onComplete();
         mRebuildUi = null;
+    }
+
+    private static NavBackEvent toNavBackEvent(BackEventCompat backEvent) {
+        return new NavBackEvent(
+                backEvent.getTouchX(),
+                backEvent.getTouchY(),
+                backEvent.getProgress());
     }
 }

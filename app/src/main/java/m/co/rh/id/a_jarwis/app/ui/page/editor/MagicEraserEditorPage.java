@@ -50,6 +50,7 @@ import m.co.rh.id.anavigator.NavRoute;
 import m.co.rh.id.anavigator.StatefulView;
 import m.co.rh.id.anavigator.annotation.NavInject;
 import m.co.rh.id.anavigator.component.INavigator;
+import m.co.rh.id.anavigator.component.NavBackPressResult;
 import m.co.rh.id.anavigator.component.NavOnBackPressed;
 import m.co.rh.id.anavigator.component.RequireComponent;
 import m.co.rh.id.aprovider.Provider;
@@ -321,7 +322,12 @@ public class MagicEraserEditorPage extends StatefulView<Activity> implements Req
         // first pipeline can start (the preview load below shows it)
         mProgressDialog = new EditorProgressDialog(activity, R.string.title_magic_eraser);
         MaterialToolbar toolbar = rootView.findViewById(R.id.toolbar);
-        toolbar.setNavigationOnClickListener(v -> handleBack());
+        toolbar.setNavigationOnClickListener(v -> {
+            NavBackPressResult result = handleBack();
+            if (result != null && result.shouldPop()) {
+                mNavigator.pop();
+            }
+        });
         mImageView = rootView.findViewById(R.id.imageView);
         mMaskOverlayView = rootView.findViewById(R.id.mask_overlay);
         mBrushOverlayView = rootView.findViewById(R.id.brush_overlay);
@@ -533,8 +539,8 @@ public class MagicEraserEditorPage extends StatefulView<Activity> implements Req
     }
 
     @Override
-    public void onBackPressed(View currentView, Activity activity, INavigator navigator) {
-        handleBack();
+    public NavBackPressResult onBackPressed(View currentView, Activity activity, INavigator navigator) {
+        return handleBack();
     }
 
     private EditorState parseRouteArgs() {
@@ -1358,10 +1364,10 @@ public class MagicEraserEditorPage extends StatefulView<Activity> implements Req
                 }));
     }
 
-    private void handleBack() {
+    private NavBackPressResult handleBack() {
         if (mProgressDialog.isWorking()) {
             // a restore/erase/save/share is running, the back press is ignored
-            return;
+            return NavBackPressResult.noPop();
         }
         EditorState editorState = mEditorState.getValue();
         if (editorState != null && editorState.mHasUnsavedChanges) {
@@ -1372,9 +1378,9 @@ public class MagicEraserEditorPage extends StatefulView<Activity> implements Req
                     .setPositiveButton(android.R.string.ok, (dialog, which) -> mNavigator.pop())
                     .setNegativeButton(android.R.string.cancel, null)
                     .show();
-        } else {
-            mNavigator.pop();
+            return NavBackPressResult.noPop();
         }
+        return NavBackPressResult.pop();
     }
 
     /**

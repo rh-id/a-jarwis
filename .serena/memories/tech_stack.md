@@ -11,7 +11,7 @@
 - Core-library desugaring (`desugar_jdk_libs` 2.1.5) enabled in ALL FOUR modules.
 
 ## Key libraries (all via catalog)
-- In-house (JitPack `com.github.rh-id`): a-provider v0.0.27 (DI), a-navigator v0.0.72 + a-navigator-extension-dialog, a-logger v0.0.4, rx-utils v0.0.3, concurrent-utils v0.0.4 (WeightedThreadPool)
+- In-house (JitPack `com.github.rh-id`): a-provider v0.0.27 (DI), a-navigator v0.0.76 + a-navigator-extension-dialog, a-logger v0.0.4, rx-utils v0.0.3, concurrent-utils v0.0.4 (WeightedThreadPool)
 - RxJava 3.1.12 / RxAndroid 3.0.2; WorkManager 2.10.5 (on-demand init); Material 1.13.0; Room 2.7.2 (runtime `api` + annotationProcessor compiler in `:base`; schemaLocation set — declared but UNUSED, no in-repo entities: dead dependency)
 - CameraX 1.4.2 (core/camera2/lifecycle/view, `:app` only — the live QR scanner; NO ML Kit)
 - AndroidX appcompat/material/constraintlayout/drawerlayout/swiperefreshlayout/recyclerview/exifinterface; leakcanary-plumber 2.14

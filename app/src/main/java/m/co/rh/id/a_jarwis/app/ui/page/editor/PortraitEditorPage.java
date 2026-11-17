@@ -44,6 +44,7 @@ import m.co.rh.id.anavigator.NavRoute;
 import m.co.rh.id.anavigator.StatefulView;
 import m.co.rh.id.anavigator.annotation.NavInject;
 import m.co.rh.id.anavigator.component.INavigator;
+import m.co.rh.id.anavigator.component.NavBackPressResult;
 import m.co.rh.id.anavigator.component.NavOnBackPressed;
 import m.co.rh.id.anavigator.component.RequireComponent;
 import m.co.rh.id.aprovider.Provider;
@@ -281,7 +282,12 @@ public class PortraitEditorPage extends StatefulView<Activity> implements Requir
         // first pipeline can start (the segmentation below shows it)
         mProgressDialog = new EditorProgressDialog(activity, R.string.title_portrait_mode);
         MaterialToolbar toolbar = rootView.findViewById(R.id.toolbar);
-        toolbar.setNavigationOnClickListener(v -> handleBack());
+        toolbar.setNavigationOnClickListener(v -> {
+            NavBackPressResult result = handleBack();
+            if (result != null && result.shouldPop()) {
+                mNavigator.pop();
+            }
+        });
         mImageView = rootView.findViewById(R.id.imageView);
         mContainerPager = rootView.findViewById(R.id.container_pager);
         mTextImagePager = rootView.findViewById(R.id.text_image_pager);
@@ -430,8 +436,8 @@ public class PortraitEditorPage extends StatefulView<Activity> implements Requir
     }
 
     @Override
-    public void onBackPressed(View currentView, Activity activity, INavigator navigator) {
-        handleBack();
+    public NavBackPressResult onBackPressed(View currentView, Activity activity, INavigator navigator) {
+        return handleBack();
     }
 
     private EditorState parseRouteArgs() {
@@ -834,10 +840,10 @@ public class PortraitEditorPage extends StatefulView<Activity> implements Requir
         }
     }
 
-    private void handleBack() {
+    private NavBackPressResult handleBack() {
         if (mProgressDialog.isWorking()) {
             // a segmentation/prepare/save is running, the back press is ignored
-            return;
+            return NavBackPressResult.noPop();
         }
         EditorState editorState = mEditorState.getValue();
         if (editorState != null && editorState.mHasUnsavedChanges) {
@@ -848,9 +854,9 @@ public class PortraitEditorPage extends StatefulView<Activity> implements Requir
                     .setPositiveButton(android.R.string.ok, (dialog, which) -> mNavigator.pop())
                     .setNegativeButton(android.R.string.cancel, null)
                     .show();
-        } else {
-            mNavigator.pop();
+            return NavBackPressResult.noPop();
         }
+        return NavBackPressResult.pop();
     }
 
     private void saveImages() {

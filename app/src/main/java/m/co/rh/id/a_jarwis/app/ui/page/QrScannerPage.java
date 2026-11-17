@@ -67,6 +67,7 @@ import m.co.rh.id.anavigator.NavRoute;
 import m.co.rh.id.anavigator.StatefulView;
 import m.co.rh.id.anavigator.annotation.NavInject;
 import m.co.rh.id.anavigator.component.INavigator;
+import m.co.rh.id.anavigator.component.NavBackPressResult;
 import m.co.rh.id.anavigator.component.NavOnActivityResult;
 import m.co.rh.id.anavigator.component.NavOnBackPressed;
 import m.co.rh.id.anavigator.component.RequireComponent;
@@ -465,8 +466,9 @@ public class QrScannerPage extends StatefulView<Activity> implements RequireComp
     }
 
     @Override
-    public void onBackPressed(View currentView, Activity activity, INavigator navigator) {
-        navigator.pop();
+    public NavBackPressResult onBackPressed(View currentView, Activity activity, INavigator navigator) {
+        // the navigator owns the pop, this page has no back special case
+        return NavBackPressResult.pop();
     }
 
     @Override

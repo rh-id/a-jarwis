@@ -19,6 +19,7 @@ import m.co.rh.id.alogger.ILogger;
 import m.co.rh.id.anavigator.StatefulView;
 import m.co.rh.id.anavigator.annotation.NavInject;
 import m.co.rh.id.anavigator.component.INavigator;
+import m.co.rh.id.anavigator.component.NavBackPressResult;
 import m.co.rh.id.anavigator.component.NavOnActivityResult;
 import m.co.rh.id.anavigator.component.NavOnBackPressed;
 import m.co.rh.id.anavigator.component.NavOnRequestPermissionResult;
@@ -100,7 +101,7 @@ public class HomePage extends StatefulView<Activity> implements RequireComponent
     }
 
     @Override
-    public void onBackPressed(View currentView, Activity activity, INavigator navigator) {
+    public NavBackPressResult onBackPressed(View currentView, Activity activity, INavigator navigator) {
         if (mHomeDrawerSV.isOpen()) {
             mHomeDrawerSV.close();
         } else {
@@ -113,6 +114,9 @@ public class HomePage extends StatefulView<Activity> implements RequireComponent
                         activity.getString(R.string.toast_back_press_exit));
             }
         }
+        // this page fully owns the back press (drawer close, double-back
+        // exit), the navigator must never pop it
+        return NavBackPressResult.noPop();
     }
 
     @Override

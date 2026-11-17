@@ -16,6 +16,9 @@
 - `createView()` inflates layout from module R; shared app bar = `AppBarSV`
 - Navigation: add route constant to `:base` `Routes`, register factory in `NavigatorProvider` navMap; pass data via Serializable param classes in `app/ui/page/nav/param` (`UriList`, `SelectedChoice`)
 - Single activity handles ALL configChanges — never add setContentView or fragment transactions
+- Back handling (a-navigator v0.0.76 contract): pages implementing `NavOnBackPressed` return `NavBackPressResult` — `pop()` = navigator pops, `noPop()` = swallowed, `null` = default pop. The navigator owns the pop; returning `null` where old code "did nothing" is a BUG (it now pops). Pages that swallow back in some paths (drawer open, double-back-to-exit, busy-guard, discard dialog) must return `noPop()` explicitly
+- Editor pages: shared private `handleBack()` returns `NavBackPressResult` with TWO callers — `onBackPressed` delegates the return value; the toolbar UP arrow lambda consumes it (`if (result != null && result.shouldPop()) mNavigator.pop()`). Keep each page's busy-guard condition intact (Face/QrCensor `isWorking()`, Style `mIsRendering || isWorking()`, MagicEraser/Portrait `mProgressDialog.isWorking()`)
+- Predictive back: `MainActivity` holds one `OnBackPressedCallback` that forwards `BackEventCompat` → `NavBackEvent` (started/progressed/cancelled) and syncs its enabled state from `navigator.shouldInterceptBack()` via a `NavOnRouteChangedListener` (removed in onDestroy — navigator is application-scoped); manifest has `android:enableOnBackInvokedCallback="true"`. Any new activity needing the navigator must replicate this wiring (reference: a-navigator example `AppCompatExampleActivity`)
 
 ## Async
 - RxJava3: page-scoped `mRxDisposer.add("<unique key>", ...)` with `Schedulers.from(mExecutorService)` for executor work (see FaceEditorPage/StyleEditorPage); dispose via `RxDisposer`

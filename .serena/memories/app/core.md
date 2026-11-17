@@ -3,7 +3,7 @@
 Entry module, namespace `m.co.rh.id.a_jarwis`. See `core` for module graph.
 
 ## App skeleton
-- `MainActivity`: only activity, singleTop, all configChanges declared (state via a-navigator)
+- `MainActivity`: only activity, singleTop, all configChanges declared (state via a-navigator); predictive back wired: gesture events → NavBackEvent + shouldInterceptBack()-synced back callback (manifest enableOnBackInvokedCallback)
 - `MainApplication`: creates Provider from `AppProviderModule`, global crash handler (log via ILogger → dispose provider → chain default handler), WorkManager `Configuration.Provider` using provider executors
 - `AppProviderModule` = composition root; registers Base/Rx/Settings/MLEngine modules (no Command modules anymore), `IStatefulViewProvider` pool, NavigatorProvider LAST (order matters)
 

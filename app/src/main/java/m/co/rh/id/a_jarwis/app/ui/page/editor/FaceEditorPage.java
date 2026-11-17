@@ -51,6 +51,7 @@ import m.co.rh.id.anavigator.NavRoute;
 import m.co.rh.id.anavigator.StatefulView;
 import m.co.rh.id.anavigator.annotation.NavInject;
 import m.co.rh.id.anavigator.component.INavigator;
+import m.co.rh.id.anavigator.component.NavBackPressResult;
 import m.co.rh.id.anavigator.component.NavOnBackPressed;
 import m.co.rh.id.anavigator.component.RequireComponent;
 import m.co.rh.id.aprovider.Provider;
@@ -305,7 +306,12 @@ public class FaceEditorPage extends StatefulView<Activity> implements RequireCom
     protected View createView(Activity activity, ViewGroup container) {
         View rootView = activity.getLayoutInflater().inflate(R.layout.page_face_editor, container, false);
         MaterialToolbar toolbar = rootView.findViewById(R.id.toolbar);
-        toolbar.setNavigationOnClickListener(v -> handleBack());
+        toolbar.setNavigationOnClickListener(v -> {
+            NavBackPressResult result = handleBack();
+            if (result != null && result.shouldPop()) {
+                mNavigator.pop();
+            }
+        });
         mImageView = rootView.findViewById(R.id.imageView);
         mImageView.setOnTouchListener(this);
         mContainerPager = rootView.findViewById(R.id.container_pager);
@@ -490,8 +496,8 @@ public class FaceEditorPage extends StatefulView<Activity> implements RequireCom
     }
 
     @Override
-    public void onBackPressed(View currentView, Activity activity, INavigator navigator) {
-        handleBack();
+    public NavBackPressResult onBackPressed(View currentView, Activity activity, INavigator navigator) {
+        return handleBack();
     }
 
     private EditorState parseRouteArgs() {
@@ -1062,10 +1068,10 @@ public class FaceEditorPage extends StatefulView<Activity> implements RequireCom
         }
     }
 
-    private void handleBack() {
+    private NavBackPressResult handleBack() {
         if (isWorking()) {
             // a detection/save/prepare is running, the back press is ignored
-            return;
+            return NavBackPressResult.noPop();
         }
         EditorState editorState = mEditorState.getValue();
         if (editorState != null && editorState.mHasUnsavedChanges) {
@@ -1076,9 +1082,9 @@ public class FaceEditorPage extends StatefulView<Activity> implements RequireCom
                     .setPositiveButton(android.R.string.ok, (dialog, which) -> mNavigator.pop())
                     .setNegativeButton(android.R.string.cancel, null)
                     .show();
-        } else {
-            mNavigator.pop();
+            return NavBackPressResult.noPop();
         }
+        return NavBackPressResult.pop();
     }
 
     private void saveImages() {
