@@ -96,4 +96,15 @@
     <string name="msg_ai_detect_analyze_busy">正在分析图片…</string>
     <string name="error_ai_detect_failed">图片分析失败</string>
     <string name="action_ai_detect_pick_another">检测另一张图片</string>
+    <string name="photo_restore_title">照片修复</string>
+    <string name="photo_restore_deblur">去除模糊</string>
+    <string name="photo_restore_show_original">显示原图</string>
+    <string name="photo_restore_show_deblurred">显示修复效果</string>
+    <string name="photo_restore_deblurring_progress">正在去除模糊…</string>
+    <string name="photo_restore_full_res_deblur_progress">正在以全分辨率去除模糊…</string>
+    <string name="photo_restore_error_deblur_failed">去除模糊失败</string>
+    <string name="photo_restore_error_64bit_required">此设备不支持照片修复（需要 64 位）</string>
+    <string name="photo_restore_msg_discard_changes">您的照片修复编辑尚未保存。要放弃这些更改吗？</string>
+    <string name="photo_restore_title_deblur_full">以全分辨率去除模糊？</string>
+    <string name="photo_restore_msg_deblur_full">保存时始终对原图以全分辨率去除模糊（预览图不会被放大）。现在对图片去除模糊吗？</string>
 </resources>

@@ -129,7 +129,22 @@ public enum ModelType {
     AI_IMAGE_DETECT("ai-image-detect",
             "AI Image Detector (CommunityForensics)",
             "~87 MB",
-            "https://huggingface.co/buildborderless/CommunityForensics-DeepfakeDet-ViT/resolve/main/onnx/model.onnx");
+            "https://huggingface.co/buildborderless/CommunityForensics-DeepfakeDet-ViT/resolve/main/onnx/model.onnx"),
+    /**
+     * NAFNet photo-restoration (deblur/denoise) model, the official OpenCV
+     * export from https://huggingface.co/opencv/deblurring_nafnet — the
+     * only candidate whose dynamic input shape loads through OpenCV 5 DNN
+     * unmodified (any HxW). Licence: dual MIT (megvii-model) + Apache-2.0
+     * (BasicSR Authors), primary source = the HF repo LICENSE file (not
+     * the HF repo tag). 64-bit devices only (unreliable 32-bit failure
+     * mode); forward memory scales at ~8.3 KB per input pixel, so the
+     * working-cap + tiled design of {@link m.co.rh.id.a_jarwis.ml_engine.provider.component.NafNetProcessor}
+     * is mandatory (PSNR 25.6 dB at the 512 px cap, reference impl).
+     */
+    NAFNET_DEBLUR("nafnet-deblur",
+            "Photo Restore (NAFNet)",
+            "~87.5 MB",
+            "https://huggingface.co/opencv/deblurring_nafnet/resolve/main/deblurring_nafnet_2025may.onnx");
 
     private final String mId;
     private final String mDisplayName;

@@ -100,4 +100,15 @@
     <string name="msg_ai_detect_analyze_busy">Analyzing image…</string>
     <string name="error_ai_detect_failed">Image analysis failed</string>
     <string name="action_ai_detect_pick_another">Check another image</string>
+    <string name="photo_restore_title">Photo Restore</string>
+    <string name="photo_restore_deblur">Deblur</string>
+    <string name="photo_restore_show_original">Show original</string>
+    <string name="photo_restore_show_deblurred">Show deblurred</string>
+    <string name="photo_restore_deblurring_progress">Deblurring…</string>
+    <string name="photo_restore_full_res_deblur_progress">Deblurring at full resolution…</string>
+    <string name="photo_restore_error_deblur_failed">Deblurring failed</string>
+    <string name="photo_restore_error_64bit_required">Photo Restore is not supported on this device (64-bit required)</string>
+    <string name="photo_restore_msg_discard_changes">Your photo restore edits have not been saved. Discard the changes?</string>
+    <string name="photo_restore_title_deblur_full">Deblur at full resolution?</string>
+    <string name="photo_restore_msg_deblur_full">Saving always deblurs the full-resolution original (the preview is never upscaled). Deblur the full-resolution image now?</string>
 </resources>

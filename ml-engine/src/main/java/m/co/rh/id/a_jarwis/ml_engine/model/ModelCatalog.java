@@ -52,6 +52,9 @@ public final class ModelCatalog {
             case AI_IMAGE_DETECT:
                 return new File(filesDir, MLEngineInstance.AI_IMAGE_DETECT_PATH
                         + "/" + MLEngineInstance.AI_IMAGE_DETECT_FILE);
+            case NAFNET_DEBLUR:
+                return new File(filesDir, MLEngineInstance.NAFNET_PATH
+                        + "/" + MLEngineInstance.NAFNET_FILE);
             default:
                 throw new IllegalArgumentException("Unknown model type: " + modelType);
         }

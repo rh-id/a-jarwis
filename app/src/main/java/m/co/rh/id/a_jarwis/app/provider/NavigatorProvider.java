@@ -24,6 +24,7 @@ import m.co.rh.id.a_jarwis.app.ui.page.editor.FaceEditorPage;
 import m.co.rh.id.a_jarwis.app.ui.page.editor.MagicEraserEditorPage;
 import m.co.rh.id.a_jarwis.app.ui.page.editor.PortraitEditorPage;
 import m.co.rh.id.a_jarwis.app.ui.page.editor.QrCensorEditorPage;
+import m.co.rh.id.a_jarwis.app.ui.page.editor.PhotoRestoreEditorPage;
 import m.co.rh.id.a_jarwis.app.ui.page.editor.StyleEditorPage;
 import m.co.rh.id.a_jarwis.base.constants.Routes;
 import m.co.rh.id.a_jarwis.settings.ui.page.SettingsPage;
@@ -67,6 +68,7 @@ public class NavigatorProvider implements ProviderDisposable {
         navMap.put(Routes.PORTRAIT_EDITOR_PAGE, (args, activity) -> new PortraitEditorPage());
         navMap.put(Routes.MAGIC_ERASER_EDITOR_PAGE, (args, activity) -> new MagicEraserEditorPage());
         navMap.put(Routes.STYLE_EDITOR_PAGE, (args, activity) -> new StyleEditorPage());
+        navMap.put(Routes.PHOTO_RESTORE_EDITOR_PAGE, (args, activity) -> new PhotoRestoreEditorPage());
         navMap.put(Routes.AI_DETECT_PAGE, (args, activity) -> new AiDetectPage());
         navMap.put(Routes.MODEL_DOWNLOAD_PAGE, (args, activity) -> new ModelDownloadDialog());
         navMap.put(Routes.SETTINGS_PAGE, (args, activity) -> new SettingsPage());

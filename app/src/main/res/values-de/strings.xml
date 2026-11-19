@@ -96,4 +96,15 @@
     <string name="msg_ai_detect_analyze_busy">Bild wird analysiert…</string>
     <string name="error_ai_detect_failed">Bildanalyse fehlgeschlagen</string>
     <string name="action_ai_detect_pick_another">Weiteres Bild prüfen</string>
+    <string name="photo_restore_title">Foto-Wiederherstellung</string>
+    <string name="photo_restore_deblur">Enschärfen</string>
+    <string name="photo_restore_show_original">Original anzeigen</string>
+    <string name="photo_restore_show_deblurred">Entschärftes Bild anzeigen</string>
+    <string name="photo_restore_deblurring_progress">Bild wird entschärft…</string>
+    <string name="photo_restore_full_res_deblur_progress">Bild wird in voller Auflösung entschärft…</string>
+    <string name="photo_restore_error_deblur_failed">Enschärfen fehlgeschlagen</string>
+    <string name="photo_restore_error_64bit_required">Foto-Wiederherstellung wird auf diesem Gerät nicht unterstützt (64-Bit erforderlich)</string>
+    <string name="photo_restore_msg_discard_changes">Ihre Foto-Wiederherstellungs-Bearbeitungen wurden noch nicht gespeichert. Möchten Sie die Änderungen verwerfen?</string>
+    <string name="photo_restore_title_deblur_full">In voller Auflösung entschärfen?</string>
+    <string name="photo_restore_msg_deblur_full">Das Speichern entschärft immer das Original in voller Auflösung (die Vorschau wird nie hochskaliert). Jetzt in voller Auflösung entschärfen?</string>
 </resources>

@@ -15,7 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <!-- the scrollable home menu: the 7-tile grid overflows small
+        <!-- the scrollable home menu: the 8-tile grid overflows small
              screens (e.g. 720x1280), the scroll view takes the space
              below the fixed app bar -->
         <ScrollView
@@ -83,6 +83,17 @@
                     android:gravity="center"
                     android:text="@string/title_ai_detect"
                     app:icon="@drawable/ic_ai_detect_black" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/button_photo_restore"
+                    style="@style/Theme.Asnapblur.HomeMenuButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_gravity="fill"
+                    android:gravity="center"
+                    android:text="@string/photo_restore_title"
+                    app:icon="@drawable/ic_photo_restore_black" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/button_qr_censor"

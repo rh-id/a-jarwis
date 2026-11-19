@@ -96,4 +96,15 @@
     <string name="msg_ai_detect_analyze_busy">Analyserer bilde…</string>
     <string name="error_ai_detect_failed">Kunne ikke analysere bildet</string>
     <string name="action_ai_detect_pick_another">Sjekk et annet bilde</string>
+    <string name="photo_restore_title">Fotorestaurering</string>
+    <string name="photo_restore_deblur">Fjern uskarphet</string>
+    <string name="photo_restore_show_original">Vis original</string>
+    <string name="photo_restore_show_deblurred">Vis bearbeidet bilde</string>
+    <string name="photo_restore_deblurring_progress">Fjerner uskarphet…</string>
+    <string name="photo_restore_full_res_deblur_progress">Fjerner uskarphet i full oppløsning…</string>
+    <string name="photo_restore_error_deblur_failed">Kunne ikke fjerne uskarphet</string>
+    <string name="photo_restore_error_64bit_required">Fotorestaurering støttes ikke på denne enheten (64-bit kreves)</string>
+    <string name="photo_restore_msg_discard_changes">Endringene dine fra fotorestaurering er ikke lagret. Vil du forkaste endringene?</string>
+    <string name="photo_restore_title_deblur_full">Fjern uskarphet i full oppløsning?</string>
+    <string name="photo_restore_msg_deblur_full">Lagring fjerner alltid uskarphet fra originalen i full oppløsning (forhåndsvisningen blir aldri oppskalert). Vil du fjerne uskarphet fra bildet nå?</string>
 </resources>

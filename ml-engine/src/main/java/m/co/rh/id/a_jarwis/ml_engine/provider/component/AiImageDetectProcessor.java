@@ -48,10 +48,9 @@ import m.co.rh.id.alogger.ILogger;
  * The fp32 build is the only viable candidate: the quantized variants are
  * a double NO-GO — OpenCV DNN cannot load them, and the model card itself
  * documents 10-70 percentage-point OOD divergence for the int8/q4 builds.
- * The constructor silently falls back to the classic OpenCV DNN engine
- * when the default engine cannot load the graph (a thrown load error or
- * an empty net); which engine actually runs the graph is observable
- * through behavior only, the finding is recorded in issue #12.
+ * Engine note: OpenCV 5.1.0 removed Dnn.ENGINE_CLASSIC (engine
+ * unification), so the constructor loads through the default engine only
+ * and any load failure surfaces as the documented IllegalStateException.
  * <p>
  * SPIKE (issue #12): round 1 (the jacoballessio distilled ViT, 224 input,
  * 2-logit head) measured 0/8 synthetic assets detected on-device (pFake
@@ -112,7 +111,7 @@ class AiImageDetectProcessor {
     public AiImageDetectProcessor(String modelPath, ILogger logger) {
         mLogger = logger;
         mTag = modelPath.substring(modelPath.lastIndexOf("/") + 1);
-        Net net = null;
+        Net net;
         try {
             net = Dnn.readNetFromONNX(modelPath);
             if (net.empty()) {
@@ -121,27 +120,16 @@ class AiImageDetectProcessor {
                 net = null;
             }
         } catch (Exception e) {
-            // spike checkpoint (issue #12): the default-engine failure is a
-            // documented spike finding, not a crash — the classic engine is
-            // retried below
-            mLogger.e(TAG, "Default DNN engine failed to load " + mTag, e);
+            // the load failure is a documented spike checkpoint (issue
+            // #12), it must surface as the IllegalStateException contract,
+            // not as a raw OpenCV exception escaping the constructor
+            mLogger.e(TAG, "Failed to load " + mTag
+                    + " with the default DNN engine", e);
             net = null;
         }
         if (net == null) {
-            try {
-                net = Dnn.readNetFromONNX(modelPath, Dnn.ENGINE_CLASSIC);
-            } catch (Exception e) {
-                // the classic retry is the last resort, its failure (e.g. a
-                // CvException of an unparseable graph) must surface as the
-                // documented both-engines contract, not as a raw OpenCV
-                // exception escaping the constructor
-                throw new IllegalStateException("Failed to load " + mTag
-                        + " with both the default and the classic DNN engine", e);
-            }
-            if (net.empty()) {
-                throw new IllegalStateException("Failed to load " + mTag
-                        + " with both the default and the classic DNN engine");
-            }
+            throw new IllegalStateException("Failed to load " + mTag
+                    + " with the default DNN engine");
         }
         mModelNet = net;
     }

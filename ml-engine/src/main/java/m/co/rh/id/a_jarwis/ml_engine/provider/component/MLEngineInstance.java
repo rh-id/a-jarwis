@@ -43,6 +43,8 @@ public class MLEngineInstance implements ProviderDisposable {
     public static final String LAMA_FILE = "inpainting_lama_2025jan.onnx";
     public static final String AI_IMAGE_DETECT_PATH = BASE_PATH + "/ai-image-detect";
     public static final String AI_IMAGE_DETECT_FILE = "community_forensics_deepfakedet_vit_fp32_2026july.onnx";
+    public static final String NAFNET_PATH = BASE_PATH + "/restore";
+    public static final String NAFNET_FILE = "deblurring_nafnet_2025may.onnx";
     private final Context mAppContext;
     private final ILogger mLogger;
     /**
@@ -88,6 +90,14 @@ public class MLEngineInstance implements ProviderDisposable {
      */
     private final ConcurrentHashMap<ModelType, AiImageDetectProcessor> mAiImageDetectProcessors;
     /**
+     * Lazy NAFNet deblur processor cache (keyed by model type for future
+     * restore variants, the file is ~87 MB). App-lifetime per the
+     * teardown-poison note on {@link NafNetProcessor} — evicted only by
+     * dispose; the retained dnn workspace is bounded by the working cap
+     * (see {@link NafNetProcessor#suggestedWorkingCap(Context)}) instead.
+     */
+    private final ConcurrentHashMap<ModelType, NafNetProcessor> mNafNetProcessors;
+    /**
      * Lazy cached YuNet face detector, created on first face detection and
      * kept for the provider lifetime like the dnn processor caches above.
      * Released only by {@link #releaseFaceModels()} and
@@ -110,6 +120,7 @@ public class MLEngineInstance implements ProviderDisposable {
         mEfficientSamProcessors = new ConcurrentHashMap<>();
         mLamaProcessors = new ConcurrentHashMap<>();
         mAiImageDetectProcessors = new ConcurrentHashMap<>();
+        mNafNetProcessors = new ConcurrentHashMap<>();
         if (OpenCVLoader.initLocal()) {
             mLogger.d("OpenCV", "OpenCV loaded");
         } else {
@@ -186,6 +197,21 @@ public class MLEngineInstance implements ProviderDisposable {
     public AiImageDetectProcessor getAiImageDetectProcessor() {
         return mAiImageDetectProcessors.computeIfAbsent(ModelType.AI_IMAGE_DETECT,
                 modelType -> new AiImageDetectProcessor(
+                        requireModelFile(modelType).getAbsolutePath(), mLogger));
+    }
+
+    /**
+     * Returns the NAFNet deblur processor, creating and caching it on first
+     * access. Calls on one instance must be serialized (e.g. single-thread
+     * executor); the instance is app-lifetime per the teardown-poison note
+     * on {@link NafNetProcessor} — nobody but the dispose cascade may
+     * release it.
+     *
+     * @return the cached NAFNet deblur processor
+     */
+    public NafNetProcessor getNafNetProcessor() {
+        return mNafNetProcessors.computeIfAbsent(ModelType.NAFNET_DEBLUR,
+                modelType -> new NafNetProcessor(
                         requireModelFile(modelType).getAbsolutePath(), mLogger));
     }
 
@@ -335,6 +361,14 @@ public class MLEngineInstance implements ProviderDisposable {
     }
 
     /**
+     * @return true when the NAFNet deblur model is downloaded and usable;
+     * the 64-bit-only device gate is enforced by the page side on top
+     */
+    public boolean isRestoreAvailable() {
+        return ModelCatalog.isAvailable(mAppContext, ModelType.NAFNET_DEBLUR);
+    }
+
+    /**
      * @return true only when BOTH the object segmentation model and the
      * inpainting model are downloaded, the magic eraser needs the two of them
      */
@@ -400,11 +434,19 @@ public class MLEngineInstance implements ProviderDisposable {
                 mLogger.e(TAG, "Failed to release an AI image detection processor", e);
             }
         }
+        for (NafNetProcessor processor : mNafNetProcessors.values()) {
+            try {
+                processor.release();
+            } catch (Exception e) {
+                mLogger.e(TAG, "Failed to release a NAFNet deblur processor", e);
+            }
+        }
         mSTProcessors.clear();
         mPersonSegProcessors.clear();
         mEfficientSamProcessors.clear();
         mLamaProcessors.clear();
         mAiImageDetectProcessors.clear();
+        mNafNetProcessors.clear();
         mFaceDetector = null;
         mFaceRecognizer = null;
         nudgeNativeReclaim();

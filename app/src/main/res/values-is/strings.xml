@@ -96,4 +96,15 @@
     <string name="msg_ai_detect_analyze_busy">Greini mynd…</string>
     <string name="error_ai_detect_failed">Tókst ekki að greina mynd</string>
     <string name="action_ai_detect_pick_another">Athuga aðra mynd</string>
+    <string name="photo_restore_title">Endurheimta mynd</string>
+    <string name="photo_restore_deblur">Afþoka</string>
+    <string name="photo_restore_show_original">Sýna frumrit</string>
+    <string name="photo_restore_show_deblurred">Sýna afþokkaða mynd</string>
+    <string name="photo_restore_deblurring_progress">Afþokar mynd…</string>
+    <string name="photo_restore_full_res_deblur_progress">Afþokar mynd í fullri upplausn…</string>
+    <string name="photo_restore_error_deblur_failed">Afþokun mistókst</string>
+    <string name="photo_restore_error_64bit_required">Endurheimta mynd er ekki stutt á þessu tæki (64-bita nauðsynlegt)</string>
+    <string name="photo_restore_msg_discard_changes">Breytingarnar þínar á myndarendurheimt hafa ekki verið vistaðar. Viltu fleygja breytingunum?</string>
+    <string name="photo_restore_title_deblur_full">Afþoka í fullri upplausn?</string>
+    <string name="photo_restore_msg_deblur_full">Vistun afþokar alltaf frumritið í fullri upplausn (forsýningin er aldrei stækkuð). Afþoka myndina núna?</string>
 </resources>

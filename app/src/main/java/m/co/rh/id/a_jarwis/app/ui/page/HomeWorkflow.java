@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
+import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 
@@ -14,6 +15,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import m.co.rh.id.a_jarwis.R;
 import m.co.rh.id.a_jarwis.app.ui.page.common.ModelDownloadDialog;
 import m.co.rh.id.a_jarwis.app.ui.page.nav.param.SelectedChoice;
 import m.co.rh.id.a_jarwis.app.ui.page.nav.param.UriList;
@@ -33,6 +35,7 @@ class HomeWorkflow implements Serializable {
     private static final int REQUEST_CODE_IMAGE_PORTRAIT = 7;
     private static final int REQUEST_CODE_IMAGE_MAGIC_ERASER = 8;
     private static final int REQUEST_CODE_IMAGE_AI_DETECT = 9;
+    private static final int REQUEST_CODE_IMAGE_RESTORE = 10;
 
     private transient INavigator mNavigator;
 
@@ -76,6 +79,32 @@ class HomeWorkflow implements Serializable {
     public void startAiDetect() {
         requestWriteExternalStoragePermission(() -> startIfAiDetectModelsAvailable(() ->
                 pickImage(REQUEST_CODE_IMAGE_AI_DETECT, false)), REQUEST_CODE_IMAGE_AI_DETECT);
+    }
+
+    /**
+     * Start the photo restore (NAFNet deblur) flow. The 64-bit gate runs
+     * FIRST, before anything else: the NAFNet forward memory scales at
+     * ~8.3 KB per input pixel and the OpenCV dnn failure mode on 32-bit is
+     * UNRELIABLE — the spike (issue #5, measured 2026-11-18) recorded a
+     * catchable CvException at the 512 px forward but a hard SIGSEGV inside
+     * TBB already at the 192 px one, so a 32-bit device would die at an
+     * unpredictable point instead of failing gracefully. On 32-bit the
+     * feature is refused with a toast before any model download or picker
+     * opens (the gate also mirrors the app-lifetime net policy of
+     * {@link m.co.rh.id.a_jarwis.ml_engine.provider.component.MLEngineInstance}:
+     * a process that can never run the net safely must never parse it).
+     */
+    public void startPhotoRestore() {
+        Activity activity = mNavigator.getActivity();
+        if (Build.SUPPORTED_64_BIT_ABIS.length == 0) {
+            Toast.makeText(activity, R.string.photo_restore_error_64bit_required,
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
+        requestWriteExternalStoragePermission(() ->
+                startIfPhotoRestoreModelsAvailable(() ->
+                        pickImage(REQUEST_CODE_IMAGE_RESTORE, false)),
+                REQUEST_CODE_IMAGE_RESTORE);
     }
 
     public void startQrScan() {
@@ -167,6 +196,19 @@ class HomeWorkflow implements Serializable {
         }
     }
 
+    private void startIfPhotoRestoreModelsAvailable(ContinueAction continueAction) {
+        Activity activity = mNavigator.getActivity();
+        ArrayList<ModelType> missingModels = new ArrayList<>();
+        if (!ModelCatalog.isAvailable(activity, ModelType.NAFNET_DEBLUR)) {
+            missingModels.add(ModelType.NAFNET_DEBLUR);
+        }
+        if (missingModels.isEmpty()) {
+            continueAction.run();
+        } else {
+            startModelDownload(missingModels, continueAction);
+        }
+    }
+
     private void startModelDownload(ArrayList<ModelType> missingModels, ContinueAction continueAction) {
         mNavigator.push(Routes.MODEL_DOWNLOAD_PAGE, new ModelDownloadDialog.ModelList(missingModels),
                 (navigator, navRoute, activity1, currentView) -> {
@@ -218,6 +260,8 @@ class HomeWorkflow implements Serializable {
             startMagicEraser();
         } else if (requestCode == REQUEST_CODE_IMAGE_AI_DETECT) {
             startAiDetect();
+        } else if (requestCode == REQUEST_CODE_IMAGE_RESTORE) {
+            startPhotoRestore();
         }
     }
 
@@ -237,6 +281,8 @@ class HomeWorkflow implements Serializable {
             pushMagicEraserEditor(data);
         } else if (requestCode == REQUEST_CODE_IMAGE_AI_DETECT) {
             pushAiDetect(data);
+        } else if (requestCode == REQUEST_CODE_IMAGE_RESTORE) {
+            pushPhotoRestoreEditor(data);
         }
     }
 
@@ -326,6 +372,20 @@ class HomeWorkflow implements Serializable {
         ArrayList<String> uris = new ArrayList<>();
         uris.add(pickedUris.get(0).toString());
         mNavigator.push(Routes.AI_DETECT_PAGE, new UriList(uris));
+    }
+
+    /**
+     * Push the photo restore editor page, the deblur works on a single
+     * image so only the first picked uri is taken
+     */
+    private void pushPhotoRestoreEditor(Intent data) {
+        List<Uri> pickedUris = collectPickedUris(data);
+        if (pickedUris.isEmpty()) {
+            return;
+        }
+        ArrayList<String> uris = new ArrayList<>();
+        uris.add(pickedUris.get(0).toString());
+        mNavigator.push(Routes.PHOTO_RESTORE_EDITOR_PAGE, new UriList(uris));
     }
 
     /**

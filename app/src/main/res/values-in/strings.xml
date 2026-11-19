@@ -96,4 +96,15 @@
     <string name="msg_ai_detect_analyze_busy">Menganalisis gambar…</string>
     <string name="error_ai_detect_failed">Gagal menganalisis gambar</string>
     <string name="action_ai_detect_pick_another">Periksa gambar lain</string>
+    <string name="photo_restore_title">Pulihkan Foto</string>
+    <string name="photo_restore_deblur">Kurangi Buram</string>
+    <string name="photo_restore_show_original">Tampilkan asli</string>
+    <string name="photo_restore_show_deblurred">Tampilkan hasilnya</string>
+    <string name="photo_restore_deblurring_progress">Mengurangi keburaman…</string>
+    <string name="photo_restore_full_res_deblur_progress">Mengurangi keburaman resolusi penuh…</string>
+    <string name="photo_restore_error_deblur_failed">Gagal mengurangi keburaman</string>
+    <string name="photo_restore_error_64bit_required">Pemulihan Foto tidak didukung pada perangkat ini (64-bit diperlukan)</string>
+    <string name="photo_restore_msg_discard_changes">Perubahan pemulihan foto Anda belum disimpan. Buang perubahan?</string>
+    <string name="photo_restore_title_deblur_full">Kurangi keburaman resolusi penuh?</string>
+    <string name="photo_restore_msg_deblur_full">Menyimpan selalu mengurangi keburaman asli pada resolusi penuh (pratinjau tidak pernah diperbesar). Kurangi keburaman gambar sekarang?</string>
 </resources>

@@ -96,4 +96,15 @@
     <string name="msg_ai_detect_analyze_busy">Analisi dell\'immagine…</string>
     <string name="error_ai_detect_failed">Analisi dell\'immagine non riuscita</string>
     <string name="action_ai_detect_pick_another">Verifica un\'altra immagine</string>
+    <string name="photo_restore_title">Restauro foto</string>
+    <string name="photo_restore_deblur">Riduci sfocatura</string>
+    <string name="photo_restore_show_original">Mostra originale</string>
+    <string name="photo_restore_show_deblurred">Mostra immagine nitida</string>
+    <string name="photo_restore_deblurring_progress">Riduzione della sfocatura…</string>
+    <string name="photo_restore_full_res_deblur_progress">Riduzione della sfocatura a piena risoluzione…</string>
+    <string name="photo_restore_error_deblur_failed">Riduzione della sfocatura non riuscita</string>
+    <string name="photo_restore_error_64bit_required">Il restauro foto non è supportato su questo dispositivo (richiesto 64 bit)</string>
+    <string name="photo_restore_msg_discard_changes">Le modifiche del restauro foto non sono state salvate. Scartare le modifiche?</string>
+    <string name="photo_restore_title_deblur_full">Ridurre la sfocatura a piena risoluzione?</string>
+    <string name="photo_restore_msg_deblur_full">Il salvataggio riduce sempre la sfocatura dell\'originale a piena risoluzione (l\'anteprima non viene mai ingrandita). Ridurre la sfocatura dell\'immagine ora?</string>
 </resources>

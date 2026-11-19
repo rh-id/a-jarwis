@@ -96,4 +96,15 @@
     <string name="msg_ai_detect_analyze_busy">Analyse de l\'image…</string>
     <string name="error_ai_detect_failed">Échec de l\'analyse de l\'image</string>
     <string name="action_ai_detect_pick_another">Vérifier une autre image</string>
+    <string name="photo_restore_title">Restauration photo</string>
+    <string name="photo_restore_deblur">Déflouter</string>
+    <string name="photo_restore_show_original">Afficher l\'original</string>
+    <string name="photo_restore_show_deblurred">Afficher l\'image défloutée</string>
+    <string name="photo_restore_deblurring_progress">Défloutage…</string>
+    <string name="photo_restore_full_res_deblur_progress">Défloutage en pleine résolution…</string>
+    <string name="photo_restore_error_deblur_failed">Échec du défloutage</string>
+    <string name="photo_restore_error_64bit_required">La restauration photo n\'est pas prise en charge sur cet appareil (64 bits requis)</string>
+    <string name="photo_restore_msg_discard_changes">Vos modifications de restauration photo n\'ont pas été enregistrées. Abandonner les modifications ?</string>
+    <string name="photo_restore_title_deblur_full">Déflouter en pleine résolution ?</string>
+    <string name="photo_restore_msg_deblur_full">L\'enregistrement défloute toujours l\'original en pleine résolution (l\'aperçu n\'est jamais agrandi). Déflouter l\'image en pleine résolution maintenant ?</string>
 </resources>

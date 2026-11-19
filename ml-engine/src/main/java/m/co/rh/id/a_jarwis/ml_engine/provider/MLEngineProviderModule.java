@@ -8,6 +8,7 @@ import m.co.rh.id.a_jarwis.ml_engine.provider.component.MagicEraserEngine;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.ModelDownloader;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.PersonSegEngine;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.QREngine;
+import m.co.rh.id.a_jarwis.ml_engine.provider.component.PhotoRestoreEngine;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.STEngine;
 import m.co.rh.id.a_jarwis.ml_engine.provider.notifier.ModelChangeNotifier;
 import m.co.rh.id.alogger.ILogger;
@@ -28,6 +29,8 @@ public class MLEngineProviderModule implements ProviderModule {
                 () -> new MagicEraserEngine(provider));
         providerRegistry.registerLazy(AiDetectEngine.class,
                 () -> new AiDetectEngine(provider));
+        providerRegistry.registerLazy(PhotoRestoreEngine.class,
+                () -> new PhotoRestoreEngine(provider));
         providerRegistry.registerLazy(ModelDownloader.class,
                 () -> new ModelDownloader(provider.get(ILogger.class),
                         provider.get(FileHelper.class),

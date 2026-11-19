@@ -96,4 +96,15 @@
     <string name="msg_ai_detect_analyze_busy">Analizar il maletg…</string>
     <string name="error_ai_detect_failed">Analizar il maletg n\'è betg reussì</string>
     <string name="action_ai_detect_pick_another">Controllar in auter maletg</string>
+    <string name="photo_restore_title">Restauraziun da fotos</string>
+    <string name="photo_restore_deblur">Sclarir il maletg</string>
+    <string name="photo_restore_show_original">Mussar l\'original</string>
+    <string name="photo_restore_show_deblurred">Mussar il maletg sclarì</string>
+    <string name="photo_restore_deblurring_progress">Il maletg vegn sclarì…</string>
+    <string name="photo_restore_full_res_deblur_progress">Il maletg vegn sclarì en resoluziun cumplaina…</string>
+    <string name="photo_restore_error_deblur_failed">Sclarir n\'è betg reussì</string>
+    <string name="photo_restore_error_64bit_required">La restauraziun da fotos na vegn betg sustegnida sin quest apparat (64-bit è necesari)</string>
+    <string name="photo_restore_msg_discard_changes">Vossas midadas da la restauraziun da fotos n\'èn betg vegnidas memorisadas. Vulais sbutter las midadas?</string>
+    <string name="photo_restore_title_deblur_full">Sclarir en resoluziun cumplaina?</string>
+    <string name="photo_restore_msg_deblur_full">Il memorisar sclara adina l\'original en resoluziun cumplaina (la prevista vegn mai engrondida). Sclarir il maletg ussa?</string>
 </resources>

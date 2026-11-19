@@ -66,6 +66,7 @@ dependencies {
     testImplementation libs.junit
     androidTestImplementation libs.androidx.test.junit
     androidTestImplementation libs.espresso.core
+    // UiAutomator for the restore E2E smoke test (drives the real system picker flow)
 }
 
 project.afterEvaluate {

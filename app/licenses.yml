@@ -550,3 +550,13 @@
   license: MIT
   licenseUrl: https://github.com/JeongsooP/Community-Forensics/blob/main/LICENSE
   url: https://huggingface.co/buildborderless/CommunityForensics-DeepfakeDet-ViT
+- name: NAFNet image restoration model (deblurring NAFNet)
+  copyrightHolder: megvii-model
+  license: MIT License
+  licenseUrl: https://github.com/megvii-research/NAFNet
+  url: https://huggingface.co/opencv/deblurring_nafnet
+- name: NAFNet image restoration model (BasicSR portions)
+  copyrightHolder: BasicSR Authors
+  license: Apache License 2.0
+  licenseUrl: https://github.com/megvii-research/NAFNet
+  url: https://huggingface.co/opencv/deblurring_nafnet
