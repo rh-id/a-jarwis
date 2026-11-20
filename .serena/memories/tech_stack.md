@@ -19,8 +19,8 @@
 
 ## ML stack
 - OpenCV 5.0.0.1 official Android AAR from Maven Central (`org.opencv:opencv:5.0.0.1`, catalog entry `libs.opencv`), consumed by `:ml-engine` directly; no local module (previously vendored 4.8.0 SDK — removed 2026-09)
-- ONNX models are NOT in the APK — downloaded on demand (`ModelType`/`ModelCatalog`/`ModelDownloader` via `ModelDownloadWorker`) into `filesDir/ml-engine/engine/**`; legacy bundled `nst_*_9.onnx` files are renamed in place by `ModelCatalog.migrateLegacyIfNeeded`
-- Run via OpenCV `FaceDetectorYN`/`FaceRecognizerSF` and DNN (`STProcessor`); processors cached per theme by `MLEngineInstance`
+- ONNX models are NOT in the APK — downloaded on demand (opaque String model ids from the engine facade accessors; the `MLEngineInstance.ModelType` catalog enum is nested PACKAGE-PRIVATE, `ModelDownloader` via `ModelDownloadWorker` resolve ids internally) into `filesDir/ml-engine/engine/**`; legacy bundled `nst_*_9.onnx` files are renamed in place by `MLEngineInstance.migrateLegacyIfNeeded` (ModelCatalog was absorbed into `MLEngineInstance` as private statics `isAvailable`/`getModelFile` + the legacy NST rename; the former `fromTheme` is STEngine's private `modelTypeForTheme`); model availability is checked through the engine facades (the app boundary speaks String ids: `MLEngineInstance.isModelAvailable(String)` + `displayNameFor`/`displaySizeFor`)
+- Run via OpenCV `FaceDetectorYN`/`FaceRecognizerSF` and DNN (`STProcessor`); processors cached per ModelType by `MLEngineInstance`
 - `AiImageDetectProcessor` runs the AI_IMAGE_DETECT model: 384x384 input (shortest-edge resize 440 + center crop, CLIP-normalized), single logit → pFake = sigmoid(logit); constructor silently falls back to the classic OpenCV DNN engine when the default engine cannot load the graph
 - QR features (censor/scanner) use the in-box `org.opencv.objdetect.QRCodeDetector` — no model file at all
 

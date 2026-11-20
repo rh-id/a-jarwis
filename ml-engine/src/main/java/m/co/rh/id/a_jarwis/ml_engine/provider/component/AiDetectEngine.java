@@ -2,6 +2,7 @@ package m.co.rh.id.a_jarwis.ml_engine.provider.component;
 
 import android.graphics.Bitmap;
 
+import m.co.rh.id.a_jarwis.ml_engine.provider.component.MLEngineInstance.ModelType;
 import m.co.rh.id.aprovider.Provider;
 import m.co.rh.id.aprovider.ProviderValue;
 
@@ -36,6 +37,28 @@ public class AiDetectEngine {
 
     public AiDetectEngine(Provider provider) {
         mMLEngine = provider.lazyGet(MLEngineInstance.class);
+    }
+
+    /**
+     * Check whether the AI-generated-image detection model is downloaded and
+     * usable, so the detector flow can prompt the model download before
+     * opening the page.
+     *
+     * @return true when the detection model file is already downloaded
+     */
+    public boolean isAvailable() {
+        return mMLEngine.get().isModelAvailable(ModelType.AI_IMAGE_DETECT);
+    }
+
+    /**
+     * Opaque model id of the AI-image-detection model, used to key download
+     * requests through ModelDownloadDialog/ModelDownloadWorker (the engines
+     * are the only model id producers).
+     *
+     * @return the opaque model id of the AI-image-detection model
+     */
+    public String aiDetectModelId() {
+        return ModelType.AI_IMAGE_DETECT.getId();
     }
 
     /**

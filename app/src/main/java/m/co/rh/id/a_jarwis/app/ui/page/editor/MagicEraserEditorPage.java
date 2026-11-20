@@ -44,7 +44,6 @@ import m.co.rh.id.a_jarwis.ml_engine.model.EditorStroke;
 import m.co.rh.id.a_jarwis.ml_engine.model.StrokeBatch;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.MagicEraserEngine;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.MagicEraserMask;
-import m.co.rh.id.a_jarwis.ml_engine.provider.component.MLEngineInstance;
 import m.co.rh.id.alogger.ILogger;
 import m.co.rh.id.anavigator.NavRoute;
 import m.co.rh.id.anavigator.StatefulView;
@@ -54,7 +53,6 @@ import m.co.rh.id.anavigator.component.NavBackPressResult;
 import m.co.rh.id.anavigator.component.NavOnBackPressed;
 import m.co.rh.id.anavigator.component.RequireComponent;
 import m.co.rh.id.aprovider.Provider;
-import m.co.rh.id.aprovider.ProviderValue;
 
 /**
  * Interactive magic eraser editor.
@@ -218,13 +216,6 @@ public class MagicEraserEditorPage extends StatefulView<Activity> implements Req
     private transient ExecutorService mExecutorService;
     private transient RxDisposer mRxDisposer;
     private transient MagicEraserEngine mMagicEraserEngine;
-    /**
-     * Lazy engine instance handle, used to release the native dnn processors
-     * (SAM before every erase, LaMa after every erase, both nets on dispose,
-     * see {@link MLEngineInstance#releaseEfficientSamProcessor()}
-     * and {@link MLEngineInstance#releaseLamaProcessor()})
-     */
-    private transient ProviderValue<MLEngineInstance> mMLEngineInstance;
     private transient FileHelper mFileHelper;
     private transient ImageHelper mImageHelper;
     private transient MediaHelper mMediaHelper;
@@ -306,7 +297,6 @@ public class MagicEraserEditorPage extends StatefulView<Activity> implements Req
         mExecutorService = mSvProvider.get(ExecutorService.class);
         mRxDisposer = mSvProvider.get(RxDisposer.class);
         mMagicEraserEngine = mSvProvider.get(MagicEraserEngine.class);
-        mMLEngineInstance = mSvProvider.lazyGet(MLEngineInstance.class);
         mFileHelper = mSvProvider.get(FileHelper.class);
         mImageHelper = mSvProvider.get(ImageHelper.class);
         mMediaHelper = mSvProvider.get(MediaHelper.class);
@@ -433,14 +423,14 @@ public class MagicEraserEditorPage extends StatefulView<Activity> implements Req
         // The releases run on the background executor: each blocks on its
         // processor monitor while a forward may still be in flight (seconds
         // of main-thread stall otherwise), the monitor stays the
-        // correctness guarantee. The engine instance is captured first:
+        // correctness guarantee. The engine facade is captured first:
         // dispose nulls the page fields below while the submitted release
         // may run after them
-        if (mExecutorService != null && mMLEngineInstance != null) {
-            MLEngineInstance engineInstance = mMLEngineInstance.get();
+        if (mExecutorService != null && mMagicEraserEngine != null) {
+            MagicEraserEngine magicEraserEngine = mMagicEraserEngine;
             mExecutorService.submit(() -> {
-                engineInstance.releaseEfficientSamProcessor();
-                engineInstance.releaseLamaProcessor();
+                magicEraserEngine.releaseSamProcessor();
+                magicEraserEngine.releaseLamaProcessor();
             });
         }
         if (mSessionSourceFiles != null) {
@@ -470,31 +460,30 @@ public class MagicEraserEditorPage extends StatefulView<Activity> implements Req
         mExecutorService = null;
         mRxDisposer = null;
         mMagicEraserEngine = null;
-        mMLEngineInstance = null;
         mFileHelper = null;
         mImageHelper = null;
         mMediaHelper = null;
     }
 
     /**
-     * Release the cached LaMa processor through the engine instance (no-op
-     * when the page components are already gone), the engine instance
-     * lazily recreates the processor on the next erase
+     * Release the cached LaMa processor through the engine facade (no-op
+     * when the page components are already gone), the engine lazily
+     * recreates the processor on the next erase
      */
     private void releaseLamaProcessor() {
-        if (mMLEngineInstance != null) {
-            mMLEngineInstance.get().releaseLamaProcessor();
+        if (mMagicEraserEngine != null) {
+            mMagicEraserEngine.releaseLamaProcessor();
         }
     }
 
     /**
-     * Release the cached SAM processor through the engine instance (no-op
-     * when the page components are already gone), the engine instance
-     * lazily recreates the processor on the next detect
+     * Release the cached SAM processor through the engine facade (no-op
+     * when the page components are already gone), the engine lazily
+     * recreates the processor on the next detect
      */
     private void releaseSamProcessor() {
-        if (mMLEngineInstance != null) {
-            mMLEngineInstance.get().releaseEfficientSamProcessor();
+        if (mMagicEraserEngine != null) {
+            mMagicEraserEngine.releaseSamProcessor();
         }
     }
 

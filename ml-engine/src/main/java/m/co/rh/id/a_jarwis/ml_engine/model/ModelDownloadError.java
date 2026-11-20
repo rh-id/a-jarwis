@@ -3,21 +3,22 @@ package m.co.rh.id.a_jarwis.ml_engine.model;
 /**
  * Permanent download failure event of a single AI model, emitted through the
  * ModelChangeNotifier by ModelDownloader (checksum validation failure) and by
- * ModelDownloadWorker when the work input is invalid (null model type).
+ * ModelDownloadWorker when the work input is invalid (missing/unknown model id).
  */
 public final class ModelDownloadError {
     /**
-     * The model that failed to download,
-     * may be null when the failure is caused by an unknown model type id
+     * The opaque model id (as obtained from the engine facades) of the model
+     * that failed to download,
+     * may be null when the failure is not tied to a known model
      */
-    public final ModelType modelType;
+    public final String modelId;
     /**
      * Description of the failure
      */
     public final String errorMessage;
 
-    public ModelDownloadError(ModelType modelType, String errorMessage) {
-        this.modelType = modelType;
+    public ModelDownloadError(String modelId, String errorMessage) {
+        this.modelId = modelId;
         this.errorMessage = errorMessage;
     }
 }

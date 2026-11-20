@@ -4,7 +4,6 @@ import m.co.rh.id.a_jarwis.app.ui.page.common.ModelDownloadDialog;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.util.TypedValue;
@@ -48,8 +47,6 @@ import m.co.rh.id.a_jarwis.base.provider.component.helper.ImageHelper;
 import m.co.rh.id.a_jarwis.base.provider.component.helper.MediaHelper;
 import m.co.rh.id.a_jarwis.base.rx.RxDisposer;
 import m.co.rh.id.a_jarwis.base.util.UiUtils;
-import m.co.rh.id.a_jarwis.ml_engine.model.ModelCatalog;
-import m.co.rh.id.a_jarwis.ml_engine.model.ModelType;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.STEngine;
 import m.co.rh.id.alogger.ILogger;
 import m.co.rh.id.anavigator.NavRoute;
@@ -210,7 +207,6 @@ public class StyleEditorPage extends StatefulView<Activity> implements RequireCo
 
     // component
     private transient Provider mSvProvider;
-    private transient Context mAppContext;
     private transient ILogger mLogger;
     private transient ExecutorService mExecutorService;
     private transient RxDisposer mRxDisposer;
@@ -264,7 +260,6 @@ public class StyleEditorPage extends StatefulView<Activity> implements RequireCo
     @Override
     public void provideComponent(Provider provider) {
         mSvProvider = provider.get(IStatefulViewProvider.class);
-        mAppContext = mSvProvider.getContext().getApplicationContext();
         mLogger = mSvProvider.get(ILogger.class);
         mExecutorService = mSvProvider.get(ExecutorService.class);
         mRxDisposer = mSvProvider.get(RxDisposer.class);
@@ -372,7 +367,6 @@ public class StyleEditorPage extends StatefulView<Activity> implements RequireCo
             mSvProvider.dispose();
             mSvProvider = null;
         }
-        mAppContext = null;
         mLogger = null;
         mExecutorService = null;
         mRxDisposer = null;
@@ -534,8 +528,7 @@ public class StyleEditorPage extends StatefulView<Activity> implements RequireCo
             mModelAvailabilityCache = new boolean[6];
             // single population pass, the later reads are pure memory reads
             for (int i = 1; i < mModelAvailabilityCache.length; i++) {
-                mModelAvailabilityCache[i] = ModelCatalog.isAvailable(mAppContext,
-                        ModelCatalog.fromTheme(i));
+                mModelAvailabilityCache[i] = mSTEngine.isNSTAvailable(i);
             }
         }
         return mModelAvailabilityCache[theme];
@@ -551,8 +544,7 @@ public class StyleEditorPage extends StatefulView<Activity> implements RequireCo
             return;
         }
         for (int i = 1; i < mModelAvailabilityCache.length; i++) {
-            mModelAvailabilityCache[i] = ModelCatalog.isAvailable(mAppContext,
-                    ModelCatalog.fromTheme(i));
+            mModelAvailabilityCache[i] = mSTEngine.isNSTAvailable(i);
         }
     }
 
@@ -763,8 +755,7 @@ public class StyleEditorPage extends StatefulView<Activity> implements RequireCo
                     showPreviewCache(mEditorState.getValue());
                     if (previewCache.mStyledPreview == null
                             && previewCache.mTheme != THEME_NONE
-                            && ModelCatalog.isAvailable(mAppContext,
-                            ModelCatalog.fromTheme(previewCache.mTheme))) {
+                            && mSTEngine.isNSTAvailable(previewCache.mTheme)) {
                         // the model finished downloading while the render was in
                         // flight and the re-emission that would have re-triggered
                         // the render was swallowed, schedule exactly one re-render
@@ -785,7 +776,7 @@ public class StyleEditorPage extends StatefulView<Activity> implements RequireCo
         try {
             Bitmap styledPreview = null;
             if (theme != THEME_NONE
-                    && ModelCatalog.isAvailable(mAppContext, ModelCatalog.fromTheme(theme))) {
+                    && mSTEngine.isNSTAvailable(theme)) {
                 styledPreview = mSTEngine.apply(preview, theme);
             }
             return new PreviewCache(index, theme, preview, styledPreview);
@@ -865,8 +856,8 @@ public class StyleEditorPage extends StatefulView<Activity> implements RequireCo
      * on success the current state is re-emitted to re-trigger the render
      */
     private void startModelDownload(int theme) {
-        ArrayList<ModelType> models = new ArrayList<>(
-                Arrays.asList(ModelCatalog.fromTheme(theme)));
+        ArrayList<String> models = new ArrayList<>(
+                Arrays.asList(mSTEngine.modelIdForTheme(theme)));
         mNavigator.push(Routes.MODEL_DOWNLOAD_PAGE, new ModelDownloadDialog.ModelList(models),
                 (navigator, navRoute, activity, currentView) -> {
                     Serializable serializable = navRoute.getRouteResult();

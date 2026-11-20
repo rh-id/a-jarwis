@@ -19,10 +19,11 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
 
 import m.co.rh.id.a_jarwis.base.provider.component.helper.FileHelper;
-import m.co.rh.id.a_jarwis.ml_engine.model.ModelCatalog;
-import m.co.rh.id.a_jarwis.ml_engine.model.ModelType;
+import m.co.rh.id.a_jarwis.ml_engine.provider.component.MLEngineInstance.ModelType;
 import m.co.rh.id.a_jarwis.ml_engine.provider.notifier.ModelChangeNotifier;
 import m.co.rh.id.alogger.ILogger;
+import m.co.rh.id.aprovider.Provider;
+import m.co.rh.id.aprovider.ProviderValue;
 
 /**
  * Downloads AI models over HTTP using pure java.net, with Hugging Face client semantics:
@@ -52,16 +53,18 @@ public class ModelDownloader {
     private final ILogger mLogger;
     private final FileHelper mFileHelper;
     private final ModelChangeNotifier mModelChangeNotifier;
+    private final ProviderValue<MLEngineInstance> mMLEngine;
 
-    public ModelDownloader(ILogger logger, FileHelper fileHelper,
-                           ModelChangeNotifier modelChangeNotifier) {
-        mLogger = logger;
-        mFileHelper = fileHelper;
-        mModelChangeNotifier = modelChangeNotifier;
+    public ModelDownloader(Provider provider) {
+        mLogger = provider.get(ILogger.class);
+        mFileHelper = provider.get(FileHelper.class);
+        mModelChangeNotifier = provider.get(ModelChangeNotifier.class);
+        mMLEngine = provider.lazyGet(MLEngineInstance.class);
     }
 
     /**
-     * Download the model into its target file (see {@link ModelCatalog#getModelFile}).
+     * Download the model into its target file
+     * (see {@link MLEngineInstance#getModelFile(ModelType)}).
      * Emits the download outcome through the injected {@link ModelChangeNotifier}:
      * {@link ModelChangeNotifier#downloadSucceeded} fires on every normal return
      * (including the already-available early return), {@link ModelChangeNotifier#downloadFailed}
@@ -69,26 +72,33 @@ public class ModelDownloader {
      * Transient {@link IOException}s are NOT emitted, the work is retried instead
      * (by WorkManager, see ModelDownloadWorker).
      *
+     * @param context any context, only used to resolve the target file location
+     * @param modelId opaque model id as obtained from the engine facades
      * @return immediately without network access when the target file already exists (idempotent)
      * @throws IOException              network/IO failure, retryable
      * @throws ModelChecksumException   checksum/length validation failed permanently,
      *                                  a failed event is emitted before rethrowing
+     * @throws IllegalArgumentException unknown model id, permanent, not retried
      */
-    public void download(@NonNull Context context, @NonNull ModelType modelType)
+    public void download(@NonNull Context context, @NonNull String modelId)
             throws IOException {
+        ModelType modelType = ModelType.fromId(modelId);
+        if (modelType == null) {
+            throw new IllegalArgumentException("Unknown model id: " + modelId);
+        }
         try {
-            downloadInternal(context, modelType);
+            downloadInternal(modelType);
         } catch (ModelChecksumException e) {
             // permanent failure, downloading again from the same url will not help
-            mModelChangeNotifier.downloadFailed(modelType, e.getMessage());
+            mModelChangeNotifier.downloadFailed(modelType.getId(), e.getMessage());
             throw e;
         }
-        mModelChangeNotifier.downloadSucceeded(modelType);
+        mModelChangeNotifier.downloadSucceeded(modelType.getId());
     }
 
-    private void downloadInternal(@NonNull Context context, @NonNull ModelType modelType)
+    private void downloadInternal(@NonNull ModelType modelType)
             throws IOException {
-        File targetFile = ModelCatalog.getModelFile(context, modelType);
+        File targetFile = mMLEngine.get().getModelFile(modelType);
         if (targetFile.exists()) {
             mLogger.d(TAG, "Model already available: " + modelType.getDisplayName());
             // the previous attempt may have died between download completion and the atomic move
@@ -188,7 +198,7 @@ public class ModelDownloader {
                 }
             }
             long bytesDone = startOffset;
-            mModelChangeNotifier.downloadProgress(modelType, bytesDone, bytesTotal);
+            mModelChangeNotifier.downloadProgress(modelType.getId(), bytesDone, bytesTotal);
             long lastReported = bytesDone;
             try (InputStream inputStream = new BufferedInputStream(connection.getInputStream(), BUFFER_SIZE);
                  DigestInputStream digestInputStream = new DigestInputStream(inputStream, messageDigest);
@@ -200,10 +210,10 @@ public class ModelDownloader {
                     bytesDone += read;
                     if (bytesDone - lastReported >= PROGRESS_STEP_BYTES) {
                         lastReported = bytesDone;
-                        mModelChangeNotifier.downloadProgress(modelType, bytesDone, bytesTotal);
+                        mModelChangeNotifier.downloadProgress(modelType.getId(), bytesDone, bytesTotal);
                     }
                 }
-                mModelChangeNotifier.downloadProgress(modelType, bytesDone, bytesTotal);
+                mModelChangeNotifier.downloadProgress(modelType.getId(), bytesDone, bytesTotal);
             }
 
             String checksum = toHex(messageDigest.digest());

@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Locale;
 
 import m.co.rh.id.a_jarwis.ml_engine.model.EditorStroke;
-import m.co.rh.id.a_jarwis.ml_engine.model.ModelType;
+import m.co.rh.id.a_jarwis.ml_engine.provider.component.MLEngineInstance.ModelType;
 import m.co.rh.id.a_jarwis.ml_engine.provider.MLEngineTestProviderModule;
 import m.co.rh.id.alogger.ILogger;
 import m.co.rh.id.aprovider.Provider;

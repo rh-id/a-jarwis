@@ -21,6 +21,7 @@ import java.util.Map;
 import m.co.rh.id.a_jarwis.ml_engine.model.CancelledCheck;
 import m.co.rh.id.a_jarwis.ml_engine.model.EditorStroke;
 import m.co.rh.id.a_jarwis.ml_engine.model.StrokeBatch;
+import m.co.rh.id.a_jarwis.ml_engine.provider.component.MLEngineInstance.ModelType;
 import m.co.rh.id.aprovider.Provider;
 import m.co.rh.id.aprovider.ProviderValue;
 
@@ -178,6 +179,86 @@ public class MagicEraserEngine {
 
     public MagicEraserEngine(Provider provider) {
         mMLEngine = provider.lazyGet(MLEngineInstance.class);
+    }
+
+    /**
+     * Check whether the magic eraser is fully usable, i.e. BOTH the
+     * EfficientSAM object segmentation model and the LaMa inpainting model
+     * are downloaded (the erase pipeline needs the two of them). Kept for
+     * API symmetry with the other engine facades.
+     *
+     * @return true when both model files are already downloaded
+     */
+    public boolean isAvailable() {
+        return isSamAvailable() && isLamaAvailable();
+    }
+
+    /**
+     * Check whether the EfficientSAM object segmentation model is downloaded
+     * and usable, so the magic eraser flow can prompt the download of each
+     * missing model separately.
+     *
+     * @return true when the object segmentation model file is already
+     * downloaded
+     */
+    public boolean isSamAvailable() {
+        return mMLEngine.get().isModelAvailable(ModelType.EFFICIENT_SAM);
+    }
+
+    /**
+     * Check whether the LaMa inpainting model is downloaded and usable, so
+     * the magic eraser flow can prompt the download of each missing model
+     * separately.
+     *
+     * @return true when the inpainting model file is already downloaded
+     */
+    public boolean isLamaAvailable() {
+        return mMLEngine.get().isModelAvailable(ModelType.LAMA);
+    }
+
+    /**
+     * Opaque model id of the EfficientSAM object-segmentation model, used
+     * to key download requests through
+     * ModelDownloadDialog/ModelDownloadWorker (the engines are the only
+     * model id producers).
+     *
+     * @return the opaque model id of the object-segmentation model
+     */
+    public String samModelId() {
+        return ModelType.EFFICIENT_SAM.getId();
+    }
+
+    /**
+     * Opaque model id of the LaMa inpainting model, used to key download
+     * requests through ModelDownloadDialog/ModelDownloadWorker (the engines
+     * are the only model id producers).
+     *
+     * @return the opaque model id of the inpainting model
+     */
+    public String lamaModelId() {
+        return ModelType.LAMA.getId();
+    }
+
+    /**
+     * Release the cached EfficientSam object-segmentation processor (frees
+     * its native net, see the MLEngineInstance release contract), called
+     * after segmentation use — the magic eraser page releases it between
+     * the erase pipeline steps and on dispose so the large retained dnn
+     * workspace does not stay reserved. The next segmentation lazily
+     * recreates the processor from the model file on demand.
+     */
+    public void releaseSamProcessor() {
+        mMLEngine.get().releaseEfficientSamProcessor();
+    }
+
+    /**
+     * Release the cached LaMa inpainting processor (frees its native net,
+     * see the MLEngineInstance release contract), called by the magic
+     * eraser page after every erase and on dispose. The next erase lazily
+     * recreates the processor from the model file on demand.
+     */
+    public void releaseLamaProcessor() {
+        mMLEngine.get().releaseLamaProcessor();
     }
 
     /**

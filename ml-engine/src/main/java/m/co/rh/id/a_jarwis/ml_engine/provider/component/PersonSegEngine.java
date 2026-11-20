@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import m.co.rh.id.a_jarwis.ml_engine.model.BlurConfig;
+import m.co.rh.id.a_jarwis.ml_engine.provider.component.MLEngineInstance.ModelType;
 import m.co.rh.id.alogger.ILogger;
 import m.co.rh.id.aprovider.Provider;
 import m.co.rh.id.aprovider.ProviderDisposable;
@@ -60,6 +61,29 @@ public class PersonSegEngine implements ProviderDisposable {
         mLogger = provider.get(ILogger.class);
         mMLEngine = provider.lazyGet(MLEngineInstance.class);
         mMaskCache = new ConcurrentHashMap<>();
+    }
+
+    /**
+     * Check whether the PP-HumanSeg portrait segmentation model is downloaded
+     * and usable, so the portrait flow can prompt the model download before
+     * opening the editor.
+     *
+     * @return true when the portrait segmentation model file is already
+     * downloaded
+     */
+    public boolean isAvailable() {
+        return mMLEngine.get().isModelAvailable(ModelType.PERSON_SEG);
+    }
+
+    /**
+     * Opaque model id of the portrait segmentation model, used to key
+     * download requests through ModelDownloadDialog/ModelDownloadWorker
+     * (the engines are the only model id producers).
+     *
+     * @return the opaque model id of the portrait segmentation model
+     */
+    public String personSegModelId() {
+        return ModelType.PERSON_SEG.getId();
     }
 
     /**

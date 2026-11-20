@@ -26,10 +26,9 @@ import m.co.rh.id.a_jarwis.R;
 import m.co.rh.id.a_jarwis.app.ui.page.nav.param.SelectedChoice;
 import m.co.rh.id.a_jarwis.base.provider.IStatefulViewProvider;
 import m.co.rh.id.a_jarwis.base.rx.RxDisposer;
-import m.co.rh.id.a_jarwis.ml_engine.model.ModelCatalog;
 import m.co.rh.id.a_jarwis.ml_engine.model.ModelDownloadError;
 import m.co.rh.id.a_jarwis.ml_engine.model.ModelDownloadProgress;
-import m.co.rh.id.a_jarwis.ml_engine.model.ModelType;
+import m.co.rh.id.a_jarwis.ml_engine.provider.component.MLEngineInstance;
 import m.co.rh.id.a_jarwis.ml_engine.provider.notifier.ModelChangeNotifier;
 import m.co.rh.id.a_jarwis.ml_engine.workmanager.ModelDownloadWorker;
 import m.co.rh.id.a_jarwis.ml_engine.workmanager.Params;
@@ -40,6 +39,7 @@ import m.co.rh.id.anavigator.annotation.NavInject;
 import m.co.rh.id.anavigator.component.INavigator;
 import m.co.rh.id.anavigator.component.RequireComponent;
 import m.co.rh.id.aprovider.Provider;
+import m.co.rh.id.aprovider.ProviderValue;
 
 /**
  * Dialog to prompt and download missing AI model(s) with progress,
@@ -60,12 +60,13 @@ public class ModelDownloadDialog extends StatefulViewDialog<Activity> implements
     private transient WorkManager mWorkManager;
     private transient RxDisposer mRxDisposer;
     private transient ModelChangeNotifier mModelChangeNotifier;
+    private transient ProviderValue<MLEngineInstance> mMLEngineInstance;
 
     private transient AlertDialog mAlertDialog;
     private transient AppCompatTextView mTextProgress;
     private transient ProgressBar mProgressBar;
-    private transient List<ModelType> mModels;
-    private transient Map<ModelType, ModelState> mModelStateMap;
+    private transient List<String> mModels;
+    private transient Map<String, ModelState> mModelStateMap;
 
     public ModelDownloadDialog() {
         mSelectedChoice = new SelectedChoice();
@@ -78,6 +79,7 @@ public class ModelDownloadDialog extends StatefulViewDialog<Activity> implements
         mWorkManager = mSvProvider.get(WorkManager.class);
         mRxDisposer = mSvProvider.get(RxDisposer.class);
         mModelChangeNotifier = mSvProvider.get(ModelChangeNotifier.class);
+        mMLEngineInstance = mSvProvider.lazyGet(MLEngineInstance.class);
     }
 
     @Override
@@ -113,8 +115,8 @@ public class ModelDownloadDialog extends StatefulViewDialog<Activity> implements
         attachObservers();
     }
 
-    private List<ModelType> parseArgs() {
-        List<ModelType> models = new ArrayList<>();
+    private List<String> parseArgs() {
+        List<String> models = new ArrayList<>();
         if (mNavRoute != null) {
             Serializable args = mNavRoute.getRouteArgs();
             if (args instanceof ModelList) {
@@ -124,15 +126,21 @@ public class ModelDownloadDialog extends StatefulViewDialog<Activity> implements
         return models;
     }
 
-    private String buildModelListText(List<ModelType> models) {
+    /**
+     * Human readable prompt lines of the models to download, resolved from
+     * the opaque ids through the engine instance's display helpers (an
+     * unknown id degrades to the raw id so the prompt always shows something)
+     */
+    private String buildModelListText(List<String> models) {
+        MLEngineInstance engineInstance = mMLEngineInstance.get();
         StringBuilder stringBuilder = new StringBuilder();
-        for (ModelType modelType : models) {
+        for (String modelId : models) {
             if (stringBuilder.length() > 0) {
                 stringBuilder.append("\n");
             }
-            stringBuilder.append(modelType.getDisplayName())
+            stringBuilder.append(engineInstance.displayNameFor(modelId))
                     .append(" (")
-                    .append(modelType.getDisplaySize())
+                    .append(engineInstance.displaySizeFor(modelId))
                     .append(")");
         }
         return stringBuilder.toString();
@@ -150,8 +158,8 @@ public class ModelDownloadDialog extends StatefulViewDialog<Activity> implements
         mTextProgress.setVisibility(View.VISIBLE);
         mTextProgress.setText(activity.getString(R.string.downloading_model));
         attachObservers();
-        for (ModelType modelType : mModels) {
-            ModelDownloadWorker.enqueue(mWorkManager, modelType);
+        for (String modelId : mModels) {
+            ModelDownloadWorker.enqueue(mWorkManager, modelId);
         }
     }
 
@@ -164,8 +172,8 @@ public class ModelDownloadDialog extends StatefulViewDialog<Activity> implements
 
     private void attachObservers() {
         mModelStateMap = new HashMap<>();
-        for (ModelType modelType : mModels) {
-            mModelStateMap.put(modelType, new ModelState());
+        for (String modelId : mModels) {
+            mModelStateMap.put(modelId, new ModelState());
         }
         // subscribe first so events emitted while the initial state is being
         // seeded are not missed, then seed once per attach to cover events
@@ -186,19 +194,18 @@ public class ModelDownloadDialog extends StatefulViewDialog<Activity> implements
         if (mModels == null || mModels.isEmpty()) {
             return;
         }
-        for (ModelType modelType : mModels) {
-            final ModelType model = modelType;
-            mRxDisposer.add("seedInitialState_" + model.getId(),
+        for (String modelId : mModels) {
+            mRxDisposer.add("seedInitialState_" + modelId,
                     Single.fromFuture(mWorkManager.getWorkInfosForUniqueWork(
-                                    ModelDownloadWorker.uniqueWorkName(model)))
+                                    ModelDownloadWorker.uniqueWorkName(modelId)))
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe((workInfos, throwable) -> {
                                 if (throwable != null) {
                                     mLogger.e(TAG, "Failed to query the work info of model "
-                                            + model.getDisplayName(), throwable);
+                                            + modelId, throwable);
                                 } else if (workInfos != null && !workInfos.isEmpty()) {
-                                    seedModelState(model, workInfos);
+                                    seedModelState(modelId, workInfos);
                                     // disk check stays active on the seeding path:
                                     // WorkInfo may say RUNNING while the file already
                                     // finished while the dialog was detached
@@ -212,9 +219,9 @@ public class ModelDownloadDialog extends StatefulViewDialog<Activity> implements
      * Seed the tracked state of the model from its current WorkInfo,
      * a state provided by a live event is never downgraded
      */
-    private void seedModelState(ModelType modelType, List<WorkInfo> workInfos) {
+    private void seedModelState(String modelId, List<WorkInfo> workInfos) {
         ModelState modelState = mModelStateMap == null
-                ? null : mModelStateMap.get(modelType);
+                ? null : mModelStateMap.get(modelId);
         if (modelState == null || modelState.state != DownloadState.UNKNOWN) {
             return;
         }
@@ -244,7 +251,7 @@ public class ModelDownloadDialog extends StatefulViewDialog<Activity> implements
         if (mModelStateMap == null) {
             return;
         }
-        ModelState modelState = mModelStateMap.get(progress.modelType);
+        ModelState modelState = mModelStateMap.get(progress.modelId);
         if (modelState == null) {
             return;
         }
@@ -261,11 +268,11 @@ public class ModelDownloadDialog extends StatefulViewDialog<Activity> implements
         evaluateModelState(false);
     }
 
-    private void onDownloadSucceeded(ModelType modelType) {
+    private void onDownloadSucceeded(String modelId) {
         if (mModelStateMap == null) {
             return;
         }
-        ModelState modelState = mModelStateMap.get(modelType);
+        ModelState modelState = mModelStateMap.get(modelId);
         if (modelState == null) {
             return;
         }
@@ -277,14 +284,15 @@ public class ModelDownloadDialog extends StatefulViewDialog<Activity> implements
         if (mModelStateMap == null) {
             return;
         }
-        ModelState modelState = mModelStateMap.get(error.modelType);
+        ModelState modelState = mModelStateMap.get(error.modelId);
         if (modelState == null) {
-            if (error.modelType != null) {
+            if (error.modelId != null) {
                 return;
             }
-            // failure caused by an unknown model type id, it cannot be attributed
-            // to any of the tracked models, keep the current state
-            mLogger.e(TAG, "Download failed for an unknown model type: " + error.errorMessage);
+            // failure not tied to a known model (e.g. missing work input id),
+            // it cannot be attributed to any of the tracked models, keep the
+            // current state
+            mLogger.e(TAG, "Download failed for an unknown model: " + error.errorMessage);
             return;
         }
         modelState.state = DownloadState.FAILED;
@@ -318,8 +326,8 @@ public class ModelDownloadDialog extends StatefulViewDialog<Activity> implements
         long bytesDone = 0;
         long bytesTotal = 0;
         boolean isProgressKnown = true;
-        for (ModelType modelType : mModels) {
-            ModelState modelState = mModelStateMap.get(modelType);
+        for (String modelId : mModels) {
+            ModelState modelState = mModelStateMap.get(modelId);
             DownloadState state = modelState == null
                     ? DownloadState.UNKNOWN : modelState.state;
             if (state == DownloadState.UNKNOWN || state == DownloadState.DOWNLOADING) {
@@ -327,7 +335,7 @@ public class ModelDownloadDialog extends StatefulViewDialog<Activity> implements
                 // (seeded state or terminal events); during live progress the
                 // download is demonstrably still running, so the disk check adds
                 // nothing but main-thread IO
-                if (checkDiskAvailability && ModelCatalog.isAvailable(activity, modelType)) {
+                if (checkDiskAvailability && mMLEngineInstance.get().isModelAvailable(modelId)) {
                     // the model file already exists on the disk (the download finished
                     // while the dialog was disposed), treat it as succeeded
                     state = DownloadState.SUCCEEDED;
@@ -422,6 +430,7 @@ public class ModelDownloadDialog extends StatefulViewDialog<Activity> implements
         mWorkManager = null;
         mRxDisposer = null;
         mModelChangeNotifier = null;
+        mMLEngineInstance = null;
     }
 
     @Override
@@ -451,16 +460,17 @@ public class ModelDownloadDialog extends StatefulViewDialog<Activity> implements
     }
 
     /**
-     * Navigation args for this dialog, contains the models to be downloaded
+     * Navigation args for this dialog, contains the opaque model ids (as
+     * obtained from the engine facades) to be downloaded
      */
     public static class ModelList implements Serializable {
-        private ArrayList<ModelType> models;
+        private ArrayList<String> models;
 
-        public ModelList(Collection<ModelType> models) {
+        public ModelList(Collection<String> models) {
             this.models = new ArrayList<>(models);
         }
 
-        public ArrayList<ModelType> getModels() {
+        public ArrayList<String> getModels() {
             return models;
         }
     }

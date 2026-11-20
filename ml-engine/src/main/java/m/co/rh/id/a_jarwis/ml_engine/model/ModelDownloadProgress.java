@@ -6,9 +6,10 @@ package m.co.rh.id.a_jarwis.ml_engine.model;
  */
 public final class ModelDownloadProgress {
     /**
-     * The model this progress belongs to
+     * The opaque model id (as obtained from the engine facades) this
+     * progress belongs to
      */
-    public final ModelType modelType;
+    public final String modelId;
     /**
      * Downloaded bytes so far (including a resumed part)
      */
@@ -18,8 +19,8 @@ public final class ModelDownloadProgress {
      */
     public final long bytesTotal;
 
-    public ModelDownloadProgress(ModelType modelType, long bytesDone, long bytesTotal) {
-        this.modelType = modelType;
+    public ModelDownloadProgress(String modelId, long bytesDone, long bytesTotal) {
+        this.modelId = modelId;
         this.bytesDone = bytesDone;
         this.bytesTotal = bytesTotal;
     }

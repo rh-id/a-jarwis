@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.List;
 
 import m.co.rh.id.a_jarwis.base.provider.component.helper.ImageHelper;
+import m.co.rh.id.a_jarwis.ml_engine.provider.component.MLEngineInstance.ModelType;
 import m.co.rh.id.alogger.ILogger;
 import m.co.rh.id.aprovider.Provider;
 import m.co.rh.id.aprovider.ProviderValue;
@@ -85,6 +86,50 @@ public class FaceEngine {
         mLogger = provider.get(ILogger.class);
         mImageHelper = provider.get(ImageHelper.class);
         mEngineInstance = provider.lazyGet(MLEngineInstance.class);
+    }
+
+    /**
+     * Check whether the YuNet face detection model is downloaded and usable,
+     * so the face flows can prompt the model download before opening the
+     * editor.
+     *
+     * @return true when the face detection model file is already downloaded
+     */
+    public boolean isFaceDetectAvailable() {
+        return mEngineInstance.get().isModelAvailable(ModelType.FACE_DETECT);
+    }
+
+    /**
+     * Opaque model id of the face detection model, used to key download
+     * requests through ModelDownloadDialog/ModelDownloadWorker (the engines
+     * are the only model id producers).
+     *
+     * @return the opaque model id of the face detection model
+     */
+    public String faceDetectModelId() {
+        return ModelType.FACE_DETECT.getId();
+    }
+
+    /**
+     * Check whether the SFace face recognition model is downloaded and usable.
+     * Kept for API symmetry with the other engine facades, no app flow gates
+     * on the recognizer today.
+     *
+     * @return true when the face recognition model file is already downloaded
+     */
+    public boolean isFaceRecognizerAvailable() {
+        return mEngineInstance.get().isModelAvailable(ModelType.FACE_RECOGNIZER);
+    }
+
+    /**
+     * Release the cached native face models: frees the cached YuNet detector
+     * and SFace recognizer nets (see the MLEngineInstance release contract),
+     * called by FaceEditorPage on dispose so the face nets stay resident
+     * only during face sessions. The next face session lazily re-parses
+     * them from the model files on demand.
+     */
+    public void releaseFaceModels() {
+        mEngineInstance.get().releaseFaceModels();
     }
 
     /**

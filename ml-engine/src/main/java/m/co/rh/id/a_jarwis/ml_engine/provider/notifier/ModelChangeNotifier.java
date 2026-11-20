@@ -6,12 +6,12 @@ import io.reactivex.rxjava3.subjects.PublishSubject;
 import io.reactivex.rxjava3.subjects.Subject;
 import m.co.rh.id.a_jarwis.ml_engine.model.ModelDownloadError;
 import m.co.rh.id.a_jarwis.ml_engine.model.ModelDownloadProgress;
-import m.co.rh.id.a_jarwis.ml_engine.model.ModelType;
 
 /**
- * Notifies subscribers about AI model download events:
+ * Notifies subscribers about AI model download events, keyed by the opaque
+ * model id obtained from the engine facades:
  * all events (progress/succeeded/failed) are emitted by ModelDownloader;
- * ModelDownloadWorker additionally emits a failed event with a null model type
+ * ModelDownloadWorker additionally emits a failed event with a null model id
  * when the work input is invalid.
  * The flows are hot: events are only received by subscriptions active at emit time,
  * a consumer that attaches later must seed its initial state by other means
@@ -19,39 +19,40 @@ import m.co.rh.id.a_jarwis.ml_engine.model.ModelType;
  */
 public class ModelChangeNotifier {
     private Subject<ModelDownloadProgress> mProgressSubject;
-    private Subject<ModelType> mSucceededSubject;
+    private Subject<String> mSucceededSubject;
     private Subject<ModelDownloadError> mFailedSubject;
 
     public ModelChangeNotifier() {
         mProgressSubject = PublishSubject.<ModelDownloadProgress>create().toSerialized();
-        mSucceededSubject = PublishSubject.<ModelType>create().toSerialized();
+        mSucceededSubject = PublishSubject.<String>create().toSerialized();
         mFailedSubject = PublishSubject.<ModelDownloadError>create().toSerialized();
     }
 
     /**
-     * Emits a download progress event for the given model type
+     * Emits a download progress event for the given model id
      * with the current bytes done/total counts.
      */
-    public void downloadProgress(ModelType modelType, long bytesDone, long bytesTotal) {
-        mProgressSubject.onNext(new ModelDownloadProgress(modelType, bytesDone, bytesTotal));
+    public void downloadProgress(String modelId, long bytesDone, long bytesTotal) {
+        mProgressSubject.onNext(new ModelDownloadProgress(modelId, bytesDone, bytesTotal));
     }
 
-    public void downloadSucceeded(ModelType modelType) {
-        mSucceededSubject.onNext(modelType);
+    public void downloadSucceeded(String modelId) {
+        mSucceededSubject.onNext(modelId);
     }
 
     /**
-     * @param modelType may be null when the failure is caused by an unknown model type id
+     * @param modelId may be null when the failure is not tied to a known model
+     *                (e.g. missing/unknown work input id)
      */
-    public void downloadFailed(ModelType modelType, String errorMessage) {
-        mFailedSubject.onNext(new ModelDownloadError(modelType, errorMessage));
+    public void downloadFailed(String modelId, String errorMessage) {
+        mFailedSubject.onNext(new ModelDownloadError(modelId, errorMessage));
     }
 
     public Flowable<ModelDownloadProgress> getProgressFlow() {
         return Flowable.fromObservable(mProgressSubject, BackpressureStrategy.BUFFER);
     }
 
-    public Flowable<ModelType> getSucceededFlow() {
+    public Flowable<String> getSucceededFlow() {
         return Flowable.fromObservable(mSucceededSubject, BackpressureStrategy.BUFFER);
     }
 

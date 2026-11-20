@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 
 import m.co.rh.id.a_jarwis.ml_engine.model.ProgressListener;
+import m.co.rh.id.a_jarwis.ml_engine.provider.component.MLEngineInstance.ModelType;
 import m.co.rh.id.aprovider.Provider;
 import m.co.rh.id.aprovider.ProviderValue;
 
@@ -28,7 +29,7 @@ public class PhotoRestoreEngine {
      * kept for API symmetry with the engine facades
      */
     public boolean isAvailable() {
-        return mMLEngine.get().isRestoreAvailable();
+        return mMLEngine.get().isModelAvailable(ModelType.NAFNET_DEBLUR);
     }
 
     /**
@@ -65,7 +66,29 @@ public class PhotoRestoreEngine {
      * kept for API symmetry with the engine facades
      */
     public boolean isUpscaleAvailable() {
-        return mMLEngine.get().isUpscaleAvailable();
+        return mMLEngine.get().isModelAvailable(ModelType.SWIN2SR_UPSCALE);
+    }
+
+    /**
+     * Opaque model id of the Swin2SR upscale model, used to key download
+     * requests through ModelDownloadDialog/ModelDownloadWorker (the engines
+     * are the only model id producers).
+     *
+     * @return the opaque model id of the upscale model
+     */
+    public String upscaleModelId() {
+        return ModelType.SWIN2SR_UPSCALE.getId();
+    }
+
+    /**
+     * Opaque model id of the NAFNet deblur model, used to key download
+     * requests through ModelDownloadDialog/ModelDownloadWorker (the engines
+     * are the only model id producers).
+     *
+     * @return the opaque model id of the deblur model
+     */
+    public String deblurModelId() {
+        return ModelType.NAFNET_DEBLUR.getId();
     }
 
     /**

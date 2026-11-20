@@ -81,6 +81,26 @@ This is AI utility app for Android device, it basically uses AI model directly o
         model is kept for the session and released when the page closes</li>
 </ul>
 
+### Photo Restore (Deblur)
+<ul>
+    <li>Pick a photo and deblur it with the on-device NAFNet model (downloaded on demand):
+        a fast preview at a capped working resolution while editing, and tiled full-resolution
+        processing on save so memory stays bounded</li>
+    <li>64-bit devices only — the NAFNet forward memory footprint makes 32-bit unsafe, the
+        feature is refused with a notice there</li>
+    <li>Restore passes stack: a deblurred result can be restored again for stronger effect</li>
+</ul>
+
+### Image Upscale (Super Resolution)
+<ul>
+    <li>Pick a photo and upscale it 4x with the on-device Swin2SR real-world super-resolution
+        model (downloaded on demand), previewed at a RAM-tiered input resolution</li>
+    <li>Full-resolution saves run the Swin2SR model through a tiled pass with blended
+        seams so large photos stay memory-safe</li>
+    <li>Stacks with Photo Restore: upscale a deblurred photo (or deblur an upscaled one) in
+        the same editor</li>
+</ul>
+
 ### Settings & Theming
 <ul>
     <li>Light / dark / follow-system theme, plus Material You dynamic colors (toggle, on by
@@ -108,8 +128,8 @@ The project follows a modular, layered architecture designed to separate concern
 
 ### Modules
 
-*   **`:app`**: The entry point. Contains all UI pages (home, the five editors, QR scanner, AI detector), navigation registration, and the feature workflows.
-*   **`:ml-engine`**: The core intelligence. Encapsulates the logic engines (`FaceEngine`, `STEngine`, `QREngine`, `PersonSegEngine`, `MagicEraserEngine`, `AiDetectEngine`), the AI model catalog with on-demand model download from Hugging Face, and background workers (`WorkManager`).
+*   **`:app`**: The entry point. Contains all UI pages (home, the six editors, QR scanner, AI detector), navigation registration, and the feature workflows.
+*   **`:ml-engine`**: The core intelligence. Encapsulates the logic engines (`FaceEngine`, `STEngine`, `QREngine`, `PersonSegEngine`, `MagicEraserEngine`, `AiDetectEngine`, `PhotoRestoreEngine`), the AI model catalog with on-demand model download from Hugging Face, and background workers (`WorkManager`).
 *   **`:base`**: Shared infrastructure. Contains DI setup (`a-provider` modules), utilities (`FileHelper`, `ImageHelper`, `MediaHelper`), common UI components, and the navigation route constants.
 *   **`:settings`**: In-app settings. Theme selection (light/dark/system, Material You dynamic colors), in-app log viewer, open-source licenses page (auto-generated at build time), and version info.
 
@@ -120,7 +140,7 @@ The project follows a modular, layered architecture designed to separate concern
 *   **StatefulView**: A framework for building state-aware UI components.
 *   **RxAndroid (RxJava 3)**: Manages asynchronous events and threading in the UI layer.
 *   **WorkManager**: Handles deferrable, guaranteed background work (on-demand AI model download).
-*   **OpenCV**: Powers the on-device computer vision — face detection, QR code detection, portrait segmentation, style transfer, object segmentation/inpainting and AI image detection (DNN).
+*   **OpenCV**: Powers the on-device computer vision — face detection, QR code detection, portrait segmentation, style transfer, object segmentation/inpainting, image deblurring/upscaling and AI image detection (DNN).
 *   **CameraX**: Powers the live QR scanner camera preview and frame analysis.
 
 ## Logic Flow & Patterns
@@ -163,7 +183,7 @@ sequenceDiagram
 
 1.  **HomePage**: Pushes the picked image(s) to `StyleEditorPage`.
 2.  **StyleEditorPage**: Interactive editor showing each picked image with a row of style tiles (Mosaic, Candy, Rain Princess, Udnie, Pointilism). Tapping a style renders a live stylized preview of the image; missing style models are prompted for download on demand.
-3.  **STEngine**: Applies the selected theme by delegating to the cached per-theme `STProcessor` (OpenCV DNN) on a downscaled preview while editing, and at full resolution on save/share.
+3.  **STEngine**: Applies the selected theme by delegating to the cached per-model-type `STProcessor` (OpenCV DNN) on a downscaled preview while editing, and at full resolution on save/share.
 4.  **Save/Share**: Saves each stylized image to the gallery via `MediaHelper` or writes a temp JPEG for the Android share sheet.
 
 ### Deep Dive: Portrait Segmentation Flow

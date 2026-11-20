@@ -45,7 +45,6 @@ import m.co.rh.id.a_jarwis.base.rx.RxDisposer;
 import m.co.rh.id.a_jarwis.base.util.UiUtils;
 import m.co.rh.id.a_jarwis.ml_engine.model.BlurConfig;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.FaceEngine;
-import m.co.rh.id.a_jarwis.ml_engine.provider.component.MLEngineInstance;
 import m.co.rh.id.alogger.ILogger;
 import m.co.rh.id.anavigator.NavRoute;
 import m.co.rh.id.anavigator.StatefulView;
@@ -55,7 +54,6 @@ import m.co.rh.id.anavigator.component.NavBackPressResult;
 import m.co.rh.id.anavigator.component.NavOnBackPressed;
 import m.co.rh.id.anavigator.component.RequireComponent;
 import m.co.rh.id.aprovider.Provider;
-import m.co.rh.id.aprovider.ProviderValue;
 
 /**
  * Interactive face blur editor.
@@ -228,11 +226,6 @@ public class FaceEditorPage extends StatefulView<Activity> implements RequireCom
     private transient ExecutorService mExecutorService;
     private transient RxDisposer mRxDisposer;
     private transient FaceEngine mFaceEngine;
-    /**
-     * Lazy engine instance handle, used to release the cached native face
-     * models on dispose (see {@link MLEngineInstance#releaseFaceModels()})
-     */
-    private transient ProviderValue<MLEngineInstance> mMLEngineInstance;
     private transient FileHelper mFileHelper;
     private transient ImageHelper mImageHelper;
     private transient MediaHelper mMediaHelper;
@@ -287,7 +280,6 @@ public class FaceEditorPage extends StatefulView<Activity> implements RequireCom
         mExecutorService = mSvProvider.get(ExecutorService.class);
         mRxDisposer = mSvProvider.get(RxDisposer.class);
         mFaceEngine = mSvProvider.get(FaceEngine.class);
-        mMLEngineInstance = mSvProvider.lazyGet(MLEngineInstance.class);
         mFileHelper = mSvProvider.get(FileHelper.class);
         mImageHelper = mSvProvider.get(ImageHelper.class);
         mMediaHelper = mSvProvider.get(MediaHelper.class);
@@ -429,12 +421,12 @@ public class FaceEditorPage extends StatefulView<Activity> implements RequireCom
         // model re-parse. The release runs on the background executor: it
         // blocks on the engine instance monitor while a face operation may
         // still be in flight (seconds of main-thread stall otherwise), the
-        // monitor stays the correctness guarantee. The engine instance is
+        // monitor stays the correctness guarantee. The engine facade is
         // captured first: dispose nulls the page fields below while the
         // submitted release may run after them
-        if (mExecutorService != null && mMLEngineInstance != null) {
-            MLEngineInstance engineInstance = mMLEngineInstance.get();
-            mExecutorService.submit(() -> engineInstance.releaseFaceModels());
+        if (mExecutorService != null && mFaceEngine != null) {
+            FaceEngine faceEngine = mFaceEngine;
+            mExecutorService.submit(() -> faceEngine.releaseFaceModels());
         }
         mImageView = null;
         mContainerPager = null;
@@ -452,7 +444,6 @@ public class FaceEditorPage extends StatefulView<Activity> implements RequireCom
         mExecutorService = null;
         mRxDisposer = null;
         mFaceEngine = null;
-        mMLEngineInstance = null;
         mFileHelper = null;
         mImageHelper = null;
         mMediaHelper = null;

@@ -1,6 +1,5 @@
 package m.co.rh.id.a_jarwis.ml_engine.provider;
 
-import m.co.rh.id.a_jarwis.base.provider.component.helper.FileHelper;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.AiDetectEngine;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.FaceEngine;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.MLEngineInstance;
@@ -11,7 +10,6 @@ import m.co.rh.id.a_jarwis.ml_engine.provider.component.QREngine;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.PhotoRestoreEngine;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.STEngine;
 import m.co.rh.id.a_jarwis.ml_engine.provider.notifier.ModelChangeNotifier;
-import m.co.rh.id.alogger.ILogger;
 import m.co.rh.id.aprovider.Provider;
 import m.co.rh.id.aprovider.ProviderModule;
 import m.co.rh.id.aprovider.ProviderRegistry;
@@ -32,11 +30,9 @@ public class MLEngineProviderModule implements ProviderModule {
         providerRegistry.registerLazy(PhotoRestoreEngine.class,
                 () -> new PhotoRestoreEngine(provider));
         providerRegistry.registerLazy(ModelDownloader.class,
-                () -> new ModelDownloader(provider.get(ILogger.class),
-                        provider.get(FileHelper.class),
-                        provider.get(ModelChangeNotifier.class)));
+                () -> new ModelDownloader(provider));
         providerRegistry.registerLazy(ModelChangeNotifier.class,
-                () -> new ModelChangeNotifier());
+                ModelChangeNotifier::new);
     }
 
     /**

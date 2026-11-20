@@ -30,8 +30,7 @@ import java.io.InputStream;
 
 import m.co.rh.id.a_jarwis.base.provider.component.helper.FileHelper;
 import m.co.rh.id.a_jarwis.ml_engine.model.BlurConfig;
-import m.co.rh.id.a_jarwis.ml_engine.model.ModelCatalog;
-import m.co.rh.id.a_jarwis.ml_engine.model.ModelType;
+import m.co.rh.id.a_jarwis.ml_engine.provider.component.MLEngineInstance.ModelType;
 import m.co.rh.id.a_jarwis.ml_engine.provider.MLEngineTestProviderModule;
 import m.co.rh.id.a_jarwis.ml_engine.test.R;
 import m.co.rh.id.alogger.ILogger;
@@ -295,9 +294,9 @@ public class PersonSegEngineTest {
      */
     @Test
     public void personSegProcessor_releaseContract() {
-        Context context = mMLEngineProvider.getContext();
         PersonSegProcessor processor = new PersonSegProcessor(
-                ModelCatalog.getModelFile(context, ModelType.PERSON_SEG)
+                mMLEngineProvider.get(MLEngineInstance.class)
+                        .getModelFile(ModelType.PERSON_SEG)
                         .getAbsolutePath(), mLogger);
         Bitmap input = Bitmap.createBitmap(64, 64, Bitmap.Config.ARGB_8888);
         input.eraseColor(Color.RED);

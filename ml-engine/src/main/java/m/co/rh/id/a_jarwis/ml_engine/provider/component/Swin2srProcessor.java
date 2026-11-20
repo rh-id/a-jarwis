@@ -24,7 +24,7 @@ import m.co.rh.id.alogger.ILogger;
 /**
  * Processor of the Swin2SR real-world 4x super-resolution model (SwinV2),
  * the onnx-community export described on {@link
- * m.co.rh.id.a_jarwis.ml_engine.model.ModelType#SWIN2SR_UPSCALE}
+ * m.co.rh.id.a_jarwis.ml_engine.provider.component.MLEngineInstance.ModelType#SWIN2SR_UPSCALE}
  * (Apache-2.0, licence source there). FIXED export shape: a 64x64 input
  * tile forwards to a 256x256 output tile — the grid runs at the INPUT
  * resolution and every tile accumulates on the 4x OUTPUT canvas, so the

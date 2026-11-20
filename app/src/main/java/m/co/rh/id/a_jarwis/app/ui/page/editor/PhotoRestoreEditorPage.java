@@ -49,7 +49,6 @@ import m.co.rh.id.a_jarwis.base.provider.component.helper.ImageHelper;
 import m.co.rh.id.a_jarwis.base.provider.component.helper.MediaHelper;
 import m.co.rh.id.a_jarwis.base.rx.RxDisposer;
 import m.co.rh.id.a_jarwis.base.util.UiUtils;
-import m.co.rh.id.a_jarwis.ml_engine.model.ModelType;
 import m.co.rh.id.a_jarwis.ml_engine.model.ProgressListener;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.PhotoRestoreEngine;
 import m.co.rh.id.alogger.ILogger;
@@ -1254,8 +1253,8 @@ public class PhotoRestoreEditorPage extends StatefulView<Activity> implements Re
      * (the HomeWorkflow gate pattern, scoped to this page's upscale model)
      */
     private void pushUpscaleModelDownload() {
-        ArrayList<ModelType> missingModels = new ArrayList<>();
-        missingModels.add(ModelType.SWIN2SR_UPSCALE);
+        ArrayList<String> missingModels = new ArrayList<>();
+        missingModels.add(mPhotoRestoreEngine.upscaleModelId());
         mNavigator.push(Routes.MODEL_DOWNLOAD_PAGE,
                 new ModelDownloadDialog.ModelList(missingModels),
                 (navigator, navRoute, activity, currentView) -> {

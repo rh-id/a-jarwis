@@ -21,9 +21,13 @@ import m.co.rh.id.a_jarwis.app.ui.page.nav.param.SelectedChoice;
 import m.co.rh.id.a_jarwis.app.ui.page.nav.param.UriList;
 import m.co.rh.id.a_jarwis.base.constants.Routes;
 import m.co.rh.id.a_jarwis.base.provider.IStatefulViewProvider;
-import m.co.rh.id.a_jarwis.ml_engine.model.ModelCatalog;
-import m.co.rh.id.a_jarwis.ml_engine.model.ModelType;
+import m.co.rh.id.a_jarwis.ml_engine.provider.component.AiDetectEngine;
+import m.co.rh.id.a_jarwis.ml_engine.provider.component.FaceEngine;
+import m.co.rh.id.a_jarwis.ml_engine.provider.component.MagicEraserEngine;
+import m.co.rh.id.a_jarwis.ml_engine.provider.component.PersonSegEngine;
+import m.co.rh.id.a_jarwis.ml_engine.provider.component.PhotoRestoreEngine;
 import m.co.rh.id.anavigator.component.INavigator;
+import m.co.rh.id.aprovider.ProviderValue;
 
 class HomeWorkflow implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -38,6 +42,11 @@ class HomeWorkflow implements Serializable {
     private static final int REQUEST_CODE_IMAGE_RESTORE = 10;
 
     private transient INavigator mNavigator;
+    private transient ProviderValue<FaceEngine> mFaceEngine;
+    private transient ProviderValue<PersonSegEngine> mPersonSegEngine;
+    private transient ProviderValue<MagicEraserEngine> mMagicEraserEngine;
+    private transient ProviderValue<AiDetectEngine> mAiDetectEngine;
+    private transient ProviderValue<PhotoRestoreEngine> mPhotoRestoreEngine;
 
     private interface ContinueAction extends Serializable {
         void run();
@@ -45,6 +54,11 @@ class HomeWorkflow implements Serializable {
 
     void init(INavigator navigator, IStatefulViewProvider svProvider) {
         mNavigator = navigator;
+        mFaceEngine = svProvider.lazyGet(FaceEngine.class);
+        mPersonSegEngine = svProvider.lazyGet(PersonSegEngine.class);
+        mMagicEraserEngine = svProvider.lazyGet(MagicEraserEngine.class);
+        mAiDetectEngine = svProvider.lazyGet(AiDetectEngine.class);
+        mPhotoRestoreEngine = svProvider.lazyGet(PhotoRestoreEngine.class);
     }
 
     public void startBlurFace() {
@@ -142,10 +156,9 @@ class HomeWorkflow implements Serializable {
     }
 
     private void startIfFaceModelsAvailable(ContinueAction continueAction) {
-        Activity activity = mNavigator.getActivity();
-        ArrayList<ModelType> missingModels = new ArrayList<>();
-        if (!ModelCatalog.isAvailable(activity, ModelType.FACE_DETECT)) {
-            missingModels.add(ModelType.FACE_DETECT);
+        ArrayList<String> missingModels = new ArrayList<>();
+        if (!mFaceEngine.get().isFaceDetectAvailable()) {
+            missingModels.add(mFaceEngine.get().faceDetectModelId());
         }
         if (missingModels.isEmpty()) {
             continueAction.run();
@@ -155,10 +168,9 @@ class HomeWorkflow implements Serializable {
     }
 
     private void startIfPortraitModelsAvailable(ContinueAction continueAction) {
-        Activity activity = mNavigator.getActivity();
-        ArrayList<ModelType> missingModels = new ArrayList<>();
-        if (!ModelCatalog.isAvailable(activity, ModelType.PERSON_SEG)) {
-            missingModels.add(ModelType.PERSON_SEG);
+        ArrayList<String> missingModels = new ArrayList<>();
+        if (!mPersonSegEngine.get().isAvailable()) {
+            missingModels.add(mPersonSegEngine.get().personSegModelId());
         }
         if (missingModels.isEmpty()) {
             continueAction.run();
@@ -168,13 +180,12 @@ class HomeWorkflow implements Serializable {
     }
 
     private void startIfMagicEraserModelsAvailable(ContinueAction continueAction) {
-        Activity activity = mNavigator.getActivity();
-        ArrayList<ModelType> missingModels = new ArrayList<>();
-        if (!ModelCatalog.isAvailable(activity, ModelType.EFFICIENT_SAM)) {
-            missingModels.add(ModelType.EFFICIENT_SAM);
+        ArrayList<String> missingModels = new ArrayList<>();
+        if (!mMagicEraserEngine.get().isSamAvailable()) {
+            missingModels.add(mMagicEraserEngine.get().samModelId());
         }
-        if (!ModelCatalog.isAvailable(activity, ModelType.LAMA)) {
-            missingModels.add(ModelType.LAMA);
+        if (!mMagicEraserEngine.get().isLamaAvailable()) {
+            missingModels.add(mMagicEraserEngine.get().lamaModelId());
         }
         if (missingModels.isEmpty()) {
             continueAction.run();
@@ -184,10 +195,9 @@ class HomeWorkflow implements Serializable {
     }
 
     private void startIfAiDetectModelsAvailable(ContinueAction continueAction) {
-        Activity activity = mNavigator.getActivity();
-        ArrayList<ModelType> missingModels = new ArrayList<>();
-        if (!ModelCatalog.isAvailable(activity, ModelType.AI_IMAGE_DETECT)) {
-            missingModels.add(ModelType.AI_IMAGE_DETECT);
+        ArrayList<String> missingModels = new ArrayList<>();
+        if (!mAiDetectEngine.get().isAvailable()) {
+            missingModels.add(mAiDetectEngine.get().aiDetectModelId());
         }
         if (missingModels.isEmpty()) {
             continueAction.run();
@@ -197,10 +207,9 @@ class HomeWorkflow implements Serializable {
     }
 
     private void startIfPhotoRestoreModelsAvailable(ContinueAction continueAction) {
-        Activity activity = mNavigator.getActivity();
-        ArrayList<ModelType> missingModels = new ArrayList<>();
-        if (!ModelCatalog.isAvailable(activity, ModelType.NAFNET_DEBLUR)) {
-            missingModels.add(ModelType.NAFNET_DEBLUR);
+        ArrayList<String> missingModels = new ArrayList<>();
+        if (!mPhotoRestoreEngine.get().isAvailable()) {
+            missingModels.add(mPhotoRestoreEngine.get().deblurModelId());
         }
         if (missingModels.isEmpty()) {
             continueAction.run();
@@ -209,7 +218,7 @@ class HomeWorkflow implements Serializable {
         }
     }
 
-    private void startModelDownload(ArrayList<ModelType> missingModels, ContinueAction continueAction) {
+    private void startModelDownload(List<String> missingModels, ContinueAction continueAction) {
         mNavigator.push(Routes.MODEL_DOWNLOAD_PAGE, new ModelDownloadDialog.ModelList(missingModels),
                 (navigator, navRoute, activity1, currentView) -> {
                     Serializable serializable = navRoute.getRouteResult();

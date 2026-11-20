@@ -18,8 +18,7 @@ import org.junit.runner.RunWith;
 
 import java.io.IOException;
 
-import m.co.rh.id.a_jarwis.ml_engine.model.ModelCatalog;
-import m.co.rh.id.a_jarwis.ml_engine.model.ModelType;
+import m.co.rh.id.a_jarwis.ml_engine.provider.component.MLEngineInstance.ModelType;
 import m.co.rh.id.a_jarwis.ml_engine.provider.MLEngineTestProviderModule;
 import m.co.rh.id.alogger.ILogger;
 import m.co.rh.id.aprovider.Provider;
@@ -73,9 +72,9 @@ public class AiImageDetectProcessorTest {
      */
     @Test
     public void aiImageDetectProcessor_releaseContract() {
-        Context context = mMLEngineProvider.getContext();
         AiImageDetectProcessor processor = new AiImageDetectProcessor(
-                ModelCatalog.getModelFile(context, ModelType.AI_IMAGE_DETECT)
+                mMLEngineProvider.get(MLEngineInstance.class)
+                        .getModelFile(ModelType.AI_IMAGE_DETECT)
                         .getAbsolutePath(), mLogger);
         Bitmap input = Bitmap.createBitmap(64, 64, Bitmap.Config.ARGB_8888);
         input.eraseColor(Color.RED);

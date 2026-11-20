@@ -22,8 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import m.co.rh.id.a_jarwis.base.provider.component.helper.FileHelper;
-import m.co.rh.id.a_jarwis.ml_engine.model.ModelCatalog;
-import m.co.rh.id.a_jarwis.ml_engine.model.ModelType;
+import m.co.rh.id.a_jarwis.ml_engine.provider.component.MLEngineInstance.ModelType;
 import m.co.rh.id.a_jarwis.ml_engine.provider.MLEngineTestProviderModule;
 import m.co.rh.id.a_jarwis.ml_engine.test.R;
 import m.co.rh.id.alogger.ILogger;
@@ -200,9 +199,9 @@ public class STEngineTest {
      */
     @Test
     public void stProcessor_releaseContract() {
-        Context context = mMLEngineProvider.getContext();
         STProcessor processor = new STProcessor(
-                ModelCatalog.getModelFile(context, ModelType.NST_MOSAIC)
+                mMLEngineProvider.get(MLEngineInstance.class)
+                        .getModelFile(ModelType.NST_MOSAIC)
                         .getAbsolutePath(), mLogger);
         Bitmap input = Bitmap.createBitmap(64, 64, Bitmap.Config.ARGB_8888);
         input.eraseColor(Color.RED);
