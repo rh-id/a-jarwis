@@ -99,12 +99,19 @@
     <string name="photo_restore_title">Foto-Wiederherstellung</string>
     <string name="photo_restore_deblur">Enschärfen</string>
     <string name="photo_restore_show_original">Original anzeigen</string>
-    <string name="photo_restore_show_deblurred">Entschärftes Bild anzeigen</string>
+    <string name="photo_restore_show_restored">Bearbeitetes Bild anzeigen</string>
     <string name="photo_restore_deblurring_progress">Bild wird entschärft…</string>
     <string name="photo_restore_full_res_deblur_progress">Bild wird in voller Auflösung entschärft…</string>
     <string name="photo_restore_error_deblur_failed">Enschärfen fehlgeschlagen</string>
     <string name="photo_restore_error_64bit_required">Foto-Wiederherstellung wird auf diesem Gerät nicht unterstützt (64-Bit erforderlich)</string>
     <string name="photo_restore_msg_discard_changes">Ihre Foto-Wiederherstellungs-Bearbeitungen wurden noch nicht gespeichert. Möchten Sie die Änderungen verwerfen?</string>
-    <string name="photo_restore_title_deblur_full">In voller Auflösung entschärfen?</string>
-    <string name="photo_restore_msg_deblur_full">Das Speichern entschärft immer das Original in voller Auflösung (die Vorschau wird nie hochskaliert). Jetzt in voller Auflösung entschärfen?</string>
+    <string name="photo_restore_title_save_full">In voller Auflösung speichern?</string>
+    <string name="photo_restore_msg_save_deblur">Die Entschärfung wird erneut auf das Foto in voller Auflösung angewendet. Die Vorschau selbst wird nie gespeichert.</string>
+    <string name="photo_restore_msg_save_upscale">Die 4×-Hochskalierung wird erneut auf das Foto in voller Auflösung angewendet, begrenzt auf das Limit dieses Geräts. Die Vorschau selbst wird nie gespeichert.</string>
+    <string name="photo_restore_msg_effective_scale">Die Eingabe wird vor der 4×-Hochskalierung auf %1$d px verkleinert; effektive Vergrößerung %2$s×.</string>
+    <string name="photo_restore_upscale">4× hochskalieren</string>
+    <string name="photo_restore_undo">Rückgängig (%1$d)</string>
+    <string name="photo_restore_upscaling_progress">Hochskalierung… dies kann eine Weile dauern</string>
+    <string name="photo_restore_full_res_upscale_progress">Hochskalierung in voller Auflösung…</string>
+    <string name="photo_restore_error_upscale_failed">Hochskalieren fehlgeschlagen</string>
 </resources>

@@ -99,12 +99,19 @@
     <string name="photo_restore_title">Restauration photo</string>
     <string name="photo_restore_deblur">Déflouter</string>
     <string name="photo_restore_show_original">Afficher l\'original</string>
-    <string name="photo_restore_show_deblurred">Afficher l\'image défloutée</string>
+    <string name="photo_restore_show_restored">Afficher l\'image restaurée</string>
     <string name="photo_restore_deblurring_progress">Défloutage…</string>
     <string name="photo_restore_full_res_deblur_progress">Défloutage en pleine résolution…</string>
     <string name="photo_restore_error_deblur_failed">Échec du défloutage</string>
     <string name="photo_restore_error_64bit_required">La restauration photo n\'est pas prise en charge sur cet appareil (64 bits requis)</string>
     <string name="photo_restore_msg_discard_changes">Vos modifications de restauration photo n\'ont pas été enregistrées. Abandonner les modifications ?</string>
-    <string name="photo_restore_title_deblur_full">Déflouter en pleine résolution ?</string>
-    <string name="photo_restore_msg_deblur_full">L\'enregistrement défloute toujours l\'original en pleine résolution (l\'aperçu n\'est jamais agrandi). Déflouter l\'image en pleine résolution maintenant ?</string>
+    <string name="photo_restore_title_save_full">Enregistrer en pleine résolution ?</string>
+    <string name="photo_restore_msg_save_deblur">Le défloutage sera de nouveau appliqué à la photo en pleine résolution. L\'aperçu lui-même n\'est jamais enregistré.</string>
+    <string name="photo_restore_msg_save_upscale">L\'agrandissement 4× sera de nouveau appliqué à la photo en pleine résolution, dans la limite de cet appareil. L\'aperçu lui-même n\'est jamais enregistré.</string>
+    <string name="photo_restore_msg_effective_scale">L\'entrée sera redimensionnée à %1$d px avant l\'agrandissement 4× ; grossissement effectif %2$s×.</string>
+    <string name="photo_restore_upscale">Agrandir 4×</string>
+    <string name="photo_restore_undo">Annuler (%1$d)</string>
+    <string name="photo_restore_upscaling_progress">Agrandissement… cela peut prendre du temps</string>
+    <string name="photo_restore_full_res_upscale_progress">Agrandissement en pleine résolution…</string>
+    <string name="photo_restore_error_upscale_failed">Échec de l\'agrandissement</string>
 </resources>

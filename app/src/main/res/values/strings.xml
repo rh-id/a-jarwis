@@ -103,12 +103,19 @@
     <string name="photo_restore_title">Photo Restore</string>
     <string name="photo_restore_deblur">Deblur</string>
     <string name="photo_restore_show_original">Show original</string>
-    <string name="photo_restore_show_deblurred">Show deblurred</string>
+    <string name="photo_restore_show_restored">Show restored</string>
     <string name="photo_restore_deblurring_progress">Deblurring…</string>
     <string name="photo_restore_full_res_deblur_progress">Deblurring at full resolution…</string>
     <string name="photo_restore_error_deblur_failed">Deblurring failed</string>
     <string name="photo_restore_error_64bit_required">Photo Restore is not supported on this device (64-bit required)</string>
     <string name="photo_restore_msg_discard_changes">Your photo restore edits have not been saved. Discard the changes?</string>
-    <string name="photo_restore_title_deblur_full">Deblur at full resolution?</string>
-    <string name="photo_restore_msg_deblur_full">Saving always deblurs the full-resolution original (the preview is never upscaled). Deblur the full-resolution image now?</string>
+    <string name="photo_restore_title_save_full">Save at full resolution?</string>
+    <string name="photo_restore_msg_save_deblur">Deblur will be re-applied to the full-resolution photo. The preview itself is never saved.</string>
+    <string name="photo_restore_msg_save_upscale">The 4× upscale will be re-applied to the full-resolution photo, capped to this device\'s limit. The preview itself is never saved.</string>
+    <string name="photo_restore_msg_effective_scale">Input will be resized to %1$d px before the 4× upscale; effective magnification %2$s×.</string>
+    <string name="photo_restore_upscale">Upscale 4×</string>
+    <string name="photo_restore_undo">Undo (%1$d)</string>
+    <string name="photo_restore_upscaling_progress">Upscaling… this can take a while</string>
+    <string name="photo_restore_full_res_upscale_progress">Upscaling at full resolution…</string>
+    <string name="photo_restore_error_upscale_failed">Upscaling failed</string>
 </resources>

@@ -55,6 +55,9 @@ public final class ModelCatalog {
             case NAFNET_DEBLUR:
                 return new File(filesDir, MLEngineInstance.NAFNET_PATH
                         + "/" + MLEngineInstance.NAFNET_FILE);
+            case SWIN2SR_UPSCALE:
+                return new File(filesDir, MLEngineInstance.SWIN2SR_PATH
+                        + "/" + MLEngineInstance.SWIN2SR_FILE);
             default:
                 throw new IllegalArgumentException("Unknown model type: " + modelType);
         }

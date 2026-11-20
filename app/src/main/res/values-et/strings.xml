@@ -99,12 +99,19 @@
     <string name="photo_restore_title">Fototaastamine</string>
     <string name="photo_restore_deblur">Teravusta</string>
     <string name="photo_restore_show_original">Kuva originaal</string>
-    <string name="photo_restore_show_deblurred">Kuva teravustatud pilti</string>
+    <string name="photo_restore_show_restored">Kuva taastatud pilti</string>
     <string name="photo_restore_deblurring_progress">Pilti teravustatakse…</string>
     <string name="photo_restore_full_res_deblur_progress">Pilti teravustatakse täielahenduses…</string>
     <string name="photo_restore_error_deblur_failed">Teravustamine ebaõnnestus</string>
     <string name="photo_restore_error_64bit_required">Fototaastamine pole selles seadmes toetatud (vajalik on 64-bitine seade)</string>
     <string name="photo_restore_msg_discard_changes">Sinu fototaastamise muudatused pole salvestatud. Kas loobuda muudatustest?</string>
-    <string name="photo_restore_title_deblur_full">Teravustada täielahenduses?</string>
-    <string name="photo_restore_msg_deblur_full">Salvestamine teravustab alati originaali täielahenduses (eelvaadet ei suurendata kunagi). Kas teravustada pilt nüüd täielahenduses?</string>
+    <string name="photo_restore_title_save_full">Salvestada täielahenduses?</string>
+    <string name="photo_restore_msg_save_deblur">Teravustamine rakendatakse fotole uuesti täielahenduses. Eelvaadet ise ei salvestata kunagi.</string>
+    <string name="photo_restore_msg_save_upscale">4× suuendus rakendatakse fotole uuesti täielahenduses, piiratud selle seadme limiidiga. Eelvaadet ise ei salvestata kunagi.</string>
+    <string name="photo_restore_msg_effective_scale">Sisend muudetakse enne 4× suuendust suurusele %1$d px; efektiivne suurendus on %2$s×.</string>
+    <string name="photo_restore_upscale">Suuenda 4×</string>
+    <string name="photo_restore_undo">Võta tagasi (%1$d)</string>
+    <string name="photo_restore_upscaling_progress">Suuendamine… see võib võtta aega</string>
+    <string name="photo_restore_full_res_upscale_progress">Suuendamine täielahenduses…</string>
+    <string name="photo_restore_error_upscale_failed">Suuendamine ebaõnnestus</string>
 </resources>

@@ -99,12 +99,19 @@
     <string name="photo_restore_title">照片修复</string>
     <string name="photo_restore_deblur">去除模糊</string>
     <string name="photo_restore_show_original">显示原图</string>
-    <string name="photo_restore_show_deblurred">显示修复效果</string>
+    <string name="photo_restore_show_restored">显示处理效果</string>
     <string name="photo_restore_deblurring_progress">正在去除模糊…</string>
     <string name="photo_restore_full_res_deblur_progress">正在以全分辨率去除模糊…</string>
     <string name="photo_restore_error_deblur_failed">去除模糊失败</string>
     <string name="photo_restore_error_64bit_required">此设备不支持照片修复（需要 64 位）</string>
     <string name="photo_restore_msg_discard_changes">您的照片修复编辑尚未保存。要放弃这些更改吗？</string>
-    <string name="photo_restore_title_deblur_full">以全分辨率去除模糊？</string>
-    <string name="photo_restore_msg_deblur_full">保存时始终对原图以全分辨率去除模糊（预览图不会被放大）。现在对图片去除模糊吗？</string>
+    <string name="photo_restore_title_save_full">以全分辨率保存？</string>
+    <string name="photo_restore_msg_save_deblur">将对全分辨率原图重新应用去模糊。预览图本身不会被保存。</string>
+    <string name="photo_restore_msg_save_upscale">将对全分辨率原图重新应用 4× 放大，并受本设备上限限制。预览图本身不会被保存。</string>
+    <string name="photo_restore_msg_effective_scale">将在 4× 放大前把输入缩放至 %1$d px；有效放大倍数为 %2$s×。</string>
+    <string name="photo_restore_upscale">放大 4×</string>
+    <string name="photo_restore_undo">撤销 (%1$d)</string>
+    <string name="photo_restore_upscaling_progress">正在放大…可能需要一些时间</string>
+    <string name="photo_restore_full_res_upscale_progress">正在以全分辨率放大…</string>
+    <string name="photo_restore_error_upscale_failed">放大失败</string>
 </resources>

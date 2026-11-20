@@ -12,6 +12,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Set;
 import java.util.UUID;
 
 import m.co.rh.id.alogger.ILogger;
@@ -234,6 +235,22 @@ public class FileHelper {
      * @param maxAgeMillis   maximum age of the files to be deleted in milliseconds
      */
     public void deleteTempFiles(String fileNamePrefix, long maxAgeMillis) {
+        deleteTempFiles(fileNamePrefix, maxAgeMillis, null);
+    }
+
+    /**
+     * Delete the temp files with the given file name prefix whose last modified
+     * time is older than the given max age, best effort, any failure is ignored.
+     * Files whose absolute path is in the given exclusion set are never deleted
+     * (a live editor session's own files survive the purge even when they are
+     * older than the cutoff).
+     *
+     * @param fileNamePrefix file name prefix of the temp files to be deleted
+     * @param maxAgeMillis   maximum age of the files to be deleted in milliseconds
+     * @param excludePaths   absolute paths to never delete, may be null
+     */
+    public void deleteTempFiles(String fileNamePrefix, long maxAgeMillis,
+                                Set<String> excludePaths) {
         long modifiedCutoff = System.currentTimeMillis() - maxAgeMillis;
         File[] parentDirs = mTempFileRoot.listFiles();
         if (parentDirs == null) {
@@ -245,10 +262,15 @@ public class FileHelper {
                 continue;
             }
             for (File file : files) {
-                if (file.getName().startsWith(fileNamePrefix)
-                        && file.lastModified() < modifiedCutoff) {
-                    file.delete();
+                if (!file.getName().startsWith(fileNamePrefix)
+                        || file.lastModified() >= modifiedCutoff) {
+                    continue;
                 }
+                if (excludePaths != null
+                        && excludePaths.contains(file.getAbsolutePath())) {
+                    continue;
+                }
+                file.delete();
             }
         }
     }

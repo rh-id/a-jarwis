@@ -43,12 +43,28 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/button_toggle_before_after"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/photo_restore_show_deblurred"
-            android:visibility="gone" />
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_toggle_before_after"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/text_margin"
+                android:layout_weight="1"
+                android:text="@string/photo_restore_show_restored"
+                android:visibility="gone" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_undo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/photo_restore_undo"
+                android:visibility="gone" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -63,6 +79,20 @@
                 android:layout_marginEnd="@dimen/text_margin"
                 android:layout_weight="1"
                 android:text="@string/photo_restore_deblur" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_upscale"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/photo_restore_upscale" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/text_margin"
+            android:orientation="horizontal">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/button_share"

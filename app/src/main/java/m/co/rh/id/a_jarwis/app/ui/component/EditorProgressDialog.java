@@ -30,6 +30,13 @@ public class EditorProgressDialog {
     private AlertDialog mDialog;
     private ProgressBar mProgressBar;
     private AppCompatTextView mTextProgress;
+    /**
+     * Opt-in cancel hook of the running pipeline, only pipelines that pass
+     * a listener to {@link #show(boolean, int, String, Runnable)} get the
+     * neutral cancel button (the dialog is rebuilt per pipeline, so the
+     * button never leaks into a later pipeline)
+     */
+    private Runnable mOnCancelRequest;
 
     public EditorProgressDialog(Activity activity, int titleRes) {
         mActivity = activity;
@@ -51,16 +58,41 @@ public class EditorProgressDialog {
      *                    false to show an indeterminate one
      */
     public void show(boolean determinate, int max, String message) {
+        show(determinate, max, message, null);
+    }
+
+    /**
+     * Show (or update) the progress dialog with an optional cancel
+     * affordance: when {@code onCancelRequest} is non-null a neutral
+     * cancel button is shown and clicking it only invokes the listener —
+     * the pipeline aborts itself (dispose + hide) in the callback.
+     *
+     * @param determinate     true to show a determinate progress bar with the given max,
+     *                        false to show an indeterminate one
+     * @param onCancelRequest invoked on the cancel button click, may be null
+     */
+    public void show(boolean determinate, int max, String message,
+                     Runnable onCancelRequest) {
+        mOnCancelRequest = onCancelRequest;
         if (mDialog == null) {
             View contentView = mActivity.getLayoutInflater()
                     .inflate(R.layout.dialog_face_editor_progress, null);
             mProgressBar = contentView.findViewById(R.id.progressBar);
             mTextProgress = contentView.findViewById(R.id.text_progress);
-            mDialog = new AlertDialog.Builder(mActivity)
+            AlertDialog.Builder builder = new AlertDialog.Builder(mActivity)
                     .setTitle(mTitleRes)
                     .setView(contentView)
-                    .setCancelable(false)
-                    .create();
+                    .setCancelable(false);
+            if (mOnCancelRequest != null) {
+                builder.setNeutralButton(android.R.string.cancel,
+                        (dialog, which) -> {
+                            Runnable listener = mOnCancelRequest;
+                            if (listener != null) {
+                                listener.run();
+                            }
+                        });
+            }
+            mDialog = builder.create();
             mDialog.show();
         }
         mProgressBar.setIndeterminate(!determinate);
@@ -97,6 +129,7 @@ public class EditorProgressDialog {
         mDialog = null;
         mProgressBar = null;
         mTextProgress = null;
+        mOnCancelRequest = null;
     }
 
     /**
@@ -112,5 +145,6 @@ public class EditorProgressDialog {
         }
         mProgressBar = null;
         mTextProgress = null;
+        mOnCancelRequest = null;
     }
 }

@@ -99,12 +99,19 @@
     <string name="photo_restore_title">Restauro foto</string>
     <string name="photo_restore_deblur">Riduci sfocatura</string>
     <string name="photo_restore_show_original">Mostra originale</string>
-    <string name="photo_restore_show_deblurred">Mostra immagine nitida</string>
+    <string name="photo_restore_show_restored">Mostra immagine restaurata</string>
     <string name="photo_restore_deblurring_progress">Riduzione della sfocatura…</string>
     <string name="photo_restore_full_res_deblur_progress">Riduzione della sfocatura a piena risoluzione…</string>
     <string name="photo_restore_error_deblur_failed">Riduzione della sfocatura non riuscita</string>
     <string name="photo_restore_error_64bit_required">Il restauro foto non è supportato su questo dispositivo (richiesto 64 bit)</string>
     <string name="photo_restore_msg_discard_changes">Le modifiche del restauro foto non sono state salvate. Scartare le modifiche?</string>
-    <string name="photo_restore_title_deblur_full">Ridurre la sfocatura a piena risoluzione?</string>
-    <string name="photo_restore_msg_deblur_full">Il salvataggio riduce sempre la sfocatura dell\'originale a piena risoluzione (l\'anteprima non viene mai ingrandita). Ridurre la sfocatura dell\'immagine ora?</string>
+    <string name="photo_restore_title_save_full">Salvare a piena risoluzione?</string>
+    <string name="photo_restore_msg_save_deblur">La riduzione della sfocatura verrà riapplicata alla foto a piena risoluzione. L\'anteprima stessa non viene mai salvata.</string>
+    <string name="photo_restore_msg_save_upscale">L\'ingrandimento 4× verrà riapplicato alla foto a piena risoluzione, entro il limite di questo dispositivo. L\'anteprima stessa non viene mai salvata.</string>
+    <string name="photo_restore_msg_effective_scale">L\'input verrà ridimensionato a %1$d px prima dell\'ingrandimento 4×; ingrandimento effettivo %2$s×.</string>
+    <string name="photo_restore_upscale">Ingrandisci 4×</string>
+    <string name="photo_restore_undo">Annulla (%1$d)</string>
+    <string name="photo_restore_upscaling_progress">Ingrandimento… potrebbe richiedere del tempo</string>
+    <string name="photo_restore_full_res_upscale_progress">Ingrandimento a piena risoluzione…</string>
+    <string name="photo_restore_error_upscale_failed">Ingrandimento non riuscito</string>
 </resources>

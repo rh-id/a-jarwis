@@ -39,6 +39,13 @@ import m.co.rh.id.aprovider.Provider;
  * under "NafNetMem"). Fixtures photo_restore_blur_input/expected.jpg are the
  * official OpenCV NAFNet example pair, vendored TEST-ONLY; the suite runs
  * in connectedCheck (the model auto-downloads via {@link ModelTestHelper}).
+ * <p>
+ * COLD FIRST FORWARD LAW: on OpenCV 5.1.0 x86_64 a net's cold first
+ * forward below ~224 px SIGSEGVs inside TBB (measured 16/96/128 crash,
+ * 224/288/384/512 pass); a first forward at &gt;= 224 px makes later small
+ * forwards safe on the same net — order-independence comes from
+ * MLEngineInstance's 512-px synthetic CREATION warm-up (see
+ * {@link NafNetProcessor#warmUp()}), the suite adds no warm-up of its own.
  */
 @RunWith(AndroidJUnit4.class)
 public class NafNetProcessorTest {
@@ -80,7 +87,11 @@ public class NafNetProcessorTest {
         mLogger = mMLEngineProvider.get(ILogger.class);
         mContext = mMLEngineProvider.getContext();
         // the engine cache creates and holds the single processor instance
-        // (the app-lifetime policy); every test below drives this instance
+        // (the app-lifetime policy); every test below drives this instance.
+        // Order-independence comes from the CREATION warm-up: the getter's
+        // mapping lambda runs one 512-px synthetic forward (see
+        // NafNetProcessor.warmUp), so the suite deliberately adds no
+        // warm-up of its own — this call IS the warm-up
         mProcessor = mMLEngineProvider.get(MLEngineInstance.class)
                 .getNafNetProcessor();
     }

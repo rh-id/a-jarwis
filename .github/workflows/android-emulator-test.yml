@@ -9,7 +9,8 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # the Swin2SR CI suite adds ~12 min per API level (measured 698 s on the emulator); the previous 30-min budget assumed Phase 1's suite only
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:

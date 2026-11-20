@@ -144,7 +144,24 @@ public enum ModelType {
     NAFNET_DEBLUR("nafnet-deblur",
             "Photo Restore (NAFNet)",
             "~87.5 MB",
-            "https://huggingface.co/opencv/deblurring_nafnet/resolve/main/deblurring_nafnet_2025may.onnx");
+            "https://huggingface.co/opencv/deblurring_nafnet/resolve/main/deblurring_nafnet_2025may.onnx"),
+    /**
+     * Swin2SR real-world 4x super-resolution (SwinV2), the fp32 ONNX export
+     * from https://huggingface.co/onnx-community/swin2SR-realworld-sr-x4-64-bsrgan-psnr-ONNX
+     * (upstream project https://github.com/mv-lab/swin2sr). FIXED export
+     * shape 64x64 -&gt; 256x256 (the -64 in the repo name): inference tiles at
+     * the input resolution, merged on a 4x output canvas by
+     * {@link m.co.rh.id.a_jarwis.ml_engine.provider.component.Swin2srProcessor};
+     * preprocess rgb_div255 per the phase-0 spike (issue #5). Licence:
+     * Apache-2.0, primary source = the upstream mv-lab/swin2sr LICENSE (not
+     * the HF tag). App-lifetime cached (teardown-poison law); peak merge
+     * memory ~47 B per output pixel (~789 MB at the 1024 cap) -&gt; RAM-tiered
+     * input cap.
+     */
+    SWIN2SR_UPSCALE("swin2sr-upscale",
+            "Photo Restore Upscale (Swin2SR)",
+            "~51.3 MB",
+            "https://huggingface.co/onnx-community/swin2SR-realworld-sr-x4-64-bsrgan-psnr-ONNX/resolve/main/onnx/model.onnx");
 
     private final String mId;
     private final String mDisplayName;

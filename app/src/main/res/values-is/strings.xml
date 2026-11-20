@@ -99,12 +99,19 @@
     <string name="photo_restore_title">Endurheimta mynd</string>
     <string name="photo_restore_deblur">Afþoka</string>
     <string name="photo_restore_show_original">Sýna frumrit</string>
-    <string name="photo_restore_show_deblurred">Sýna afþokkaða mynd</string>
+    <string name="photo_restore_show_restored">Sýna endurheimta mynd</string>
     <string name="photo_restore_deblurring_progress">Afþokar mynd…</string>
     <string name="photo_restore_full_res_deblur_progress">Afþokar mynd í fullri upplausn…</string>
     <string name="photo_restore_error_deblur_failed">Afþokun mistókst</string>
     <string name="photo_restore_error_64bit_required">Endurheimta mynd er ekki stutt á þessu tæki (64-bita nauðsynlegt)</string>
     <string name="photo_restore_msg_discard_changes">Breytingarnar þínar á myndarendurheimt hafa ekki verið vistaðar. Viltu fleygja breytingunum?</string>
-    <string name="photo_restore_title_deblur_full">Afþoka í fullri upplausn?</string>
-    <string name="photo_restore_msg_deblur_full">Vistun afþokar alltaf frumritið í fullri upplausn (forsýningin er aldrei stækkuð). Afþoka myndina núna?</string>
+    <string name="photo_restore_title_save_full">Vista í fullri upplausn?</string>
+    <string name="photo_restore_msg_save_deblur">Afþokun verður framkvæmd aftur á myndinni í fullri upplausn. Forsýningin sjálf er aldrei vistuð.</string>
+    <string name="photo_restore_msg_save_upscale">4× stækkunin verður framkvæmd aftur á myndinni í fullri upplausn, háð takmörkunum þessa tækis. Forsýningin sjálf er aldrei vistuð.</string>
+    <string name="photo_restore_msg_effective_scale">Inntakið verður aðlagað að %1$d px áður en 4× stækkunin fer fram; raunveruleg stækkun %2$s×.</string>
+    <string name="photo_restore_upscale">Stækka 4×</string>
+    <string name="photo_restore_undo">Afturkalla (%1$d)</string>
+    <string name="photo_restore_upscaling_progress">Stækkun… þetta getur tekið tíma</string>
+    <string name="photo_restore_full_res_upscale_progress">Stækkun í fullri upplausn…</string>
+    <string name="photo_restore_error_upscale_failed">Stækkun mistókst</string>
 </resources>

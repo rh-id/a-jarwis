@@ -560,3 +560,8 @@
   license: Apache License 2.0
   licenseUrl: https://github.com/megvii-research/NAFNet
   url: https://huggingface.co/opencv/deblurring_nafnet
+- name: Swin2SR image super-resolution model (SwinV2)
+  copyrightHolder: SwinIR/Swin2SR Authors
+  license: Apache License 2.0
+  licenseUrl: https://github.com/mv-lab/swin2sr
+  url: https://huggingface.co/onnx-community/swin2SR-realworld-sr-x4-64-bsrgan-psnr-ONNX

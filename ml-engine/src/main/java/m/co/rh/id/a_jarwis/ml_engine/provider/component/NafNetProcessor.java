@@ -35,6 +35,17 @@ import m.co.rh.id.alogger.ILogger;
  * 5.0.0.1 + 5.1.0) — app-lifetime processor, evicted only by
  * {@link MLEngineInstance} dispose; same-instance forwards are safe.
  * <p>
+ * COLD FIRST FORWARD LAW (OpenCV 5.1.0 x86_64 emulator): a net's cold
+ * first forward below ~224 px SIGSEGVs inside TBB during graph planning
+ * (measured 16/96/128 crash, 224/288/384/512 pass); a first forward at
+ * &gt;= 224 px immunizes the net, later small forwards are safe on it —
+ * the invariant holds for EVERY caller path because
+ * {@link MLEngineInstance#getNafNetProcessor()} runs a 512-px synthetic
+ * {@link #warmUp()} at creation (512 = the verified-safe size; the
+ * creation cost is paid once, on the first deblur-path use only —
+ * upscale-only users never construct this net and their save path's
+ * deblurFull forwards 512-flat tiles which are cold-safe).
+ * <p>
  * Forward RSS scales at ~8.3 KB per input pixel — never run native-
  * resolution single-shot (lmkd death), hence the mandatory cap of
  * {@link #process(Bitmap, int)} and the tiles of
@@ -122,9 +133,41 @@ class NafNetProcessor {
     }
 
     /**
+     * One synthetic 512-px forward at creation (the engine cache calls it
+     * inside the mapping lambda, exactly once per process): a &gt;= 224 px
+     * first forward immunizes the net for all later small forwards (see
+     * the class javadoc), so even sub-224 sources are safe in every
+     * caller path. Memory-pressured failures follow the forward contract
+     * (CvException logged + rethrown AS-IS); a throw leaves the
+     * processor uncached and the next access retries the creation.
+     */
+    synchronized void warmUp() {
+        checkNotReleased();
+        Mat synthetic = null;
+        try {
+            synthetic = new Mat(512, 512, CvType.CV_8UC3,
+                    new Scalar(0, 0, 0));
+            mLogger.i(TAG, "creation warm-up (cold-first-forward law: a"
+                    + " >=224 first forward immunizes later small forwards)");
+            forwardRgb(synthetic);
+        } catch (CvException e) {
+            mLogger.e(TAG, "Creation warm-up forward failed (memory"
+                    + " pressure on the device?)", e);
+            throw e;
+        } finally {
+            if (synthetic != null) {
+                synthetic.release();
+            }
+        }
+    }
+
+    /**
      * Working cap by device RAM (preview cap, tiled tile ceiling),
      * bounding the app-lifetime net's retained dnn workspace at ~8.3 KB
-     * per input pixel (2.65 GB at 512).
+     * per input pixel (2.65 GB at 512). The 224 floor must not be lowered:
+     * below it a cold first forward SEGVs (see the class javadoc), and the
+     * 224-cold case itself still needs the parked real-device validation
+     * before the RAM tiers ship.
      *
      * @param context any context
      * @return 512 on >= 8 GB RAM, 384 on >= 6 GB, 288 on >= 4 GB, 224
@@ -301,7 +344,7 @@ class NafNetProcessor {
             // the tile blend ramp depends only on the tile-local coordinates
             // and every tile is exactly tileSize x tileSize: built ONCE and
             // shared by the whole grid
-            ramp = buildWeightRamp(effectiveTileSize, overlap);
+            ramp = TileBlend.buildWeightRamp(effectiveTileSize, overlap);
             // cv::multiply/divide need matching channel counts on both
             // sides, the per-pixel weight is broadcast into 3 channels once
             ramp3 = new Mat();
@@ -367,8 +410,9 @@ class NafNetProcessor {
                         tileOut.convertTo(tileOut32, CvType.CV_32FC3);
                         weighted = new Mat();
                         Core.multiply(tileOut32, ramp3, weighted);
-                        accumulate(sumWeighted, sumWeight, tileLeft, tileTop,
-                                clipWidth, clipHeight, weighted, ramp);
+                        TileBlend.accumulate(sumWeighted, sumWeight,
+                                tileLeft, tileTop, clipWidth, clipHeight,
+                                weighted, ramp);
                     } finally {
                         if (tileIn != null) {
                             tileIn.release();
@@ -506,87 +550,6 @@ class NafNetProcessor {
             }
             if (output != null) {
                 output.release();
-            }
-        }
-    }
-
-    /**
-     * The shared per-tile blend weight Mat: per-axis edge ramps' product,
-     * 1 at the center falling to 1/(overlap+1) at the edges. 2-D, bulk put
-     * is safe (the zero-transfer bug is n-dim only).
-     */
-    private static Mat buildWeightRamp(int tileSize, int overlap) {
-        Mat ramp = new Mat(tileSize, tileSize, CvType.CV_32FC1);
-        float[] buffer = new float[tileSize * tileSize];
-        for (int y = 0; y < tileSize; y++) {
-            float rampY = edgeRamp(y, overlap) * edgeRamp(tileSize - 1 - y,
-                    overlap);
-            for (int x = 0; x < tileSize; x++) {
-                float rampX = edgeRamp(x, overlap)
-                        * edgeRamp(tileSize - 1 - x, overlap);
-                buffer[y * tileSize + x] = rampX * rampY;
-            }
-        }
-        ramp.put(0, 0, buffer);
-        return ramp;
-    }
-
-    /**
-     * One linear edge ramp: 1 at the center, 1/(overlap+1) AT the edge
-     * pixel — 0 would divide by zero at single-covered borders.
-     */
-    private static float edgeRamp(int distanceToEdge, int overlap) {
-        if (overlap <= 0 || distanceToEdge >= overlap) {
-            return 1f;
-        }
-        return (distanceToEdge + 1f) / (overlap + 1f);
-    }
-
-    /**
-     * Add the in-image region of one tile's weighted output into the
-     * running sums (fresh destination per addition: no in-place aliasing).
-     */
-    private static void accumulate(Mat sumWeighted, Mat sumWeight,
-                                   int tileLeft, int tileTop,
-                                   int clipWidth, int clipHeight,
-                                   Mat weightedTile, Mat ramp) {
-        Mat weightedView = null;
-        Mat rampView = null;
-        Mat sumWeightedView = null;
-        Mat sumWeightView = null;
-        Mat weightedSum = null;
-        Mat weightSum = null;
-        try {
-            weightedView = weightedTile.submat(0, clipHeight, 0, clipWidth);
-            rampView = ramp.submat(0, clipHeight, 0, clipWidth);
-            sumWeightedView = sumWeighted.submat(tileTop,
-                    tileTop + clipHeight, tileLeft, tileLeft + clipWidth);
-            sumWeightView = sumWeight.submat(tileTop,
-                    tileTop + clipHeight, tileLeft, tileLeft + clipWidth);
-            weightedSum = new Mat();
-            Core.add(sumWeightedView, weightedView, weightedSum);
-            weightedSum.copyTo(sumWeightedView);
-            weightSum = new Mat();
-            Core.add(sumWeightView, rampView, weightSum);
-            weightSum.copyTo(sumWeightView);
-        } finally {
-            if (weightedView != null) {
-                weightedView.release();
-            }
-            if (rampView != null) {
-                rampView.release();
-            }
-            if (sumWeightedView != null) {
-                sumWeightedView.release();
-            }
-            if (sumWeightView != null) {
-                sumWeightView.release();
-            }
-            if (weightedSum != null) {
-                weightedSum.release();
-            }
-            if (weightSum != null) {
-                weightSum.release();
             }
         }
     }

@@ -99,12 +99,19 @@
     <string name="photo_restore_title">Pulihkan Foto</string>
     <string name="photo_restore_deblur">Kurangi Buram</string>
     <string name="photo_restore_show_original">Tampilkan asli</string>
-    <string name="photo_restore_show_deblurred">Tampilkan hasilnya</string>
+    <string name="photo_restore_show_restored">Tampilkan hasil pemulihan</string>
     <string name="photo_restore_deblurring_progress">Mengurangi keburaman…</string>
     <string name="photo_restore_full_res_deblur_progress">Mengurangi keburaman resolusi penuh…</string>
     <string name="photo_restore_error_deblur_failed">Gagal mengurangi keburaman</string>
     <string name="photo_restore_error_64bit_required">Pemulihan Foto tidak didukung pada perangkat ini (64-bit diperlukan)</string>
     <string name="photo_restore_msg_discard_changes">Perubahan pemulihan foto Anda belum disimpan. Buang perubahan?</string>
-    <string name="photo_restore_title_deblur_full">Kurangi keburaman resolusi penuh?</string>
-    <string name="photo_restore_msg_deblur_full">Menyimpan selalu mengurangi keburaman asli pada resolusi penuh (pratinjau tidak pernah diperbesar). Kurangi keburaman gambar sekarang?</string>
+    <string name="photo_restore_title_save_full">Simpan pada resolusi penuh?</string>
+    <string name="photo_restore_msg_save_deblur">Pengurangan keburaman akan diterapkan kembali ke foto beresolusi penuh. Pratinjau itu sendiri tidak pernah disimpan.</string>
+    <string name="photo_restore_msg_save_upscale">Pembesaran 4× akan diterapkan kembali ke foto beresolusi penuh, dibatasi kapasitas perangkat ini. Pratinjau itu sendiri tidak pernah disimpan.</string>
+    <string name="photo_restore_msg_effective_scale">Input akan diubah ke %1$d px sebelum pembesaran 4×; perbesaran efektif %2$s×.</string>
+    <string name="photo_restore_upscale">Perbesar 4×</string>
+    <string name="photo_restore_undo">Urungkan (%1$d)</string>
+    <string name="photo_restore_upscaling_progress">Memperbesar… ini bisa memakan waktu</string>
+    <string name="photo_restore_full_res_upscale_progress">Memperbesar resolusi penuh…</string>
+    <string name="photo_restore_error_upscale_failed">Gagal memperbesar</string>
 </resources>

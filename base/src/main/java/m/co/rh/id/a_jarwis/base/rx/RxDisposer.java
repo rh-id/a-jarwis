@@ -26,6 +26,17 @@ public class RxDisposer implements ProviderDisposable {
         disposableMap.put(uniqueKey, disposable);
     }
 
+    /**
+     * Dispose only the disposable registered under the given key (no-op
+     * when absent), e.g. a user-requested cancel of one running pipeline
+     */
+    public void dispose(String uniqueKey) {
+        Disposable disposable = disposableMap.remove(uniqueKey);
+        if (disposable != null) {
+            disposable.dispose();
+        }
+    }
+
     public void dispose() {
         if (!disposableMap.isEmpty()) {
             for (Map.Entry<String, Disposable> entry : disposableMap.entrySet()) {

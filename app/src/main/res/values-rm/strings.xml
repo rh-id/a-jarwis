@@ -99,12 +99,19 @@
     <string name="photo_restore_title">Restauraziun da fotos</string>
     <string name="photo_restore_deblur">Sclarir il maletg</string>
     <string name="photo_restore_show_original">Mussar l\'original</string>
-    <string name="photo_restore_show_deblurred">Mussar il maletg sclarì</string>
+    <string name="photo_restore_show_restored">Mussar il maletg restaurà</string>
     <string name="photo_restore_deblurring_progress">Il maletg vegn sclarì…</string>
     <string name="photo_restore_full_res_deblur_progress">Il maletg vegn sclarì en resoluziun cumplaina…</string>
     <string name="photo_restore_error_deblur_failed">Sclarir n\'è betg reussì</string>
     <string name="photo_restore_error_64bit_required">La restauraziun da fotos na vegn betg sustegnida sin quest apparat (64-bit è necesari)</string>
     <string name="photo_restore_msg_discard_changes">Vossas midadas da la restauraziun da fotos n\'èn betg vegnidas memorisadas. Vulais sbutter las midadas?</string>
-    <string name="photo_restore_title_deblur_full">Sclarir en resoluziun cumplaina?</string>
-    <string name="photo_restore_msg_deblur_full">Il memorisar sclara adina l\'original en resoluziun cumplaina (la prevista vegn mai engrondida). Sclarir il maletg ussa?</string>
+    <string name="photo_restore_title_save_full">Memorisar en resoluziun cumplaina?</string>
+    <string name="photo_restore_msg_save_deblur">Il sclarir vegn applitgà anc ina giada sin la foto en resoluziun cumplaina. La prevista sez vegn mai memorisada.</string>
+    <string name="photo_restore_msg_save_upscale">L\'engrondiment da 4× vegn applitgà anc ina giada sin la foto en resoluziun cumplaina, limità al limit da quest apparat. La prevista sez vegn mai memorisada.</string>
+    <string name="photo_restore_msg_effective_scale">L\'entrada vegn engrondata a %1$d px avant l\'engrondiment da 4×; engrondiment efectiv %2$s×.</string>
+    <string name="photo_restore_upscale">Engrondir 4×</string>
+    <string name="photo_restore_undo">Annullar (%1$d)</string>
+    <string name="photo_restore_upscaling_progress">Engrondiment… quai po durar in toc</string>
+    <string name="photo_restore_full_res_upscale_progress">Engrondiment en resoluziun cumplaina…</string>
+    <string name="photo_restore_error_upscale_failed">Engrondir n\'è betg reussì</string>
 </resources>

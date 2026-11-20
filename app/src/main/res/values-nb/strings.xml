@@ -99,12 +99,19 @@
     <string name="photo_restore_title">Fotorestaurering</string>
     <string name="photo_restore_deblur">Fjern uskarphet</string>
     <string name="photo_restore_show_original">Vis original</string>
-    <string name="photo_restore_show_deblurred">Vis bearbeidet bilde</string>
+    <string name="photo_restore_show_restored">Vis restaurert bilde</string>
     <string name="photo_restore_deblurring_progress">Fjerner uskarphet…</string>
     <string name="photo_restore_full_res_deblur_progress">Fjerner uskarphet i full oppløsning…</string>
     <string name="photo_restore_error_deblur_failed">Kunne ikke fjerne uskarphet</string>
     <string name="photo_restore_error_64bit_required">Fotorestaurering støttes ikke på denne enheten (64-bit kreves)</string>
     <string name="photo_restore_msg_discard_changes">Endringene dine fra fotorestaurering er ikke lagret. Vil du forkaste endringene?</string>
-    <string name="photo_restore_title_deblur_full">Fjern uskarphet i full oppløsning?</string>
-    <string name="photo_restore_msg_deblur_full">Lagring fjerner alltid uskarphet fra originalen i full oppløsning (forhåndsvisningen blir aldri oppskalert). Vil du fjerne uskarphet fra bildet nå?</string>
+    <string name="photo_restore_title_save_full">Lagre i full oppløsning?</string>
+    <string name="photo_restore_msg_save_deblur">Fjerning av uskarphet utføres på nytt på bildet i full oppløsning. Forhåndsvisningen blir aldri lagret.</string>
+    <string name="photo_restore_msg_save_upscale">4×-oppskaleringen utføres på nytt på bildet i full oppløsning, begrenset av denne enhetens grense. Forhåndsvisningen blir aldri lagret.</string>
+    <string name="photo_restore_msg_effective_scale">Inndata blir endret til %1$d px før 4×-oppskaleringen; effektiv forstørrelse %2$s×.</string>
+    <string name="photo_restore_upscale">Oppskaler 4×</string>
+    <string name="photo_restore_undo">Angre (%1$d)</string>
+    <string name="photo_restore_upscaling_progress">Oppskalering… dette kan ta tid</string>
+    <string name="photo_restore_full_res_upscale_progress">Oppskalering i full oppløsning…</string>
+    <string name="photo_restore_error_upscale_failed">Kunne ikke oppskalere</string>
 </resources>

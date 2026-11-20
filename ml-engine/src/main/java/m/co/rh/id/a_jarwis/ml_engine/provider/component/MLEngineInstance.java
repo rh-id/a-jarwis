@@ -45,6 +45,8 @@ public class MLEngineInstance implements ProviderDisposable {
     public static final String AI_IMAGE_DETECT_FILE = "community_forensics_deepfakedet_vit_fp32_2026july.onnx";
     public static final String NAFNET_PATH = BASE_PATH + "/restore";
     public static final String NAFNET_FILE = "deblurring_nafnet_2025may.onnx";
+    public static final String SWIN2SR_PATH = BASE_PATH + "/upscale";
+    public static final String SWIN2SR_FILE = "swin2sr-realworld-sr-x4-64.onnx";
     private final Context mAppContext;
     private final ILogger mLogger;
     /**
@@ -98,6 +100,14 @@ public class MLEngineInstance implements ProviderDisposable {
      */
     private final ConcurrentHashMap<ModelType, NafNetProcessor> mNafNetProcessors;
     /**
+     * Lazy Swin2SR upscale processor cache (keyed by model type for future
+     * upscale variants, the file is ~51.3 MB). App-lifetime per the
+     * teardown-poison note on {@link Swin2srProcessor} — evicted only by
+     * dispose; the peak merge memory is bounded by the input cap (see
+     * {@link Swin2srProcessor#suggestedUpscaleCap(Context)}) instead.
+     */
+    private final ConcurrentHashMap<ModelType, Swin2srProcessor> mSwin2srProcessors;
+    /**
      * Lazy cached YuNet face detector, created on first face detection and
      * kept for the provider lifetime like the dnn processor caches above.
      * Released only by {@link #releaseFaceModels()} and
@@ -121,6 +131,7 @@ public class MLEngineInstance implements ProviderDisposable {
         mLamaProcessors = new ConcurrentHashMap<>();
         mAiImageDetectProcessors = new ConcurrentHashMap<>();
         mNafNetProcessors = new ConcurrentHashMap<>();
+        mSwin2srProcessors = new ConcurrentHashMap<>();
         if (OpenCVLoader.initLocal()) {
             mLogger.d("OpenCV", "OpenCV loaded");
         } else {
@@ -202,7 +213,11 @@ public class MLEngineInstance implements ProviderDisposable {
 
     /**
      * Returns the NAFNet deblur processor, creating and caching it on first
-     * access. Calls on one instance must be serialized (e.g. single-thread
+     * access. The creation runs a 512-px synthetic warm-up forward (see
+     * {@link NafNetProcessor#warmUp()}), so every later forward — of any
+     * size — is safe (cold-first-forward law). A warm-up throw propagates
+     * and leaves the processor uncached (the next call retries).
+     * Calls on one instance must be serialized (e.g. single-thread
      * executor); the instance is app-lifetime per the teardown-poison note
      * on {@link NafNetProcessor} — nobody but the dispose cascade may
      * release it.
@@ -211,7 +226,27 @@ public class MLEngineInstance implements ProviderDisposable {
      */
     public NafNetProcessor getNafNetProcessor() {
         return mNafNetProcessors.computeIfAbsent(ModelType.NAFNET_DEBLUR,
-                modelType -> new NafNetProcessor(
+                modelType -> {
+                    NafNetProcessor processor = new NafNetProcessor(
+                            requireModelFile(modelType).getAbsolutePath(),
+                            mLogger);
+                    processor.warmUp();
+                    return processor;
+                });
+    }
+
+    /**
+     * Returns the Swin2SR upscale processor, creating and caching it on first
+     * access. Calls on one instance must be serialized (e.g. single-thread
+     * executor); the instance is app-lifetime per the teardown-poison note
+     * on {@link Swin2srProcessor} — nobody but the dispose cascade may
+     * release it.
+     *
+     * @return the cached Swin2SR upscale processor
+     */
+    public Swin2srProcessor getSwin2srProcessor() {
+        return mSwin2srProcessors.computeIfAbsent(ModelType.SWIN2SR_UPSCALE,
+                modelType -> new Swin2srProcessor(
                         requireModelFile(modelType).getAbsolutePath(), mLogger));
     }
 
@@ -369,6 +404,14 @@ public class MLEngineInstance implements ProviderDisposable {
     }
 
     /**
+     * @return true when the Swin2SR upscale model is downloaded and usable;
+     * the 64-bit-only device gate is enforced by the page side on top
+     */
+    public boolean isUpscaleAvailable() {
+        return ModelCatalog.isAvailable(mAppContext, ModelType.SWIN2SR_UPSCALE);
+    }
+
+    /**
      * @return true only when BOTH the object segmentation model and the
      * inpainting model are downloaded, the magic eraser needs the two of them
      */
@@ -441,12 +484,20 @@ public class MLEngineInstance implements ProviderDisposable {
                 mLogger.e(TAG, "Failed to release a NAFNet deblur processor", e);
             }
         }
+        for (Swin2srProcessor processor : mSwin2srProcessors.values()) {
+            try {
+                processor.release();
+            } catch (Exception e) {
+                mLogger.e(TAG, "Failed to release a Swin2SR upscale processor", e);
+            }
+        }
         mSTProcessors.clear();
         mPersonSegProcessors.clear();
         mEfficientSamProcessors.clear();
         mLamaProcessors.clear();
         mAiImageDetectProcessors.clear();
         mNafNetProcessors.clear();
+        mSwin2srProcessors.clear();
         mFaceDetector = null;
         mFaceRecognizer = null;
         nudgeNativeReclaim();
