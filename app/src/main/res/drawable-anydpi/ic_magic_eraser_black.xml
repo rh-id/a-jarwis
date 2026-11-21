@@ -1,0 +1,32 @@
+<!--
+    Magic Eraser icon: derived from the Material Symbols "deblur" icon
+    (Apache-2.0, https://fonts.google.com/icons?icon.query=deblur), mirrored
+    horizontally so the solid arc sits on the left and the image dissolves
+    into dots toward the right, plus a custom magic wand and sparkles on the
+    far right as if the image is erased like magic; styled like the other
+    home menu icons (see ic_photo_restore_black). The dots at (720,560) and
+    (720,400) are omitted where the wand sweeps through, as if already
+    erased.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="960"
+    android:viewportHeight="960"
+    android:tint="#333333"
+    android:alpha="0.6">
+  <path
+      android:fillColor="@android:color/white"
+      android:pathData="M480,840 v-80 q-116,0 -198,-82 t-82,-198 q0,-116 82,-198 t198,-82 v-80 q-74,0 -139.5,28.5 T226,226 q-49,49 -77.5,114.5 T120,480 q0,74 28.5,139.5 T226,734 q49,49 114.5,77.5 T480,840 Z"/>
+  <path
+      android:fillColor="@android:color/white"
+      android:pathData="M840,420 q8,0 14,-6 t6,-14 q0,-8 -6,-14 t-14,-6 q-8,0 -14,6 t-6,14 q0,8 6,14 t14,6 Z M840,580 q8,0 14,-6 t6,-14 q0,-8 -6,-14 t-14,-6 q-8,0 -14,6 t-6,14 q0,8 6,14 t14,6 Z M720,280 q17,0 28.5,-11.5 T760,240 q0,-17 -11.5,-28.5 T720,200 q-17,0 -28.5,11.5 T680,240 q0,17 11.5,28.5 T720,280 Z M720,760 q17,0 28.5,-11.5 T760,720 q0,-17 -11.5,-28.5 T720,680 q-17,0 -28.5,11.5 T680,720 q0,17 11.5,28.5 T720,760 Z M560,140 q8,0 14,-6 t6,-14 q0,-8 -6,-14 t-14,-6 q-8,0 -14,6 t-6,14 q0,8 6,14 t14,6 Z M560,280 q17,0 28.5,-11.5 T600,240 q0,-17 -11.5,-28.5 T560,200 q-17,0 -28.5,11.5 T520,240 q0,17 11.5,28.5 T560,280 Z M560,460 q25,0 42.5,-17.5 T620,400 q0,-25 -17.5,-42.5 T560,340 q-25,0 -42.5,17.5 T500,400 q0,25 17.5,42.5 T560,460 Z M560,620 q25,0 42.5,-17.5 T620,560 q0,-25 -17.5,-42.5 T560,500 q-25,0 -42.5,17.5 T500,560 q0,25 17.5,42.5 T560,620 Z M560,760 q17,0 28.5,-11.5 T600,720 q0,-17 -11.5,-28.5 T560,680 q-17,0 -28.5,11.5 T520,720 q0,17 11.5,28.5 T560,760 Z M560,860 q8,0 14,-6 t6,-14 q0,-8 -6,-14 t-14,-6 q-8,0 -14,6 t-6,14 q0,8 6,14 t14,6 Z"/>
+  <path
+      android:fillColor="@android:color/white"
+      android:pathData="M640,244 Q652,288 696,300 Q652,312 640,356 Q628,312 584,300 Q628,288 640,244 Z M750,310 Q757,333 780,340 Q757,347 750,370 Q743,347 720,340 Q743,333 750,310 Z"/>
+  <path
+      android:strokeColor="@android:color/white"
+      android:strokeWidth="80"
+      android:strokeLineCap="round"
+      android:pathData="M915,820 L665,395"/>
+</vector>

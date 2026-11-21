@@ -71,7 +71,7 @@
                     android:layout_gravity="fill"
                     android:gravity="center"
                     android:text="@string/title_magic_eraser"
-                    app:icon="@drawable/ic_portrait_black" />
+                    app:icon="@drawable/ic_magic_eraser_black" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/button_ai_detect"
