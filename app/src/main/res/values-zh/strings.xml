@@ -69,10 +69,12 @@
     <string name="title_portrait_mode">人像模式</string>
     <string name="blur_background">模糊背景</string>
     <string name="remove_background">移除背景</string>
+    <string name="title_lens_blur">镜头模糊</string>
     <string name="detecting_people_progress">正在检测人物… (%1$d/%2$d)</string>
     <string name="no_person_detected">未检测到人物</string>
     <string name="no_person_detected_">未检测到人物：%s</string>
     <string name="msg_discard_portrait_changes">您的人像选择尚未保存。要放弃这些更改吗？</string>
+    <string name="msg_discard_lens_blur_changes">您的镜头模糊选择尚未保存。要放弃这些更改吗？</string>
     <string name="title_share_no_portrait">未检测到人物</string>
     <string name="msg_share_no_portrait">此图片上没有检测到人物。仍要分享原图吗？</string>
     <string name="detecting_progress">正在检测对象…</string>

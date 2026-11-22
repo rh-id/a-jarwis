@@ -69,10 +69,12 @@
     <string name="title_portrait_mode">Portrétthamur</string>
     <string name="blur_background">Móða bakgrunninn</string>
     <string name="remove_background">Fjarlægja bakgrunninn</string>
+    <string name="title_lens_blur">Linsudof</string>
     <string name="detecting_people_progress">Greini fólk… (%1$d/%2$d)</string>
     <string name="no_person_detected">Ekkert fólk fannst</string>
     <string name="no_person_detected_">Ekkert fólk fannst: %s</string>
     <string name="msg_discard_portrait_changes">Valið þitt á portréttham hefur ekki verið vistað. Viltu fleygja breytingunum?</string>
+    <string name="msg_discard_lens_blur_changes">Valið þitt á linsudof hefur ekki verið vistað. Viltu fleygja breytingunum?</string>
     <string name="title_share_no_portrait">Ekkert fólk fannst</string>
     <string name="msg_share_no_portrait">Ekkert fólk fannst á þessari mynd. Viltu samt deila upprunalegu myndinni?</string>
     <string name="detecting_progress">Greini hlut…</string>

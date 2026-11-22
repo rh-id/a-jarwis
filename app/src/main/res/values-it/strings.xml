@@ -69,10 +69,12 @@
     <string name="title_portrait_mode">Modalità ritratto</string>
     <string name="blur_background">Sfoca lo sfondo</string>
     <string name="remove_background">Rimuovi lo sfondo</string>
+    <string name="title_lens_blur">Sfocatura lente</string>
     <string name="detecting_people_progress">Rilevamento persone… (%1$d/%2$d)</string>
     <string name="no_person_detected">Nessuna persona rilevata</string>
     <string name="no_person_detected_">Nessuna persona rilevata: %s</string>
     <string name="msg_discard_portrait_changes">La selezione della modalità ritratto non è stata salvata. Scartare le modifiche?</string>
+    <string name="msg_discard_lens_blur_changes">La selezione della sfocatura lente non è stata salvata. Scartare le modifiche?</string>
     <string name="title_share_no_portrait">Nessuna persona rilevata</string>
     <string name="msg_share_no_portrait">Nessuna persona rilevata in questa immagine. Condividere comunque l\'originale?</string>
     <string name="detecting_progress">Rilevamento dell\'oggetto…</string>

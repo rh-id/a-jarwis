@@ -83,6 +83,8 @@ public class HomePage extends StatefulView<Activity> implements RequireComponent
         aiDetectButton.setOnClickListener(this);
         Button restoreButton = rootLayout.findViewById(R.id.button_photo_restore);
         restoreButton.setOnClickListener(this);
+        Button lensBlurButton = rootLayout.findViewById(R.id.button_lens_blur);
+        lensBlurButton.setOnClickListener(this);
         ViewGroup containerAppBar = rootLayout.findViewById(R.id.container_app_bar);
         containerAppBar.addView(mAppBarSV.buildView(activity, container));
         return rootLayout;
@@ -140,6 +142,8 @@ public class HomePage extends StatefulView<Activity> implements RequireComponent
             mWorkflow.startAiDetect();
         } else if (id == R.id.button_photo_restore) {
             mWorkflow.startPhotoRestore();
+        } else if (id == R.id.button_lens_blur) {
+            mWorkflow.startLensBlur();
         }
     }
 

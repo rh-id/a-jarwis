@@ -18,10 +18,11 @@
 - Test: JUnit 4.13.2, Mockito 4.11, espresso 3.7.0, androidx.test-junit, work-testing (androidTest only); zxing core 3.5.3 is `androidTestImplementation` in `:ml-engine` ONLY (test oracle for the QR-censor effectiveness tests — must never reach the shipped APK)
 
 ## ML stack
-- OpenCV 5.0.0.1 official Android AAR from Maven Central (`org.opencv:opencv:5.0.0.1`, catalog entry `libs.opencv`), consumed by `:ml-engine` directly; no local module (previously vendored 4.8.0 SDK — removed 2026-09)
+- OpenCV 5.1.0 official Android AAR from Maven Central (`org.opencv:opencv:5.1.0`, catalog entry `libs.opencv`), consumed by `:ml-engine` directly; no local module (previously vendored 4.8.0 SDK — removed 2026-09)
 - ONNX models are NOT in the APK — downloaded on demand (opaque String model ids from the engine facade accessors; the `MLEngineInstance.ModelType` catalog enum is nested PACKAGE-PRIVATE, `ModelDownloader` via `ModelDownloadWorker` resolve ids internally) into `filesDir/ml-engine/engine/**`; legacy bundled `nst_*_9.onnx` files are renamed in place by `MLEngineInstance.migrateLegacyIfNeeded` (ModelCatalog was absorbed into `MLEngineInstance` as private statics `isAvailable`/`getModelFile` + the legacy NST rename; the former `fromTheme` is STEngine's private `modelTypeForTheme`); model availability is checked through the engine facades (the app boundary speaks String ids: `MLEngineInstance.isModelAvailable(String)` + `displayNameFor`/`displaySizeFor`)
-- Run via OpenCV `FaceDetectorYN`/`FaceRecognizerSF` and DNN (`STProcessor`); processors cached per ModelType by `MLEngineInstance`
+- Run via OpenCV `FaceDetectorYN`/`FaceRecognizerSF` and DNN (`STProcessor`, `PersonSegProcessor`, `DepthProcessor`, EfficientSAM/LaMa/AI-detect processors); processors cached per ModelType by `MLEngineInstance`
 - `AiImageDetectProcessor` runs the AI_IMAGE_DETECT model: 384x384 input (shortest-edge resize 440 + center crop, CLIP-normalized), single logit → pFake = sigmoid(logit); constructor silently falls back to the classic OpenCV DNN engine when the default engine cannot load the graph
+- `DepthProcessor` runs DEPTH_ESTIMATION (Depth Anything V2 Small fp32 ~99MB): aspect-preserving lower-bound ≥518/multiple-of-14 bicubic input, manual ImageNet normalization, 3-D (1,H,W) output blob extracted via reshape (NEVER imagesFromBlob/bulk n-dim get), disparity-like map normalized to 0..1 closeness + post-resize clamp — full facts in `ml-engine/core`
 - QR features (censor/scanner) use the in-box `org.opencv.objdetect.QRCodeDetector` — no model file at all
 
 ## CI (.github/workflows)

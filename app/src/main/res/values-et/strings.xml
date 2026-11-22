@@ -69,10 +69,12 @@
     <string name="title_portrait_mode">Portreerežiim</string>
     <string name="blur_background">Hägusta tausta</string>
     <string name="remove_background">Eemalda taust</string>
+    <string name="title_lens_blur">Läätse hägu</string>
     <string name="detecting_people_progress">Isikute tuvastamine… (%1$d/%2$d)</string>
     <string name="no_person_detected">Isikuid ei tuvastatud</string>
     <string name="no_person_detected_">Isikuid ei tuvastatud: %s</string>
     <string name="msg_discard_portrait_changes">Portreerežiimi valikuid pole salvestatud. Kas loobuda muudatustest?</string>
+    <string name="msg_discard_lens_blur_changes">Läätse hägu valikuid pole salvestatud. Kas loobuda muudatustest?</string>
     <string name="title_share_no_portrait">Isikuid ei tuvastatud</string>
     <string name="msg_share_no_portrait">Sellel pildil ei tuvastatud isikuid. Kas jagada siiski algset pilti?</string>
     <string name="detecting_progress">Objekti tuvastatakse…</string>

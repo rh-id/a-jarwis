@@ -22,6 +22,7 @@ import m.co.rh.id.a_jarwis.app.ui.page.nav.param.UriList;
 import m.co.rh.id.a_jarwis.base.constants.Routes;
 import m.co.rh.id.a_jarwis.base.provider.IStatefulViewProvider;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.AiDetectEngine;
+import m.co.rh.id.a_jarwis.ml_engine.provider.component.DepthEngine;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.FaceEngine;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.MagicEraserEngine;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.PersonSegEngine;
@@ -40,6 +41,7 @@ class HomeWorkflow implements Serializable {
     private static final int REQUEST_CODE_IMAGE_MAGIC_ERASER = 8;
     private static final int REQUEST_CODE_IMAGE_AI_DETECT = 9;
     private static final int REQUEST_CODE_IMAGE_RESTORE = 10;
+    private static final int REQUEST_CODE_IMAGE_LENS_BLUR = 11;
 
     private transient INavigator mNavigator;
     private transient ProviderValue<FaceEngine> mFaceEngine;
@@ -47,6 +49,7 @@ class HomeWorkflow implements Serializable {
     private transient ProviderValue<MagicEraserEngine> mMagicEraserEngine;
     private transient ProviderValue<AiDetectEngine> mAiDetectEngine;
     private transient ProviderValue<PhotoRestoreEngine> mPhotoRestoreEngine;
+    private transient ProviderValue<DepthEngine> mDepthEngine;
 
     private interface ContinueAction extends Serializable {
         void run();
@@ -59,6 +62,7 @@ class HomeWorkflow implements Serializable {
         mMagicEraserEngine = svProvider.lazyGet(MagicEraserEngine.class);
         mAiDetectEngine = svProvider.lazyGet(AiDetectEngine.class);
         mPhotoRestoreEngine = svProvider.lazyGet(PhotoRestoreEngine.class);
+        mDepthEngine = svProvider.lazyGet(DepthEngine.class);
     }
 
     public void startBlurFace() {
@@ -119,6 +123,20 @@ class HomeWorkflow implements Serializable {
                 startIfPhotoRestoreModelsAvailable(() ->
                         pickImage(REQUEST_CODE_IMAGE_RESTORE, false)),
                 REQUEST_CODE_IMAGE_RESTORE);
+    }
+
+    /**
+     * Start the lens blur flow: the standalone whole-image depth bokeh editor.
+     * The Depth Anything V2 model availability is checked FIRST (the portrait
+     * PERSON_SEG gate pattern: a missing model pushes the
+     * {@link ModelDownloadDialog} and the pick continues on a POSITIVE result),
+     * then a multi-image pick feeds the dedicated lens blur editor.
+     */
+    public void startLensBlur() {
+        requestWriteExternalStoragePermission(() ->
+                startIfLensBlurModelsAvailable(() ->
+                        pickImage(REQUEST_CODE_IMAGE_LENS_BLUR)),
+                REQUEST_CODE_IMAGE_LENS_BLUR);
     }
 
     public void startQrScan() {
@@ -218,6 +236,18 @@ class HomeWorkflow implements Serializable {
         }
     }
 
+    private void startIfLensBlurModelsAvailable(ContinueAction continueAction) {
+        ArrayList<String> missingModels = new ArrayList<>();
+        if (!mDepthEngine.get().isAvailable()) {
+            missingModels.add(mDepthEngine.get().depthModelId());
+        }
+        if (missingModels.isEmpty()) {
+            continueAction.run();
+        } else {
+            startModelDownload(missingModels, continueAction);
+        }
+    }
+
     private void startModelDownload(List<String> missingModels, ContinueAction continueAction) {
         mNavigator.push(Routes.MODEL_DOWNLOAD_PAGE, new ModelDownloadDialog.ModelList(missingModels),
                 (navigator, navRoute, activity1, currentView) -> {
@@ -271,6 +301,8 @@ class HomeWorkflow implements Serializable {
             startAiDetect();
         } else if (requestCode == REQUEST_CODE_IMAGE_RESTORE) {
             startPhotoRestore();
+        } else if (requestCode == REQUEST_CODE_IMAGE_LENS_BLUR) {
+            startLensBlur();
         }
     }
 
@@ -292,6 +324,8 @@ class HomeWorkflow implements Serializable {
             pushAiDetect(data);
         } else if (requestCode == REQUEST_CODE_IMAGE_RESTORE) {
             pushPhotoRestoreEditor(data);
+        } else if (requestCode == REQUEST_CODE_IMAGE_LENS_BLUR) {
+            pushLensBlurEditor(data);
         }
     }
 
@@ -395,6 +429,21 @@ class HomeWorkflow implements Serializable {
         ArrayList<String> uris = new ArrayList<>();
         uris.add(pickedUris.get(0).toString());
         mNavigator.push(Routes.PHOTO_RESTORE_EDITOR_PAGE, new UriList(uris));
+    }
+
+    /**
+     * Push the interactive lens blur editor page for the picked images
+     */
+    private void pushLensBlurEditor(Intent data) {
+        List<Uri> pickedUris = collectPickedUris(data);
+        if (pickedUris.isEmpty()) {
+            return;
+        }
+        ArrayList<String> uris = new ArrayList<>();
+        for (Uri uri : pickedUris) {
+            uris.add(uri.toString());
+        }
+        mNavigator.push(Routes.LENS_BLUR_EDITOR_PAGE, new UriList(uris));
     }
 
     /**

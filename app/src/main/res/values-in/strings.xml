@@ -69,10 +69,12 @@
     <string name="title_portrait_mode">Mode Potret</string>
     <string name="blur_background">Buramkan latar belakang</string>
     <string name="remove_background">Hapus latar belakang</string>
+    <string name="title_lens_blur">Kabur lensa</string>
     <string name="detecting_people_progress">Mendeteksi orang… (%1$d/%2$d)</string>
     <string name="no_person_detected">Tidak ada orang terdeteksi</string>
     <string name="no_person_detected_">Tidak ada orang terdeteksi: %s</string>
     <string name="msg_discard_portrait_changes">Pilihan mode potret Anda belum disimpan. Buang perubahannya?</string>
+    <string name="msg_discard_lens_blur_changes">Pilihan kabur lensa Anda belum disimpan. Buang perubahannya?</string>
     <string name="title_share_no_portrait">Tidak ada orang terdeteksi</string>
     <string name="msg_share_no_portrait">Tidak ada orang yang terdeteksi pada gambar ini. Tetap bagikan gambar aslinya?</string>
     <string name="detecting_progress">Mendeteksi objek…</string>

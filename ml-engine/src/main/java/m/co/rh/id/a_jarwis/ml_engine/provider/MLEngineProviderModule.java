@@ -1,6 +1,7 @@
 package m.co.rh.id.a_jarwis.ml_engine.provider;
 
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.AiDetectEngine;
+import m.co.rh.id.a_jarwis.ml_engine.provider.component.DepthEngine;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.FaceEngine;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.MLEngineInstance;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.MagicEraserEngine;
@@ -23,6 +24,8 @@ public class MLEngineProviderModule implements ProviderModule {
         providerRegistry.registerLazy(STEngine.class, () -> new STEngine(provider));
         providerRegistry.registerLazy(PersonSegEngine.class,
                 () -> new PersonSegEngine(provider));
+        providerRegistry.registerLazy(DepthEngine.class,
+                () -> new DepthEngine(provider));
         providerRegistry.registerLazy(MagicEraserEngine.class,
                 () -> new MagicEraserEngine(provider));
         providerRegistry.registerLazy(AiDetectEngine.class,

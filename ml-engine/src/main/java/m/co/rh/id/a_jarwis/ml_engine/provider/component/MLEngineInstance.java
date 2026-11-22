@@ -45,6 +45,8 @@ public class MLEngineInstance implements ProviderDisposable {
     private static final String NAFNET_FILE = "deblurring_nafnet_2025may.onnx";
     private static final String SWIN2SR_PATH = BASE_PATH + "/upscale";
     private static final String SWIN2SR_FILE = "swin2sr-realworld-sr-x4-64.onnx";
+    private static final String DEPTH_ESTIMATION_PATH = BASE_PATH + "/depth-estimation";
+    private static final String DEPTH_ESTIMATION_FILE = "depth_anything_v2_small.onnx";
     private final Context mAppContext;
     private final ILogger mLogger;
     /**
@@ -106,6 +108,18 @@ public class MLEngineInstance implements ProviderDisposable {
      */
     private final ConcurrentHashMap<ModelType, Swin2srProcessor> mSwin2srProcessors;
     /**
+     * Lazy depth estimation processor cache (keyed by model type for future
+     * depth variants), an instance holds its ONNX model loaded in the native
+     * memory (the fp32 file is ~99 MB, ~480-550 MB native retained after the
+     * forwards and GC) — like the magic eraser's SAM/LaMa the retained dnn
+     * workspace is far too big for an app-lifetime cache, so the lens blur
+     * editor releases the processor through
+     * {@link DepthEngine#releaseProcessor()} when its session ends
+     * (the {@link #releaseDepthProcessor()} map remove + nudge pattern, the
+     * AI-detector precedent) and the next use lazily re-parses the model.
+     */
+    private final ConcurrentHashMap<ModelType, DepthProcessor> mDepthProcessors;
+    /**
      * Lazy cached YuNet face detector, created on first face detection and
      * kept for the provider lifetime like the dnn processor caches above.
      * Released only by {@link #releaseFaceModels()} and
@@ -130,6 +144,7 @@ public class MLEngineInstance implements ProviderDisposable {
         mAiImageDetectProcessors = new ConcurrentHashMap<>();
         mNafNetProcessors = new ConcurrentHashMap<>();
         mSwin2srProcessors = new ConcurrentHashMap<>();
+        mDepthProcessors = new ConcurrentHashMap<>();
         if (OpenCVLoader.initLocal()) {
             mLogger.d("OpenCV", "OpenCV loaded");
         } else {
@@ -247,6 +262,44 @@ public class MLEngineInstance implements ProviderDisposable {
         return mSwin2srProcessors.computeIfAbsent(ModelType.SWIN2SR_UPSCALE,
                 modelType -> new Swin2srProcessor(
                         requireModelFile(modelType).getAbsolutePath(), mLogger));
+    }
+
+    /**
+     * Returns the depth estimation processor, creating and caching it on
+     * first access. A processor instance must never have its
+     * computeDepth() invoked concurrently, callers are expected to serialize
+     * their calls on one instance (e.g. through a single-thread executor).
+     * The cached processor is session-lifetime, not app-lifetime: the
+     * ~480-550 MB native dnn workspace the fp32 net retains after its
+     * forwards must not outlive the lens-blur session, the engine facade
+     * releases it through {@link #releaseDepthProcessor()} on editor dispose
+     * and the next use lazily re-parses the ~99 MB model file.
+     *
+     * @return the cached depth estimation processor
+     */
+    DepthProcessor getDepthProcessor() {
+        return mDepthProcessors.computeIfAbsent(ModelType.DEPTH_ESTIMATION,
+                modelType -> new DepthProcessor(
+                        requireModelFile(modelType).getAbsolutePath(), mLogger));
+    }
+
+    /**
+     * Release the cached depth estimation processor (frees its native net,
+     * see {@link DepthProcessor#release()}): OpenCV dnn retains a large
+     * workspace inside the net after its inference (~480-550 MB native after
+     * GC, measured by the issue-#6 spike), so the lens blur editor releases
+     * the processor through DepthEngine.releaseProcessor() on editor dispose
+     * instead of keeping it for the app lifetime. The next
+     * {@link #getDepthProcessor()} lazily recreates the processor from the
+     * model file on demand (a seconds-long re-parse, the same policy as the
+     * magic eraser's SAM/LaMa releases).
+     */
+    void releaseDepthProcessor() {
+        DepthProcessor processor = mDepthProcessors.remove(ModelType.DEPTH_ESTIMATION);
+        if (processor != null) {
+            processor.release();
+            nudgeNativeReclaim();
+        }
     }
 
     /**
@@ -520,6 +573,13 @@ public class MLEngineInstance implements ProviderDisposable {
                 mLogger.e(TAG, "Failed to release a Swin2SR upscale processor", e);
             }
         }
+        for (DepthProcessor processor : mDepthProcessors.values()) {
+            try {
+                processor.release();
+            } catch (Exception e) {
+                mLogger.e(TAG, "Failed to release a depth estimation processor", e);
+            }
+        }
         mSTProcessors.clear();
         mPersonSegProcessors.clear();
         mEfficientSamProcessors.clear();
@@ -527,6 +587,7 @@ public class MLEngineInstance implements ProviderDisposable {
         mAiImageDetectProcessors.clear();
         mNafNetProcessors.clear();
         mSwin2srProcessors.clear();
+        mDepthProcessors.clear();
         mFaceDetector = null;
         mFaceRecognizer = null;
         nudgeNativeReclaim();
@@ -583,6 +644,9 @@ public class MLEngineInstance implements ProviderDisposable {
             case SWIN2SR_UPSCALE:
                 return new File(filesDir, SWIN2SR_PATH
                         + "/" + SWIN2SR_FILE);
+            case DEPTH_ESTIMATION:
+                return new File(filesDir, DEPTH_ESTIMATION_PATH
+                        + "/" + DEPTH_ESTIMATION_FILE);
             default:
                 throw new IllegalArgumentException("Unknown model type: " + modelType);
         }
@@ -830,7 +894,53 @@ public class MLEngineInstance implements ProviderDisposable {
         SWIN2SR_UPSCALE("swin2sr-upscale",
                 "Photo Restore Upscale (Swin2SR)",
                 "~51.3 MB",
-                "https://huggingface.co/onnx-community/swin2SR-realworld-sr-x4-64-bsrgan-psnr-ONNX/resolve/main/onnx/model.onnx");
+                "https://huggingface.co/onnx-community/swin2SR-realworld-sr-x4-64-bsrgan-psnr-ONNX/resolve/main/onnx/model.onnx"),
+        /**
+         * Depth Anything V2 Small monocular depth estimation, the single-file
+         * fp32 ONNX export from
+         * https://huggingface.co/onnx-community/depth-anything-v2-small
+         * (upstream project https://github.com/DepthAnything/Depth-Anything-V2).
+         * Licence: Apache-2.0, verified against the upstream GitHub LICENSE
+         * file — the Small checkpoint is Apache-2.0 while the Base/Large
+         * checkpoints are CC-BY-NC-4.0 (forbidden for this app), so ONLY the
+         * Small variant may ever ship. Output: a 3-D (1, H, W) blob of raw
+         * disparity-like values (higher = closer, verified visually on the
+         * issue-#6 spike photos), read through the reshape(1, size(dims-2))
+         * clone form because the OpenCV 5 Java bindings silently return zeros
+         * for n-dimensional bulk reads and imagesFromBlob asserts dims==4
+         * (see {@link DepthProcessor}).
+         * <p>
+         * Spike status (issue #6, phase 0 device run — FIXED conclusions):
+         * fp32 GO, verified on 5 AVDs spanning API 24/26/29 32-bit x86 and
+         * newer (per-AVD latencies are recorded in the issue-#6 spike record;
+         * the landscape photo runs in the seconds range on the 32-bit x86
+         * emulators), NO 64-bit device gate needed. Preprocessing: the
+         * aspect-PRESERVING lower-bound convention — scale =
+         * max(518/w, 518/h), both dims rounded UP to the next multiple of 14
+         * (518 = 14 * 37, the ViT patch grid of the export, both dims end at
+         * or above 518), bicubic resize, then /255 and the per-channel
+         * ImageNet mean/std normalization, fed pre-normalized
+         * (blobFromImage scalefactor 1, scalar mean 0, swapRB false) because
+         * blobFromImage only supports a SCALAR mean (the
+         * AiImageDetectProcessor manual-normalization precedent). Variant
+         * NO-GOs kept for re-evaluation: fp16 (~49.6 MB,
+         * https://huggingface.co/onnx-community/depth-anything-v2-small/resolve/main/onnx/model_fp16.onnx)
+         * fails inside the net (fastNorm CV_16F failure / resize2 assertion),
+         * int8 (~27.3 MB,
+         * .../onnx/model_int8.onnx) parses but is 2-3x slower AND OOMs on the
+         * 32-bit devices, and the newer external-data export repo
+         * (depth-anything-v2-small-ONNX: a ~127 kB model.onnx + a ~98.8 MB
+         * model.onnx_data sibling) loads to an EMPTY net in OpenCV 5. Memory:
+         * ~166 MB native after the parse, ~480-550 MB native retained after
+         * the forwards and GC (the dnn workspace) — the release-on-dispose +
+         * nudge pattern is MANDATORY (the AI-detector/SAM precedent, see the
+         * mDepthProcessors javadoc), this is why the processor cache here is
+         * session-lifetime instead of app-lifetime.
+         */
+        DEPTH_ESTIMATION("depth-estimation",
+                "Depth Estimation (Depth Anything V2)",
+                "~99 MB",
+                "https://huggingface.co/onnx-community/depth-anything-v2-small/resolve/main/onnx/model.onnx");
 
         private final String mId;
         private final String mDisplayName;

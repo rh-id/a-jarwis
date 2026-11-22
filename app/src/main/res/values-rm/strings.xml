@@ -69,10 +69,12 @@
     <string name="title_portrait_mode">Modus da ritratscha</string>
     <string name="blur_background">Sfumar il fund</string>
     <string name="remove_background">Stizzar il fund</string>
+    <string name="title_lens_blur">Sfumatura da lent</string>
     <string name="detecting_people_progress">Tschertgar persunas… (%1$d/%2$d)</string>
     <string name="no_person_detected">Nagina persuna chattada</string>
     <string name="no_person_detected_">Nagina persuna chattada: %s</string>
     <string name="msg_discard_portrait_changes">Vossa selecziun da ritratscha n\'è betg vegnida memorisada. Vulais sbutter las midadas?</string>
+    <string name="msg_discard_lens_blur_changes">Vossa selecziun da sfumatura da lent n\'è betg vegnida memorisada. Vulais sbutter las midadas?</string>
     <string name="title_share_no_portrait">Nagina persuna chattada</string>
     <string name="msg_share_no_portrait">Nagina persuna chattada sin quest maletg. Vulais parturar tuttina l\'original?</string>
     <string name="detecting_progress">Detecziun da l\'object…</string>

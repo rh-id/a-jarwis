@@ -69,10 +69,12 @@
     <string name="title_portrait_mode">Portrettmodus</string>
     <string name="blur_background">Uklargjer bakgrunnen</string>
     <string name="remove_background">Fjern bakgrunnen</string>
+    <string name="title_lens_blur">Linseuskarphet</string>
     <string name="detecting_people_progress">Oppdagar personar… (%1$d/%2$d)</string>
     <string name="no_person_detected">Ingen person oppdaga</string>
     <string name="no_person_detected_">Ingen person oppdaga: %s</string>
     <string name="msg_discard_portrait_changes">Valet ditt av portrettmodus er ikkje lagra. Forkast endringane?</string>
+    <string name="msg_discard_lens_blur_changes">Valet ditt av linseuskarphet er ikkje lagra. Forkast endringane?</string>
     <string name="title_share_no_portrait">Ingen person oppdaga</string>
     <string name="msg_share_no_portrait">Ingen person oppdaga på dette biletet. Del originalen likevel?</string>
     <string name="detecting_progress">Oppdagar objekt…</string>

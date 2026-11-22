@@ -35,6 +35,19 @@ This is AI utility app for Android device, it basically uses AI model directly o
     <li>Remove mode exports a PNG preserving the alpha channel; blur mode exports the usual JPEG</li>
 </ul>
 
+### Lens Blur (Depth-Aware Bokeh)
+<ul>
+    <li>A standalone home feature with its own tile: instead of a binary person cutout, a
+        continuous monocular depth map (Depth Anything V2 Small, downloaded on demand) scales
+        the blur per pixel across the whole image, so far content blurs progressively and near
+        content stays sharp — no hard cutout edges around hair or glasses</li>
+    <li>Pure depth on ANY photo, no person logic at all: landscapes, food, product shots and
+        portraits all get the same natural depth falloff</li>
+    <li>Adjustable blur strength (1..5) with a live preview; the saved full-resolution image
+        reuses the cached depth map, so preview and save agree</li>
+    <li>Exports JPEG; the depth model downloads on first use</li>
+</ul>
+
 ### Magic Eraser (Object Removal)
 <ul>
     <li>Pick a photo and paint brush strokes over the object to remove, then press
@@ -128,7 +141,7 @@ The project follows a modular, layered architecture designed to separate concern
 
 ### Modules
 
-*   **`:app`**: The entry point. Contains all UI pages (home, the six editors, QR scanner, AI detector), navigation registration, and the feature workflows.
+*   **`:app`**: The entry point. Contains all UI pages (home, the seven editors, QR scanner, AI detector), navigation registration, and the feature workflows.
 *   **`:ml-engine`**: The core intelligence. Encapsulates the logic engines (`FaceEngine`, `STEngine`, `QREngine`, `PersonSegEngine`, `MagicEraserEngine`, `AiDetectEngine`, `PhotoRestoreEngine`), the AI model catalog with on-demand model download from Hugging Face, and background workers (`WorkManager`).
 *   **`:base`**: Shared infrastructure. Contains DI setup (`a-provider` modules), utilities (`FileHelper`, `ImageHelper`, `MediaHelper`), common UI components, and the navigation route constants.
 *   **`:settings`**: In-app settings. Theme selection (light/dark/system, Material You dynamic colors), in-app log viewer, open-source licenses page (auto-generated at build time), and version info.
@@ -140,7 +153,7 @@ The project follows a modular, layered architecture designed to separate concern
 *   **StatefulView**: A framework for building state-aware UI components.
 *   **RxAndroid (RxJava 3)**: Manages asynchronous events and threading in the UI layer.
 *   **WorkManager**: Handles deferrable, guaranteed background work (on-demand AI model download).
-*   **OpenCV**: Powers the on-device computer vision — face detection, QR code detection, portrait segmentation, style transfer, object segmentation/inpainting, image deblurring/upscaling and AI image detection (DNN).
+*   **OpenCV**: Powers the on-device computer vision — face detection, QR code detection, portrait segmentation, style transfer, object segmentation/inpainting, image deblurring/upscaling, monocular depth estimation and AI image detection (DNN).
 *   **CameraX**: Powers the live QR scanner camera preview and frame analysis.
 
 ## Logic Flow & Patterns

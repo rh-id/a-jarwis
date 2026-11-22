@@ -565,3 +565,8 @@
   license: Apache License 2.0
   licenseUrl: https://github.com/mv-lab/swin2sr
   url: https://huggingface.co/onnx-community/swin2SR-realworld-sr-x4-64-bsrgan-psnr-ONNX
+- name: Depth Anything V2 Small model
+  copyrightHolder: Depth Anything authors (ByteDance)
+  license: Apache License 2.0
+  licenseUrl: https://github.com/DepthAnything/Depth-Anything-V2/blob/main/LICENSE
+  url: https://huggingface.co/onnx-community/depth-anything-v2-small
