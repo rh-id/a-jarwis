@@ -89,6 +89,10 @@
     <string name="reset">Réinitialiser</string>
     <string name="apply_history_full">L\'historique est plein. Enregistrez ou partagez le résultat pour commencer une nouvelle modification.</string>
     <string name="error_insufficient_memory">Mémoire insuffisante pour traiter cette image</string>
+    <string name="title_background_removal">Supprimer l\'arrière-plan</string>
+    <string name="detecting_subject_progress">Détection du sujet…</string>
+    <string name="no_subject_detected">Aucun sujet clair détecté — essayez une photo avec un sujet principal distinct</string>
+    <string name="msg_discard_background_removal_changes">Votre sélection de suppression d\'arrière-plan n\'a pas été enregistrée. Voulez-vous abandonner les modifications ?</string>
     <string name="title_ai_detect">Détecteur d\'images IA</string>
     <string name="band_likely_ai">Probablement générée par IA</string>
     <string name="band_unclear">Indéterminé</string>

@@ -89,6 +89,10 @@
     <string name="reset">重置</string>
     <string name="apply_history_full">历史记录已满。请保存或分享结果后再开始新的编辑。</string>
     <string name="error_insufficient_memory">内存不足，无法处理此图片</string>
+    <string name="title_background_removal">移除背景</string>
+    <string name="detecting_subject_progress">正在检测主体…</string>
+    <string name="no_subject_detected">未检测到清晰的主体——请尝试拍摄主体明显的照片</string>
+    <string name="msg_discard_background_removal_changes">您的背景移除选择尚未保存。要放弃这些更改吗？</string>
     <string name="title_ai_detect">AI 图像检测器</string>
     <string name="band_likely_ai">可能为 AI 生成</string>
     <string name="band_unclear">不明确</string>

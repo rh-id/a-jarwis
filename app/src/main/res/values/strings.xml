@@ -93,6 +93,10 @@
     <string name="reset">Reset</string>
     <string name="apply_history_full">The erase history is full. Save or share the result to start a new edit.</string>
     <string name="error_insufficient_memory">Not enough memory to process this image</string>
+    <string name="title_background_removal">Remove Background</string>
+    <string name="detecting_subject_progress">Detecting subject…</string>
+    <string name="no_subject_detected">No clear subject detected — try a photo with a distinct main subject</string>
+    <string name="msg_discard_background_removal_changes">Your background removal selection has not been saved. Discard the changes?</string>
     <string name="title_ai_detect">AI Image Detector</string>
     <string name="band_likely_ai">Likely AI-generated</string>
     <string name="band_unclear">Unclear</string>

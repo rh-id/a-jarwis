@@ -10,6 +10,7 @@ import m.co.rh.id.a_jarwis.ml_engine.provider.component.PersonSegEngine;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.QREngine;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.PhotoRestoreEngine;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.STEngine;
+import m.co.rh.id.a_jarwis.ml_engine.provider.component.SubjectSegEngine;
 import m.co.rh.id.a_jarwis.ml_engine.provider.notifier.ModelChangeNotifier;
 import m.co.rh.id.aprovider.Provider;
 import m.co.rh.id.aprovider.ProviderModule;
@@ -24,6 +25,8 @@ public class MLEngineProviderModule implements ProviderModule {
         providerRegistry.registerLazy(STEngine.class, () -> new STEngine(provider));
         providerRegistry.registerLazy(PersonSegEngine.class,
                 () -> new PersonSegEngine(provider));
+        providerRegistry.registerLazy(SubjectSegEngine.class,
+                () -> new SubjectSegEngine(provider));
         providerRegistry.registerLazy(DepthEngine.class,
                 () -> new DepthEngine(provider));
         providerRegistry.registerLazy(MagicEraserEngine.class,

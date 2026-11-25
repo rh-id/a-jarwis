@@ -6,6 +6,7 @@ a-navigator = "v0.0.76"
 a-provider = "v0.0.27"
 junit = "4.13.2"
 androidx-test-ext-junit = "1.3.0"
+androidx-test-orchestrator = "1.6.1"
 espresso = "3.7.0"
 mockito = "4.11.0"
 rxjava = "3.1.12"
@@ -36,6 +37,7 @@ a-navigator = { group = "com.github.rh-id.a-navigator", name = "a-navigator", ve
 a-navigator-dialog = { group = "com.github.rh-id.a-navigator", name = "a-navigator-extension-dialog", version.ref = "a-navigator" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-test-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
+androidx-test-orchestrator = { group = "androidx.test", name = "orchestrator", version.ref = "androidx-test-orchestrator" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso" }
 mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
 rxjava = { group = "io.reactivex.rxjava3", name = "rxjava", version.ref = "rxjava" }

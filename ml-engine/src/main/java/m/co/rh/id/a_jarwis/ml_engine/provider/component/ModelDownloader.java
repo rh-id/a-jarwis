@@ -32,6 +32,16 @@ import m.co.rh.id.aprovider.ProviderValue;
  * (e.g. the git-blob SHA-1 exposed for non-LFS files) is treated as unknown checksum
  * and only the content length is validated. Supports resuming an interrupted download
  * through the Range header.
+ * A model that carries a PINNED checksum (see
+ * {@link ModelType#getPinnedSha256()}) bypasses the server-metadata fetch
+ * entirely: the downloaded bytes are validated against the pinned digest (and the
+ * pinned length, when present), so any change of the file at the download host
+ * fails the download permanently — a pin is tamper-evident in a way the
+ * server-driven ETag metadata can never be (a replaced file would change the
+ * ETag along with it). This is what allows hosting a download on a plain GitHub
+ * release URL (which 302-redirects to objects.githubusercontent.com and has no
+ * X-Linked-ETag): the GET follows redirects, including the cross-host one,
+ * because {@link #openConnection} leaves instanceFollowRedirects enabled.
  * ALL download events are broadcast through the injected {@link ModelChangeNotifier}:
  * progress (see {@link ModelChangeNotifier#downloadProgress}), succeeded
  * (see {@link ModelChangeNotifier#downloadSucceeded}) and failed for permanent
@@ -114,7 +124,17 @@ public class ModelDownloader {
         if (parentFile != null) {
             parentFile.mkdirs();
         }
-        DownloadMeta meta = fetchMeta(modelType.getDownloadUrl());
+        // a pinned checksum takes precedence over the server-provided metadata:
+        // the HEAD fetch is skipped entirely (a pinned download host such as a
+        // GitHub release URL has no X-Linked-ETag to read anyway) and the
+        // validation targets are the immutable pin values
+        String pinnedSha256 = modelType.getPinnedSha256();
+        DownloadMeta meta;
+        if (pinnedSha256 == null || pinnedSha256.isEmpty()) {
+            meta = fetchMeta(modelType.getDownloadUrl());
+        } else {
+            meta = new DownloadMeta(pinnedSha256, modelType.getPinnedLength());
+        }
 
         int attempt = 0;
         while (true) {
@@ -235,7 +255,9 @@ public class ModelDownloader {
     }
 
     /**
-     * Fetch the expected size and the file sha256 checksum of the model.
+     * Fetch the expected size and the file sha256 checksum of the model from
+     * the server (only used for models WITHOUT a pinned checksum, see
+     * {@link #downloadInternal}).
      * Redirects are NOT followed here: Hugging Face redirects its resolve url to a Xet CDN
      * whose final ETag is the Xet hash, NOT the file sha256. The real file sha256 and size
      * are only present in the X-Linked-ETag / X-Linked-Size headers of the initial

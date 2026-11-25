@@ -1,6 +1,8 @@
 package m.co.rh.id.a_jarwis.ml_engine.provider.component;
 
 import android.content.Context;
+import android.os.Debug;
+import android.os.SystemClock;
 
 import androidx.annotation.NonNull;
 
@@ -47,6 +49,34 @@ public class MLEngineInstance implements ProviderDisposable {
     private static final String SWIN2SR_FILE = "swin2sr-realworld-sr-x4-64.onnx";
     private static final String DEPTH_ESTIMATION_PATH = BASE_PATH + "/depth-estimation";
     private static final String DEPTH_ESTIMATION_FILE = "depth_anything_v2_small.onnx";
+    private static final String SUBJECT_SEG_PATH = BASE_PATH + "/subject-segmentation";
+    private static final String SUBJECT_SEG_FILE = "isnet_general_use_1024_fp32.onnx";
+    /**
+     * Native-heap ceiling of the bounded settle poll before the ISNet
+     * re-parse ({@link #settleNativeHeapBeforeSubjectSegReparse}): the
+     * issue-#4 SPIKE #2 teardown run was lmk-killed on the 2 GB 32-bit AVD
+     * when the reloaded net parsed while the previously released ~1 GB dnn
+     * workspace had not been reclaimed yet (~1549 MB resident at death).
+     * Waiting until the allocated native heap drops below this ceiling (or
+     * the timeout expires) gives the finalizer that time on the
+     * memory-constrained tiers; the ceiling stays far above the ISNet
+     * steady state (~190 MB after parse) so a healthy process never waits
+     */
+    private static final long SUBJECT_SEG_SETTLE_HEAP_CEILING_BYTES =
+            600L * 1024L * 1024L;
+    /**
+     * Timeout of the bounded settle poll, the wait must never turn into a
+     * hang: after the timeout the re-parse proceeds regardless and the
+     * page-level OOM/CvException self-heal (the MagicEraser toast pattern)
+     * is the last resort
+     */
+    private static final long SUBJECT_SEG_SETTLE_TIMEOUT_MS = 2_000;
+    /**
+     * Poll interval of the bounded settle poll, each tick re-nudges the
+     * finalizer (the release reclamation is finalizer-driven, see
+     * {@link #nudgeNativeReclaim()})
+     */
+    private static final long SUBJECT_SEG_SETTLE_POLL_MS = 100;
     private final Context mAppContext;
     private final ILogger mLogger;
     /**
@@ -120,6 +150,21 @@ public class MLEngineInstance implements ProviderDisposable {
      */
     private final ConcurrentHashMap<ModelType, DepthProcessor> mDepthProcessors;
     /**
+     * Lazy subject segmentation processor cache (keyed by model type for
+     * future subject-segmentation variants), an instance holds its ONNX
+     * model loaded in the native memory (the fp32 file is ~171 MB, ~1 GB
+     * native retained after the forwards and GC) — SESSION-LIFETIME, not
+     * app-lifetime: unlike the PersonSeg processor (~1.7 MB file, negligible
+     * workspace) the ISNet dnn workspace retained after the forwards is far
+     * too big to keep resident next to the other heavy nets, so the
+     * subject-background-removal editor releases the processor through
+     * {@link #releaseSubjectSegProcessor()} when its session ends (the
+     * {@link DepthProcessor} cache shape, release + nudge) and the next use
+     * lazily re-parses the model behind the bounded native-heap settle (see
+     * {@link #getSubjectSegProcessor()}).
+     */
+    private final ConcurrentHashMap<ModelType, SubjectSegProcessor> mSubjectSegProcessors;
+    /**
      * Lazy cached YuNet face detector, created on first face detection and
      * kept for the provider lifetime like the dnn processor caches above.
      * Released only by {@link #releaseFaceModels()} and
@@ -145,6 +190,7 @@ public class MLEngineInstance implements ProviderDisposable {
         mNafNetProcessors = new ConcurrentHashMap<>();
         mSwin2srProcessors = new ConcurrentHashMap<>();
         mDepthProcessors = new ConcurrentHashMap<>();
+        mSubjectSegProcessors = new ConcurrentHashMap<>();
         if (OpenCVLoader.initLocal()) {
             mLogger.d("OpenCV", "OpenCV loaded");
         } else {
@@ -300,6 +346,109 @@ public class MLEngineInstance implements ProviderDisposable {
             processor.release();
             nudgeNativeReclaim();
         }
+    }
+
+    /**
+     * Returns the subject segmentation processor, creating and caching it on
+     * first access. A processor instance must never have its
+     * computeMask() invoked concurrently, callers are expected to serialize
+     * their calls on one instance (e.g. through a single-thread executor).
+     * The cached processor is session-lifetime, not app-lifetime (see the
+     * mSubjectSegProcessors javadoc): after a release the next call lazily
+     * re-parses the ~171 MB model file — and BEFORE that re-parse the
+     * bounded native-heap settle runs ({@link
+     * #settleNativeHeapBeforeSubjectSegReparse()}): on a cold first create
+     * the settle exits immediately (the heap is far below the ceiling), on a
+     * recreate-after-release it gives the previous net's ~1 GB workspace
+     * finalizer the time the 2 GB tier needs (the issue-#4 SPIKE #2
+     * teardown evidence).
+     *
+     * @return the cached subject segmentation processor
+     */
+    SubjectSegProcessor getSubjectSegProcessor() {
+        return mSubjectSegProcessors.computeIfAbsent(ModelType.SUBJECT_SEG,
+                modelType -> {
+                    settleNativeHeapBeforeSubjectSegReparse();
+                    return new SubjectSegProcessor(
+                            requireModelFile(modelType).getAbsolutePath(),
+                            mLogger);
+                });
+    }
+
+    /**
+     * Release the cached subject segmentation processor (frees its native
+     * net, see {@link SubjectSegProcessor#release()}): OpenCV dnn retains
+     * a large workspace inside the net after its inference (~1 GB native
+     * after GC, measured by the issue-#4 SPIKE #2), so the subject
+     * background removal editor releases the processor when its session
+     * ends instead of keeping it for the app lifetime (the mandatory
+     * release-on-dispose + nudge pattern, the depth-processor precedent).
+     * The next {@link #getSubjectSegProcessor()} lazily recreates the
+     * processor from the model file behind the bounded native-heap settle
+     * (a seconds-long re-parse).
+     */
+    void releaseSubjectSegProcessor() {
+        SubjectSegProcessor processor =
+                mSubjectSegProcessors.remove(ModelType.SUBJECT_SEG);
+        if (processor != null) {
+            processor.release();
+            nudgeNativeReclaim();
+        }
+    }
+
+    /**
+     * Bounded native-heap settle before the ISNet model re-parse: nudge the
+     * finalizer, then poll the allocated native heap until it drops below
+     * {@link #SUBJECT_SEG_SETTLE_HEAP_CEILING_BYTES} or
+     * {@link #SUBJECT_SEG_SETTLE_TIMEOUT_MS} elapse, re-nudging each poll
+     * tick. Spike evidence (issue #4 SPIKE #2 teardown run, 2 GB 32-bit
+     * AVD): a gc/runFinalization nudge followed immediately by the
+     * re-parse left the released ~1 GB dnn workspace resident and the
+     * RELOADED net's first forward was lmk-killed at ~1549 MB resident —
+     * the same sequence on the 3 GB 64-bit AVD reclaimed to ~22 MB and
+     * reloaded fine, so the reclamation works, it only needs time on the
+     * memory-constrained tier. The wait never becomes a hang: after the
+     * timeout the re-parse proceeds regardless (the page layer's
+     * OOM/CvException catch with the toast self-heal, the MagicEraser
+     * pattern, is the last resort), and the settle outcome is logged for
+     * the field diagnostics.
+     */
+    private void settleNativeHeapBeforeSubjectSegReparse() {
+        nudgeNativeReclaim();
+        long heap = Debug.getNativeHeapAllocatedSize();
+        if (heap <= SUBJECT_SEG_SETTLE_HEAP_CEILING_BYTES) {
+            mLogger.d(TAG, "subject-seg native heap already settled ("
+                    + mb(heap) + " MB), no settle wait");
+            return;
+        }
+        long startElapsed = SystemClock.elapsedRealtime();
+        long deadline = startElapsed + SUBJECT_SEG_SETTLE_TIMEOUT_MS;
+        while (heap > SUBJECT_SEG_SETTLE_HEAP_CEILING_BYTES
+                && SystemClock.elapsedRealtime() < deadline) {
+            SystemClock.sleep(SUBJECT_SEG_SETTLE_POLL_MS);
+            nudgeNativeReclaim();
+            heap = Debug.getNativeHeapAllocatedSize();
+        }
+        long waitedMs = SystemClock.elapsedRealtime() - startElapsed;
+        if (heap <= SUBJECT_SEG_SETTLE_HEAP_CEILING_BYTES) {
+            mLogger.d(TAG, "subject-seg native heap settled to " + mb(heap)
+                    + " MB in " + waitedMs + " ms before the re-parse");
+        } else {
+            mLogger.e(TAG, "subject-seg native heap did not settle below "
+                    + mb(SUBJECT_SEG_SETTLE_HEAP_CEILING_BYTES) + " MB within "
+                    + SUBJECT_SEG_SETTLE_TIMEOUT_MS + " ms (still " + mb(heap)
+                    + " MB), proceeding with the re-parse — a reload forward"
+                    + " may fail on the memory-constrained tiers"
+                    + " (page-level self-heal is the last resort)");
+        }
+    }
+
+    /**
+     * Human readable megabyte figure of a byte count, for the settle logs
+     */
+    private static String mb(long bytes) {
+        return String.format(java.util.Locale.US, "%.1f",
+                bytes / (1024.0 * 1024.0));
     }
 
     /**
@@ -580,6 +729,13 @@ public class MLEngineInstance implements ProviderDisposable {
                 mLogger.e(TAG, "Failed to release a depth estimation processor", e);
             }
         }
+        for (SubjectSegProcessor processor : mSubjectSegProcessors.values()) {
+            try {
+                processor.release();
+            } catch (Exception e) {
+                mLogger.e(TAG, "Failed to release a subject segmentation processor", e);
+            }
+        }
         mSTProcessors.clear();
         mPersonSegProcessors.clear();
         mEfficientSamProcessors.clear();
@@ -588,6 +744,7 @@ public class MLEngineInstance implements ProviderDisposable {
         mNafNetProcessors.clear();
         mSwin2srProcessors.clear();
         mDepthProcessors.clear();
+        mSubjectSegProcessors.clear();
         mFaceDetector = null;
         mFaceRecognizer = null;
         nudgeNativeReclaim();
@@ -647,6 +804,9 @@ public class MLEngineInstance implements ProviderDisposable {
             case DEPTH_ESTIMATION:
                 return new File(filesDir, DEPTH_ESTIMATION_PATH
                         + "/" + DEPTH_ESTIMATION_FILE);
+            case SUBJECT_SEG:
+                return new File(filesDir, SUBJECT_SEG_PATH
+                        + "/" + SUBJECT_SEG_FILE);
             default:
                 throw new IllegalArgumentException("Unknown model type: " + modelType);
         }
@@ -940,18 +1100,91 @@ public class MLEngineInstance implements ProviderDisposable {
         DEPTH_ESTIMATION("depth-estimation",
                 "Depth Estimation (Depth Anything V2)",
                 "~99 MB",
-                "https://huggingface.co/onnx-community/depth-anything-v2-small/resolve/main/onnx/model.onnx");
+                "https://huggingface.co/onnx-community/depth-anything-v2-small/resolve/main/onnx/model.onnx"),
+        /**
+         * IS-Net general-use salient-object segmentation, the fp32 ONNX
+         * export distributed by rembg
+         * (https://github.com/danielgatis/rembg, upstream project
+         * https://github.com/xuebinqin/DIS). Download URL: the OFFICIAL
+         * canonical rembg release
+         * https://github.com/danielgatis/rembg/releases/download/v0.0.0/isnet-general-use.onnx
+         * with the file sha256 PINNED (60920e99c45464f2ba57bee2ad08c919a52
+         * bbf852739e96947fbb4358c0d964a, 178,648,008 bytes) — the
+         * ModelDownloader validates the downloaded bytes against the pin, so
+         * any change of the file at the host fails the download
+         * (tamper-evident; the server-driven HF ETag logic cannot
+         * self-certify this way). Documentation note: the HF mirror
+         * https://huggingface.co/jellybox/isnet-general-use was verified
+         * byte-identical to this release during the issue-#4 spike.
+         * <p>
+         * Licence: Apache-2.0, primary source = the upstream
+         * xuebinqin/DIS LICENSE.md (the isnet-general-use checkpoint was
+         * trained and released by the DIS authors); the ONNX conversion is
+         * distributed under the MIT licence of the rembg project.
+         * <p>
+         * Input: FIXED 1024x1024, RGB, aspect-DISTORTING resize (no
+         * letterbox), rembg ISNetSession normalization (x/255 - 0.5) with
+         * NO std division — different from the ImageNet-style
+         * normalization of the rejected BiRefNet candidate — fed
+         * pre-normalized through blobFromImage(scalefactor 1, scalar mean
+         * 0, swapRB false, the manual-normalization convention). Output: a
+         * single-channel CV_32F salience map, blob shape (1, 1, 1024,
+         * 1024), extracted via {@code Dnn.imagesFromBlob}; postprocess =
+         * min-max normalize to 0..255 (the DIS inference.py convention,
+         * NOT a sigmoid — the output is a salience score, not a logit).
+         * <p>
+         * Spike record (issue #4, phase 0 device runs — FIXED
+         * conclusions). Candidate 1 BiRefNet-lite: NO-GO — the fixed
+         * 1024² fp32 graph holds ~404 MB native after the parse (20.4 s)
+         * and its Swin forward workspace blew past 2 GB within seconds,
+         * lmk process death on the 2 GB 32-bit AND the 3 GB 64-bit AVDs;
+         * the fp16 variant is a functional NO-GO (fastNorm CV_16F
+         * failure, the depth-spike precedent); URLs kept for the record:
+         * https://huggingface.co/onnx-community/BiRefNet_lite-ONNX/resolve/main/onnx/model.onnx
+         * (+ model_fp16.onnx). Candidate 2 (shipped) IS-Net general-use:
+         * GO — 2 GB 32-bit tier peak native ~1.04 GB, cold forward 7.4 s /
+         * warm ~5.5 s; 3 GB 64-bit tier peak ~1.02 GB, cold 3.6 s / warm
+         * ~2.2 s (emulated x86; no 64-bit device gate needed).
+         * <p>
+         * Memory law: ~1 GB dnn workspace retained after the forwards —
+         * SESSION-LIFETIME processor, release-on-dispose MANDATORY (the
+         * DepthProcessor precedent, release +
+         * {@link #nudgeNativeReclaim()}). Teardown is safe (64-bit proven:
+         * 1022 → 22 MB reclaim after the nudge, the reloaded net forwarded
+         * fine) BUT on the 2 GB tier a release→reload inside one session
+         * was lmk-killed (old-workspace reclaim latency stacked with the
+         * new parse, ~1549 MB resident at death) — the recreation after a
+         * release therefore settles the native heap before the re-parse
+         * (bounded poll, see {@link #getSubjectSegProcessor()}), and the
+         * page layer catches OOM/CvException with the toast self-heal (the
+         * MagicEraser pattern) as the last resort.
+         */
+        SUBJECT_SEG("subject-segmentation",
+                "Subject Background Removal (ISNet)",
+                "~171 MB",
+                "https://github.com/danielgatis/rembg/releases/download/v0.0.0/isnet-general-use.onnx",
+                "60920e99c45464f2ba57bee2ad08c919a52bbf852739e96947fbb4358c0d964a",
+                178_648_008L);
 
         private final String mId;
         private final String mDisplayName;
         private final String mDisplaySize;
         private final String mDownloadUrl;
+        private final String mPinnedSha256;
+        private final long mPinnedLength;
 
         ModelType(String id, String displayName, String displaySize, String downloadUrl) {
+            this(id, displayName, displaySize, downloadUrl, null, 0L);
+        }
+
+        ModelType(String id, String displayName, String displaySize, String downloadUrl,
+                  String pinnedSha256, long pinnedLength) {
             mId = id;
             mDisplayName = displayName;
             mDisplaySize = displaySize;
             mDownloadUrl = downloadUrl;
+            mPinnedSha256 = pinnedSha256;
+            mPinnedLength = pinnedLength;
         }
 
         /**
@@ -977,6 +1210,23 @@ public class MLEngineInstance implements ProviderDisposable {
 
         public String getDownloadUrl() {
             return mDownloadUrl;
+        }
+
+        /**
+         * Pinned expected file sha256 hex digest used by the ModelDownloader
+         * to validate the downloaded bytes, or null when the model is not
+         * pinned (then the server-provided metadata is validated instead)
+         */
+        public String getPinnedSha256() {
+            return mPinnedSha256;
+        }
+
+        /**
+         * Pinned expected file length in bytes, or 0 when unknown.
+         * Only meaningful together with a non-null {@link #getPinnedSha256()}
+         */
+        public long getPinnedLength() {
+            return mPinnedLength;
         }
 
         /**

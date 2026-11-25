@@ -89,6 +89,10 @@
     <string name="reset">Endurstilla</string>
     <string name="apply_history_full">Ferillinn er fullur. Vistaðu eða deildu niðurstöðunni til að byrja nýja breytingu.</string>
     <string name="error_insufficient_memory">Ekki nægt minni til að vinna úr þessari mynd</string>
+    <string name="title_background_removal">Fjarlægja bakgrunn</string>
+    <string name="detecting_subject_progress">Greini efnivið…</string>
+    <string name="no_subject_detected">Engin greinileg aðalmynd fannst — reyndu ljósmynd með greinilegum aðalviðfangsefnum</string>
+    <string name="msg_discard_background_removal_changes">Val þitt á bakgrunnsfjarlægingu hefur ekki verið vistað. Viltu henda breytingum?</string>
     <string name="title_ai_detect">Gervigreindarmyndaskynjari</string>
     <string name="band_likely_ai">Líklega gerð með gervigreind</string>
     <string name="band_unclear">Óljóst</string>

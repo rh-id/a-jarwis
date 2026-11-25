@@ -27,6 +27,7 @@ import m.co.rh.id.a_jarwis.ml_engine.provider.component.FaceEngine;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.MagicEraserEngine;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.PersonSegEngine;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.PhotoRestoreEngine;
+import m.co.rh.id.a_jarwis.ml_engine.provider.component.SubjectSegEngine;
 import m.co.rh.id.anavigator.component.INavigator;
 import m.co.rh.id.aprovider.ProviderValue;
 
@@ -42,6 +43,7 @@ class HomeWorkflow implements Serializable {
     private static final int REQUEST_CODE_IMAGE_AI_DETECT = 9;
     private static final int REQUEST_CODE_IMAGE_RESTORE = 10;
     private static final int REQUEST_CODE_IMAGE_LENS_BLUR = 11;
+    private static final int REQUEST_CODE_IMAGE_BACKGROUND_REMOVAL = 12;
 
     private transient INavigator mNavigator;
     private transient ProviderValue<FaceEngine> mFaceEngine;
@@ -50,6 +52,7 @@ class HomeWorkflow implements Serializable {
     private transient ProviderValue<AiDetectEngine> mAiDetectEngine;
     private transient ProviderValue<PhotoRestoreEngine> mPhotoRestoreEngine;
     private transient ProviderValue<DepthEngine> mDepthEngine;
+    private transient ProviderValue<SubjectSegEngine> mSubjectSegEngine;
 
     private interface ContinueAction extends Serializable {
         void run();
@@ -63,6 +66,7 @@ class HomeWorkflow implements Serializable {
         mAiDetectEngine = svProvider.lazyGet(AiDetectEngine.class);
         mPhotoRestoreEngine = svProvider.lazyGet(PhotoRestoreEngine.class);
         mDepthEngine = svProvider.lazyGet(DepthEngine.class);
+        mSubjectSegEngine = svProvider.lazyGet(SubjectSegEngine.class);
     }
 
     public void startBlurFace() {
@@ -137,6 +141,23 @@ class HomeWorkflow implements Serializable {
                 startIfLensBlurModelsAvailable(() ->
                         pickImage(REQUEST_CODE_IMAGE_LENS_BLUR)),
                 REQUEST_CODE_IMAGE_LENS_BLUR);
+    }
+
+    /**
+     * Start the background removal flow: the standalone subject
+     * background-removal editor. The ISNet general-use model availability is
+     * checked FIRST (the lens-blur gate-in-workflow shape: a missing model
+     * pushes the {@link ModelDownloadDialog} and the pick continues on a
+     * POSITIVE result), then a single-image pick feeds the dedicated editor.
+     * NO 64-bit gate: the issue-#4 spike measured the ISNet GO on the 2 GB
+     * 32-bit tier (the BiRefNet candidate it replaced was the OOM gate, the
+     * ISNet CNN workspace fits both tiers).
+     */
+    public void startBackgroundRemoval() {
+        requestWriteExternalStoragePermission(() ->
+                startIfSubjectModelAvailable(() ->
+                        pickImage(REQUEST_CODE_IMAGE_BACKGROUND_REMOVAL, false)),
+                REQUEST_CODE_IMAGE_BACKGROUND_REMOVAL);
     }
 
     public void startQrScan() {
@@ -248,6 +269,18 @@ class HomeWorkflow implements Serializable {
         }
     }
 
+    private void startIfSubjectModelAvailable(ContinueAction continueAction) {
+        ArrayList<String> missingModels = new ArrayList<>();
+        if (!mSubjectSegEngine.get().isAvailable()) {
+            missingModels.add(mSubjectSegEngine.get().subjectSegModelId());
+        }
+        if (missingModels.isEmpty()) {
+            continueAction.run();
+        } else {
+            startModelDownload(missingModels, continueAction);
+        }
+    }
+
     private void startModelDownload(List<String> missingModels, ContinueAction continueAction) {
         mNavigator.push(Routes.MODEL_DOWNLOAD_PAGE, new ModelDownloadDialog.ModelList(missingModels),
                 (navigator, navRoute, activity1, currentView) -> {
@@ -303,6 +336,8 @@ class HomeWorkflow implements Serializable {
             startPhotoRestore();
         } else if (requestCode == REQUEST_CODE_IMAGE_LENS_BLUR) {
             startLensBlur();
+        } else if (requestCode == REQUEST_CODE_IMAGE_BACKGROUND_REMOVAL) {
+            startBackgroundRemoval();
         }
     }
 
@@ -326,6 +361,8 @@ class HomeWorkflow implements Serializable {
             pushPhotoRestoreEditor(data);
         } else if (requestCode == REQUEST_CODE_IMAGE_LENS_BLUR) {
             pushLensBlurEditor(data);
+        } else if (requestCode == REQUEST_CODE_IMAGE_BACKGROUND_REMOVAL) {
+            pushBackgroundRemovalEditor(data);
         }
     }
 
@@ -444,6 +481,21 @@ class HomeWorkflow implements Serializable {
             uris.add(uri.toString());
         }
         mNavigator.push(Routes.LENS_BLUR_EDITOR_PAGE, new UriList(uris));
+    }
+
+    /**
+     * Push the background removal editor page, the edit works on a single
+     * image so only the first picked uri is taken (the magic eraser
+     * single-image pattern)
+     */
+    private void pushBackgroundRemovalEditor(Intent data) {
+        List<Uri> pickedUris = collectPickedUris(data);
+        if (pickedUris.isEmpty()) {
+            return;
+        }
+        ArrayList<String> uris = new ArrayList<>();
+        uris.add(pickedUris.get(0).toString());
+        mNavigator.push(Routes.BACKGROUND_REMOVAL_EDITOR_PAGE, new UriList(uris));
     }
 
     /**

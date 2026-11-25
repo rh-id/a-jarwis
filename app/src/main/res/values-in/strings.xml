@@ -89,6 +89,10 @@
     <string name="reset">Setel ulang</string>
     <string name="apply_history_full">Riwayat sudah penuh. Simpan atau bagikan hasilnya untuk memulai edit baru.</string>
     <string name="error_insufficient_memory">Memori tidak cukup untuk memproses gambar ini</string>
+    <string name="title_background_removal">Hapus Latar Belakang</string>
+    <string name="detecting_subject_progress">Mendeteksi subjek…</string>
+    <string name="no_subject_detected">Tidak ada subjek jelas yang terdeteksi — coba foto dengan subjek utama yang menonjol</string>
+    <string name="msg_discard_background_removal_changes">Pilihan penghapusan latar belakang Anda belum disimpan. Buang perubahan?</string>
     <string name="title_ai_detect">Detektor Gambar AI</string>
     <string name="band_likely_ai">Kemungkinan dihasilkan AI</string>
     <string name="band_unclear">Tidak jelas</string>

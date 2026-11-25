@@ -89,6 +89,10 @@
     <string name="reset">Reavi</string>
     <string name="apply_history_full">L\'archiv è plain. Memorisai u parturai il resultat per cumenzar ina nova midada.</string>
     <string name="error_insufficient_memory">Memoria insuffizienta per elavurar quest maletg</string>
+    <string name="title_background_removal">Allontanar il fund</string>
+    <string name="detecting_subject_progress">Tschertgar il motiv…</string>
+    <string name="no_subject_detected">Chattà nagin motiv clar — emprova ina foto cun in motiv principal clar</string>
+    <string name="msg_discard_background_removal_changes">Tia selecziun d\'allontanar il fund n\'è betg memorisada. Vuls scartar las midadas?</string>
     <string name="title_ai_detect">Detector da maletgs IA</string>
     <string name="band_likely_ai">Probabel generada d\'IA</string>
     <string name="band_unclear">Malclar</string>

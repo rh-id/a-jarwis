@@ -89,6 +89,10 @@
     <string name="reset">Zurücksetzen</string>
     <string name="apply_history_full">Der Verlauf ist voll. Speichern oder teilen Sie das Ergebnis, um eine neue Bearbeitung zu starten.</string>
     <string name="error_insufficient_memory">Nicht genügend Arbeitsspeicher, um dieses Bild zu verarbeiten</string>
+    <string name="title_background_removal">Hintergrund entfernen</string>
+    <string name="detecting_subject_progress">Motiv wird erkannt…</string>
+    <string name="no_subject_detected">Kein klares Motiv erkannt – versuchen Sie ein Foto mit einem deutlichen Hauptmotiv</string>
+    <string name="msg_discard_background_removal_changes">Ihre Hintergrund-Entfernen-Auswahl wurde nicht gespeichert. Möchten Sie die Änderungen verwerfen?</string>
     <string name="title_ai_detect">KI-Bilderkennung</string>
     <string name="band_likely_ai">Wahrscheinlich KI-generiert</string>
     <string name="band_unclear">Unklar</string>

@@ -53,15 +53,6 @@ class PersonSegProcessor {
      */
     private static final double NORMALIZE_SCALE_FACTOR = 1.0 / 127.5;
     private static final Scalar NORMALIZE_MEAN = new Scalar(127.5, 127.5, 127.5);
-    /**
-     * Feather width of the person mask relative to the model input size, the
-     * segmentation edge is smoothed with a small Gaussian kernel so a composited
-     * person does not end with an aliased hard edge. OpenCV requires a positive
-     * odd kernel size
-     */
-    private static final float MASK_FEATHER_SCALE = 0.03f;
-    private static final int MASK_FEATHER_KERNEL_SIZE =
-            toOdd(Math.round(MODEL_INPUT_SIZE * MASK_FEATHER_SCALE));
 
     private final ILogger mLogger;
     private Net mModelNet;
@@ -163,24 +154,10 @@ class PersonSegProcessor {
         person.convertTo(mask, CvType.CV_8U, 255.0, 0.0);
         person.release();
         mLogger.d(mTag, "postProcess_mask:" + mask);
-        // feather the segmentation edge, sigma 0 lets OpenCV derive it from the kernel
-        Imgproc.GaussianBlur(mask, mask,
-                new Size(MASK_FEATHER_KERNEL_SIZE, MASK_FEATHER_KERNEL_SIZE), 0);
-        // upsample the mask back to the input bitmap resolution, keep the soft
-        // values (no nearest neighbor and no argmax hard mask)
-        Imgproc.resize(mask, mask, new Size(width, height), 0, 0, Imgproc.INTER_LINEAR);
+        // the shared segmentation tail: feather at the model resolution, then
+        // upsample to the input bitmap resolution (see SegMaskPostprocess)
+        SegMaskPostprocess.featherAndUpsample(mask, MODEL_INPUT_SIZE,
+                width, height);
         return mask;
-    }
-
-    /**
-     * Force the given kernel size to a positive odd value, OpenCV requires
-     * a positive odd kernel size
-     */
-    private static int toOdd(int kernelSize) {
-        int size = Math.max(1, kernelSize);
-        if (size % 2 == 0) {
-            size++;
-        }
-        return size;
     }
 }

@@ -15,7 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <!-- the scrollable home menu: the 9-tile grid overflows small
+        <!-- the scrollable home menu: the 10-tile grid overflows small
              screens (e.g. 720x1280), the scroll view takes the space
              below the fixed app bar -->
         <ScrollView
@@ -105,6 +105,17 @@
                     android:gravity="center"
                     android:text="@string/title_lens_blur"
                     app:icon="@drawable/ic_lens_blur" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/button_background_removal"
+                    style="@style/Theme.Asnapblur.HomeMenuButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_gravity="fill"
+                    android:gravity="center"
+                    android:text="@string/title_background_removal"
+                    app:icon="@drawable/ic_background_removal_black" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/button_qr_censor"

@@ -535,6 +535,18 @@
   license: Apache-2.0
   licenseUrl: https://www.apache.org/licenses/LICENSE-2.0.txt
   url: https://huggingface.co/opencv/human_segmentation_pphumanseg
+# ISNet general-use subject segmentation model: the checkpoint is the DIS
+# authors' Apache-2.0 release; the ONNX conversion is distributed under the
+# MIT licence of github.com/danielgatis/rembg. The model is downloaded from
+# the OFFICIAL rembg release with the file sha256 pinned in the app
+# (60920e99c45464f2ba57bee2ad08c919a52bbf852739e96947fbb4358c0d964a); the HF
+# mirror jellybox/isnet-general-use was verified byte-identical to this
+# release during the issue-#4 spike.
+- name: ISNet general-use subject segmentation model
+  copyrightHolder: Xuebin Qin and DIS contributors (IS-Net)
+  license: Apache License 2.0
+  licenseUrl: https://www.apache.org/licenses/LICENSE-2.0.txt
+  url: https://github.com/danielgatis/rembg/releases/download/v0.0.0/isnet-general-use.onnx
 - name: EfficientSAM image segmentation model
   copyrightHolder: EfficientSAM authors (yformer)
   license: Apache-2.0

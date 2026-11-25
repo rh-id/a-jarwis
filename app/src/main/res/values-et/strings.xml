@@ -89,6 +89,10 @@
     <string name="reset">Lähtesta</string>
     <string name="apply_history_full">Ajalugu on täis. Salvesta või jaga tulemust, et alustada uut muudatust.</string>
     <string name="error_insufficient_memory">Mälu ei piisa selle pildi töötlemiseks</string>
+    <string name="title_background_removal">Eemalda taust</string>
+    <string name="detecting_subject_progress">Tuvastatakse suvandit…</string>
+    <string name="no_subject_detected">Selget põhisuvandit ei tuvastatud — proovige fotot, kus peamine objekt on selgelt eristatav</string>
+    <string name="msg_discard_background_removal_changes">Teie tausta eemaldamise valik pole salvestatud. Kas loobuda muudatustest?</string>
     <string name="title_ai_detect">AI-pildituvastaja</string>
     <string name="band_likely_ai">Tõenäoliselt AI-genereritud</string>
     <string name="band_unclear">Ebaselge</string>
