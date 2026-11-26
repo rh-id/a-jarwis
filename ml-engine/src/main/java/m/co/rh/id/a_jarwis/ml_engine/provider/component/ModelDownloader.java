@@ -19,6 +19,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
 
 import m.co.rh.id.a_jarwis.base.provider.component.helper.FileHelper;
+import m.co.rh.id.a_jarwis.ml_engine.model.CancelledCheck;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.MLEngineInstance.ModelType;
 import m.co.rh.id.a_jarwis.ml_engine.provider.notifier.ModelChangeNotifier;
 import m.co.rh.id.alogger.ILogger;
@@ -48,6 +49,23 @@ import m.co.rh.id.aprovider.ProviderValue;
  * checksum failures (see {@link ModelChangeNotifier#downloadFailed}); transient IO
  * failures are not emitted because the work is retried (by WorkManager,
  * see ModelDownloadWorker).
+ * CANCELLATION CONTRACT: the 3-arg {@link #download(Context, String, CancelledCheck)}
+ * accepts a {@link CancelledCheck} polled between the stream chunks and again
+ * right before the tmp file is published (cancelUniqueWork cannot stop a
+ * running transfer — the HttpURLConnection read loop is not interruptible —
+ * so the check is the only effective stop). On cancellation the connection is
+ * disconnected (the finally block) and a {@link ModelDownloadCancelledException}
+ * is thrown, but the partial tmp file is deliberately KEPT: a tmp.delete()
+ * on this path would also fire on the transient WorkManager constraint stops
+ * (e.g. a momentary network loss) and throw away up to ~171 MB of progress
+ * the Range-resume would otherwise pick up. Nothing stale can be published:
+ * the pre-atomicMove isCancelled() gate guarantees a stopped worker never
+ * publishes the target, and the leftover tmp is either Range-resumed by the
+ * next enqueue, deleted explicitly by ModelStorageManager.deleteModel, or
+ * swept by ModelStorageManager.deleteIncompleteDownloads. The cancellation
+ * triggers neither the {@link ModelChangeNotifier#downloadFailed} event of
+ * the checksum path nor the {@link ModelChangeNotifier#downloadSucceeded}
+ * emission, and the caller must not retry it (see ModelDownloadWorker).
  * Must be executed on a background thread.
  */
 public class ModelDownloader {
@@ -57,7 +75,13 @@ public class ModelDownloader {
     private static final int READ_TIMEOUT_MS = 60_000;
     private static final int BUFFER_SIZE = 8_192;
     private static final int PROGRESS_STEP_BYTES = 65_536;
-    private static final String TEMP_FILE_SUFFIX = ".tmp";
+    /**
+     * Suffix of the in-progress download file written next to its target.
+     * Package-private so the delete flow (ModelStorageManager) can sweep the
+     * sibling {@code "<target>.tmp"} of a model target without duplicating
+     * the literal
+     */
+    static final String TEMP_FILE_SUFFIX = ".tmp";
     private static final String SHA_256 = "SHA-256";
 
     private final ILogger mLogger;
@@ -92,12 +116,39 @@ public class ModelDownloader {
      */
     public void download(@NonNull Context context, @NonNull String modelId)
             throws IOException {
+        // the legacy 2-arg entry is never cancelled (the reusable engine-pipeline
+        // abort hook, see CancelledCheck)
+        download(context, modelId, () -> false);
+    }
+
+    /**
+     * Same contract as {@link #download(Context, String)}, plus a
+     * {@link CancelledCheck} polled between the stream chunks and right
+     * before the tmp file is published to its target path (see the class
+     * javadoc cancellation contract)
+     *
+     * @param context any context, only used to resolve the target file location
+     * @param modelId opaque model id as obtained from the engine facades
+     * @param check   abort hook polled during the transfer, the ModelDownloadWorker
+     *                passes its {@code this::isStopped}
+     * @throws IOException                      network/IO failure, retryable
+     * @throws ModelDownloadCancelledException  the check aborted the download,
+     *                                          NOT retryable, no notifier event,
+     *                                          the partial tmp is kept for the
+     *                                          next enqueue / the sweep
+     * @throws ModelChecksumException           checksum/length validation failed permanently,
+     *                                          a failed event is emitted before rethrowing
+     * @throws IllegalArgumentException unknown model id, permanent, not retried
+     */
+    public void download(@NonNull Context context, @NonNull String modelId,
+                         @NonNull CancelledCheck check)
+            throws IOException {
         ModelType modelType = ModelType.fromId(modelId);
         if (modelType == null) {
             throw new IllegalArgumentException("Unknown model id: " + modelId);
         }
         try {
-            downloadInternal(modelType);
+            downloadInternal(modelType, check);
         } catch (ModelChecksumException e) {
             // permanent failure, downloading again from the same url will not help
             mModelChangeNotifier.downloadFailed(modelType.getId(), e.getMessage());
@@ -106,7 +157,8 @@ public class ModelDownloader {
         mModelChangeNotifier.downloadSucceeded(modelType.getId());
     }
 
-    private void downloadInternal(@NonNull ModelType modelType)
+    private void downloadInternal(@NonNull ModelType modelType,
+                                  @NonNull CancelledCheck check)
             throws IOException {
         File targetFile = mMLEngine.get().getModelFile(modelType);
         if (targetFile.exists()) {
@@ -142,7 +194,7 @@ public class ModelDownloader {
             try {
                 // only the first attempt may resume, the retry after checksum mismatch is always clean
                 downloadOnce(modelType, modelType.getDownloadUrl(), tmpFile, meta,
-                        attempt == 1);
+                        attempt == 1, check);
                 break;
             } catch (ModelChecksumException e) {
                 tmpFile.delete();
@@ -153,13 +205,19 @@ public class ModelDownloader {
                         + ", retrying a clean download", e);
             }
         }
-
+        // a cancel arriving between the last chunk and here must still not
+        // publish the target (see the class javadoc cancellation contract)
+        if (check.isCancelled()) {
+            throw new ModelDownloadCancelledException(
+                    "Download of " + modelType.getDisplayName() + " was cancelled");
+        }
         mFileHelper.atomicMove(tmpFile, targetFile);
         mLogger.i(TAG, "Model downloaded: " + modelType.getDisplayName());
     }
 
     private void downloadOnce(ModelType modelType, String urlStr, File tmpFile, DownloadMeta meta,
-                              boolean allowResume) throws IOException {
+                              boolean allowResume, @NonNull CancelledCheck check)
+            throws IOException {
         long startOffset = 0;
         if (allowResume && tmpFile.exists()) {
             startOffset = tmpFile.length();
@@ -207,45 +265,69 @@ public class ModelDownloader {
             }
 
             MessageDigest messageDigest = getMessageDigest();
-            if (resumed) {
-                // seed the digest with the already downloaded part
-                try (InputStream existing = new FileInputStream(tmpFile)) {
-                    byte[] buffer = new byte[BUFFER_SIZE];
-                    int read;
-                    while ((read = existing.read(buffer)) != -1) {
-                        messageDigest.update(buffer, 0, read);
-                    }
-                }
-            }
             long bytesDone = startOffset;
-            mModelChangeNotifier.downloadProgress(modelType.getId(), bytesDone, bytesTotal);
-            long lastReported = bytesDone;
-            try (InputStream inputStream = new BufferedInputStream(connection.getInputStream(), BUFFER_SIZE);
-                 DigestInputStream digestInputStream = new DigestInputStream(inputStream, messageDigest);
-                 OutputStream outputStream = new FileOutputStream(tmpFile, resumed)) {
-                byte[] buffer = new byte[BUFFER_SIZE];
-                int read;
-                while ((read = digestInputStream.read(buffer)) != -1) {
-                    outputStream.write(buffer, 0, read);
-                    bytesDone += read;
-                    if (bytesDone - lastReported >= PROGRESS_STEP_BYTES) {
-                        lastReported = bytesDone;
-                        mModelChangeNotifier.downloadProgress(modelType.getId(), bytesDone, bytesTotal);
+            // RESUME RACE GUARD: the append stream is opened BEFORE the digest is
+            // seeded, and the resume offset is re-verified right after the seed —
+            // otherwise a concurrent tmp deletion (user delete / incomplete-download
+            // sweep) between the seed-read and the open makes the append-mode
+            // constructor recreate an EMPTY tmp while digest/bytesDone still reflect
+            // the old offset, and length-only validation (some hosts have no
+            // checksum meta) would publish a truncated model. The other interleavings
+            // are benign: deletion before the open aborts at the offset re-verify,
+            // deletion after it fails at the final atomicMove — both transient and
+            // retried
+            try (OutputStream outputStream = new FileOutputStream(tmpFile, resumed)) {
+                if (resumed) {
+                    // seed the digest with the already downloaded part
+                    try (InputStream existing = new FileInputStream(tmpFile)) {
+                        byte[] seedBuffer = new byte[BUFFER_SIZE];
+                        int seedRead;
+                        while ((seedRead = existing.read(seedBuffer)) != -1) {
+                            messageDigest.update(seedBuffer, 0, seedRead);
+                        }
+                    }
+                    long resumeLength = tmpFile.length();
+                    if (resumeLength != startOffset) {
+                        throw new IOException("Tmp file of "
+                                + modelType.getDisplayName() + " changed during"
+                                + " the resume (expected " + startOffset
+                                + " bytes, found " + resumeLength + ")");
                     }
                 }
                 mModelChangeNotifier.downloadProgress(modelType.getId(), bytesDone, bytesTotal);
-            }
+                long lastReported = bytesDone;
+                try (InputStream inputStream = new BufferedInputStream(connection.getInputStream(), BUFFER_SIZE);
+                     DigestInputStream digestInputStream = new DigestInputStream(inputStream, messageDigest)) {
+                    byte[] buffer = new byte[BUFFER_SIZE];
+                    int read;
+                    while ((read = digestInputStream.read(buffer)) != -1) {
+                        // the only effective stop: the read loop is not interruptible
+                        // (see the class javadoc cancellation contract)
+                        if (check.isCancelled()) {
+                            throw new ModelDownloadCancelledException(
+                                    "Download of " + modelType.getDisplayName() + " was cancelled");
+                        }
+                        outputStream.write(buffer, 0, read);
+                        bytesDone += read;
+                        if (bytesDone - lastReported >= PROGRESS_STEP_BYTES) {
+                            lastReported = bytesDone;
+                            mModelChangeNotifier.downloadProgress(modelType.getId(), bytesDone, bytesTotal);
+                        }
+                    }
+                    mModelChangeNotifier.downloadProgress(modelType.getId(), bytesDone, bytesTotal);
+                }
 
-            String checksum = toHex(messageDigest.digest());
-            boolean checksumValid = meta.sha256 == null || meta.sha256.isEmpty()
-                    || meta.sha256.equalsIgnoreCase(checksum);
-            boolean lengthValid = bytesTotal <= 0 || bytesDone == bytesTotal;
-            if (!checksumValid || !lengthValid) {
-                throw new ModelChecksumException("Downloaded model " + modelType.getDisplayName()
-                        + " failed validation, expected length: " + bytesTotal
-                        + ", actual length: " + bytesDone
-                        + ", expected checksum: " + meta.sha256
-                        + ", actual checksum: " + checksum);
+                String checksum = toHex(messageDigest.digest());
+                boolean checksumValid = meta.sha256 == null || meta.sha256.isEmpty()
+                        || meta.sha256.equalsIgnoreCase(checksum);
+                boolean lengthValid = bytesTotal <= 0 || bytesDone == bytesTotal;
+                if (!checksumValid || !lengthValid) {
+                    throw new ModelChecksumException("Downloaded model " + modelType.getDisplayName()
+                            + " failed validation, expected length: " + bytesTotal
+                            + ", actual length: " + bytesDone
+                            + ", expected checksum: " + meta.sha256
+                            + ", actual checksum: " + checksum);
+                }
             }
         } finally {
             if (connection != null) {

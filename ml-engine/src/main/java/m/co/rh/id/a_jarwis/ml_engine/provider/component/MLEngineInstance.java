@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import m.co.rh.id.alogger.ILogger;
 import m.co.rh.id.aprovider.Provider;
 import m.co.rh.id.aprovider.ProviderDisposable;
+import m.co.rh.id.aprovider.ProviderValue;
 
 public class MLEngineInstance implements ProviderDisposable {
     private static final String TAG = "MLEngineInstance";
@@ -80,6 +81,13 @@ public class MLEngineInstance implements ProviderDisposable {
     private final Context mAppContext;
     private final ILogger mLogger;
     /**
+     * Lazy last-used timestamp store of the models: marked used from
+     * {@link #requireModelFile(ModelType)} (the single point where a model
+     * file is actually loaded for use), read/cleared by the user-facing
+     * storage management (see {@link ModelStorageManager})
+     */
+    private final ProviderValue<ModelUsageStore> mModelUsageStore;
+    /**
      * Set by {@link #dispose(Context)}: the provider dispose cascade invokes
      * it twice (synchronously through the module dispose, asynchronously
      * through this instance's registry entry), the flag makes the second
@@ -89,36 +97,48 @@ public class MLEngineInstance implements ProviderDisposable {
     /**
      * Lazy neural style transfer processor cache (keyed by model type),
      * an instance holds its ONNX model loaded in the native memory
-     * (~32 MB worst case) for the app lifetime because the models are
-     * never deleted once downloaded
+     * (~32 MB worst case) for the app lifetime. Models CAN be deleted by
+     * the user through {@link ModelStorageManager}, but the delete flow
+     * never releases this cache (the teardown-poison law: a release outside
+     * dispose SEGVs the next net's first forward) — a cached processor of a
+     * deleted model keeps working in-session until its normal release point
+     * (dispose or the session-scoped release* methods), and the availability
+     * gates re-prompt the download on the next session
      */
     private final ConcurrentHashMap<ModelType, STProcessor> mSTProcessors;
     /**
      * Lazy portrait segmentation processor cache (keyed by model type for
      * future person segmentation variants), an instance holds its ONNX model
-     * loaded in the native memory (the file is ~1.7 MB) for the app lifetime
-     * because the model is never deleted once downloaded
+     * loaded in the native memory (the file is ~1.7 MB) for the app lifetime.
+     * Model deletion (see {@link ModelStorageManager})
+     * never releases this cache (the teardown-poison law, see the mSTProcessors
+     * javadoc)
      */
     private final ConcurrentHashMap<ModelType, PersonSegProcessor> mPersonSegProcessors;
     /**
      * Lazy object segmentation processor cache (keyed by model type for
      * future EfficientSAM variants), an instance holds its ONNX model
      * loaded in the native memory (the fp32 file is ~46 MB) for the app
-     * lifetime because the model is never deleted once downloaded
+     * lifetime. Model deletion (see {@link ModelStorageManager})
+     * never releases this cache (the teardown-poison law, see the mSTProcessors
+     * javadoc)
      */
     private final ConcurrentHashMap<ModelType, EfficientSamProcessor> mEfficientSamProcessors;
     /**
      * Lazy inpainting processor cache (keyed by model type for future LaMa
      * variants), an instance holds its ONNX model loaded in the native memory
-     * (the file is ~93 MB) for the app lifetime because the model is never
-     * deleted once downloaded
+     * (the file is ~93 MB) for the app lifetime. Model deletion (see {@link ModelStorageManager})
+     * never releases this cache (the teardown-poison law, see the mSTProcessors
+     * javadoc)
      */
     private final ConcurrentHashMap<ModelType, LamaProcessor> mLamaProcessors;
     /**
      * Lazy AI-generated-image detection processor cache (keyed by model type
      * for future detector variants), an instance holds its ONNX model loaded
-     * in the native memory (the fp32 file is ~87 MB) for the app lifetime
-     * because the model is never deleted once downloaded
+     * in the native memory (the fp32 file is ~87 MB) for the app lifetime.
+     * Model deletion (see {@link ModelStorageManager})
+     * never releases this cache (the teardown-poison law, see the mSTProcessors
+     * javadoc)
      */
     private final ConcurrentHashMap<ModelType, AiImageDetectProcessor> mAiImageDetectProcessors;
     /**
@@ -182,6 +202,7 @@ public class MLEngineInstance implements ProviderDisposable {
     public MLEngineInstance(Provider provider) {
         mAppContext = provider.getContext().getApplicationContext();
         mLogger = provider.get(ILogger.class);
+        mModelUsageStore = provider.lazyGet(ModelUsageStore.class);
         mSTProcessors = new ConcurrentHashMap<>();
         mPersonSegProcessors = new ConcurrentHashMap<>();
         mEfficientSamProcessors = new ConcurrentHashMap<>();
@@ -871,7 +892,11 @@ public class MLEngineInstance implements ProviderDisposable {
     /**
      * These models are downloaded on demand (see ModelDownloadWorker),
      * callers are expected to check availability first (see isModelAvailable),
-     * hence this should never be hit on normal flow
+     * hence this should never be hit on normal flow. This is also the single
+     * point where a model is recorded as USED: the last-used timestamp is
+     * marked here (and only here) so the storage page shows a real
+     * "last used" per model — the availability gates never mark it
+     * (a gate check is not a use)
      */
     @NonNull
     private File requireModelFile(ModelType modelType) {
@@ -884,6 +909,7 @@ public class MLEngineInstance implements ProviderDisposable {
             mLogger.e(TAG, message);
             throw new IllegalStateException(message);
         }
+        mModelUsageStore.get().markUsed(modelType.getId());
         return getModelFile(mAppContext, modelType);
     }
 

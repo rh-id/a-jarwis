@@ -229,7 +229,18 @@ public class ModelDownloadDialog extends StatefulViewDialog<Activity> implements
         WorkInfo.State state = currentWorkInfo.getState();
         switch (state) {
             case SUCCEEDED:
-                modelState.state = DownloadState.SUCCEEDED;
+                // a SUCCEEDED record can be STALE: WorkManager keeps it
+                // after the user deletes the model file through the
+                // storage management, and trusting it would auto-continue
+                // the flow with the file gone (requireModelFile then
+                // throws). Trust it only while the file still exists;
+                // otherwise keep the prompt state so the Download tap
+                // enqueues a genuine download. The disk stat runs on the
+                // main thread like evaluateModelState's own availability
+                // fallback — a single metadata check, once per attach.
+                if (mMLEngineInstance.get().isModelAvailable(modelId)) {
+                    modelState.state = DownloadState.SUCCEEDED;
+                }
                 break;
             case FAILED:
                 modelState.state = DownloadState.FAILED;

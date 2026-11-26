@@ -17,4 +17,26 @@
     <string name="donation_other_apps">Autras apps dal developpadur: %s</string>
     <string name="donation_thank_you">Grazia fitg per Voss sustegn</string>
     <string name="title_no_record">Nagin register</string>
+    <string name="storage_title">Memoria</string>
+    <string name="storage_total_downloaded">Total telechargià: %1$s</string>
+    <string name="storage_free_space">Spazi liber: %1$s</string>
+    <string name="storage_incomplete_downloads">Telechargiaments nun cumpletts (%1$s)</string>
+    <string name="storage_app_cache">Cache da l\'app (%1$s)</string>
+    <string name="storage_not_downloaded">Betg telechargià</string>
+    <string name="storage_downloading">En telechargiament…</string>
+    <string name="storage_never_used">Mai utilisà</string>
+    <string name="button_delete">Stizzar</string>
+    <string name="button_delete_all">Stizzar tut</string>
+    <string name="button_clear">Stivedar</string>
+    <string name="title_storage_delete_confirm">Stizzar %1$s?</string>
+    <string name="msg_storage_delete_confirm">Quai libera %1$s. Il model vegn telechargià danovamain la proxima giada che Vus utilisais %2$s.</string>
+    <string name="msg_storage_delete_confirm_downloading">Il telechargiament en vigur vegn annullà.</string>
+    <string name="title_storage_delete_all_confirm">Stizzar tut ils models telechargiads?</string>
+    <string name="msg_storage_delete_all_confirm">Quai libera %1$s. Mintga model vegn telechargià danovamain la proxima giada che Vus utilisais sia funcziun.</string>
+    <string name="msg_storage_delete_failed">Error tar il stizzar dal model</string>
+    <string name="storage_button_download">Telechargiar</string>
+    <string name="title_storage_download_confirm">Telechargiar %1$s?</string>
+    <string name="msg_storage_download_confirm">Vegn telechargià enturn %1$s sur internet. Il progress vegn mussà en questa glista.</string>
+    <string name="msg_storage_download_failed">Error tar il telechargiar dal model</string>
+    <string name="storage_download_progress">En telechargiament… %1$d%%</string>
 </resources>

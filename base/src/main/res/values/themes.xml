@@ -26,6 +26,16 @@
         <item name="colorSecondaryVariant">@color/dynamic_secondary_variant</item>
     </style>
 
+    <!-- Re-points the MaterialButton default style at the M3 text button:
+         the Material library has no textButtonStyle theme attr for a plain
+         defStyleAttr, so code-built text buttons wrap their context in this
+         overlay and construct with materialButtonStyle. Explicit empty
+         parent: the empty name suppresses the dotted-name implicit-parent
+         lookup (Theme.Asnapblur.Overlay is not a resource) -->
+    <style name="Theme.Asnapblur.Overlay.TextButton" parent="">
+        <item name="materialButtonStyle">@style/Widget.Material3.Button.TextButton</item>
+    </style>
+
     <style name="Theme.Asnapblur.BorderlessMenuButton" parent="Widget.Material3.Button.IconButton">
         <item name="android:gravity">center_vertical</item>
         <item name="android:minHeight">70dp</item>

@@ -10,4 +10,12 @@
    <include domain="sharedpref" path="."/>
    <exclude domain="sharedpref" path="device.xml"/>
 -->
+    <!-- the on-demand AI models (~600 MB) are re-downloadable, backing them
+         up would bloat the quota and a restore would resurrect deleted
+         models (see ModelStorageManager) -->
+    <exclude domain="file" path="ml-engine/" />
+    <!-- the last-used timestamps of the models (written by ModelUsageStore
+         into shared_prefs/ml-engine-model-usage.xml): restoring them after
+         a model was deleted would resurrect stale "last used" hints -->
+    <exclude domain="sharedpref" path="ml-engine-model-usage.xml" />
 </full-backup-content>

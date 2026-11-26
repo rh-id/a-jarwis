@@ -17,4 +17,26 @@
     <string name="donation_other_apps">Andre apper fra utvikleren: %s</string>
     <string name="donation_thank_you">Takk for støtten</string>
     <string name="title_no_record">Ingen oppføring</string>
+    <string name="storage_title">Lagring</string>
+    <string name="storage_total_downloaded">Totalt nedlastet: %1$s</string>
+    <string name="storage_free_space">Ledig plass: %1$s</string>
+    <string name="storage_incomplete_downloads">Ufullstendige nedlastinger (%1$s)</string>
+    <string name="storage_app_cache">Appens hurtigminne (%1$s)</string>
+    <string name="storage_not_downloaded">Ikke nedlastet</string>
+    <string name="storage_downloading">Laster ned…</string>
+    <string name="storage_never_used">Aldri brukt</string>
+    <string name="button_delete">Slett</string>
+    <string name="button_delete_all">Slett alt</string>
+    <string name="button_clear">Tøm</string>
+    <string name="title_storage_delete_confirm">Slette %1$s?</string>
+    <string name="msg_storage_delete_confirm">Dette frigjør %1$s. Modellen lastes ned igjen neste gang du bruker %2$s.</string>
+    <string name="msg_storage_delete_confirm_downloading">Nedlastingen som pågår, avbrytes.</string>
+    <string name="title_storage_delete_all_confirm">Slette alle nedlastede modeller?</string>
+    <string name="msg_storage_delete_all_confirm">Dette frigjør %1$s. Hver modell lastes ned igjen neste gang du bruker funksjonen sin.</string>
+    <string name="msg_storage_delete_failed">Kunne ikke slette modellen</string>
+    <string name="storage_button_download">Last ned</string>
+    <string name="title_storage_download_confirm">Laste ned %1$s?</string>
+    <string name="msg_storage_download_confirm">Omtrent %1$s lastes ned over Internett. Fremdriften vises i denne listen.</string>
+    <string name="msg_storage_download_failed">Kunne ikke laste ned modellen</string>
+    <string name="storage_download_progress">Laster ned… %1$d%%</string>
 </resources>

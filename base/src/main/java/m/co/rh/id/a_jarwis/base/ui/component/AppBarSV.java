@@ -25,6 +25,16 @@ public class AppBarSV extends StatefulView<Activity> implements RequireNavigator
     private transient byte mRouteIndex;
     private transient View.OnClickListener mNavigationOnClickListener;
     private Integer mMenuResId;
+    /**
+     * When true, the BACK arrow is shown even on the initial route instead
+     * of the menu icon. Exists for standalone single-page activity hosts
+     * (e.g. ManageSpaceActivity, launched by the OS manage-space entry)
+     * whose StatefulView page is the only route of a dedicated navigator:
+     * there is no drawer to open, and the back arrow pairs with
+     * {@link #setNavigationOnClick} finishing the activity. Regular pages
+     * never set it, the initial route keeps showing the menu icon
+     */
+    private boolean mBackIconOnInitialRoute;
     private transient Toolbar.OnMenuItemClickListener mOnMenuItemClickListener;
     private transient Provider mSvProvider;
     private transient RxDisposer mRxDisposer;
@@ -53,7 +63,7 @@ public class AppBarSV extends StatefulView<Activity> implements RequireNavigator
     protected View createView(Activity activity, ViewGroup container) {
         View view = activity.getLayoutInflater().inflate(R.layout.app_bar, container, false);
         Toolbar toolbar = view.findViewById(R.id.toolbar);
-        if (isInitialRoute()) {
+        if (isInitialRoute() && !mBackIconOnInitialRoute) {
             toolbar.setNavigationIcon(R.drawable.ic_menu_white);
         } else {
             toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white);
@@ -89,6 +99,16 @@ public class AppBarSV extends StatefulView<Activity> implements RequireNavigator
 
     public void setNavigationOnClick(View.OnClickListener navigationOnClickListener) {
         mNavigationOnClickListener = navigationOnClickListener;
+    }
+
+    /**
+     * See {@link #mBackIconOnInitialRoute}: for standalone single-page hosts
+     * (ManageSpaceActivity) only; regular drawer-hosted pages must not enable it
+     *
+     * @param backIconOnInitialRoute true to show the back arrow on the initial route
+     */
+    public void setBackIconOnInitialRoute(boolean backIconOnInitialRoute) {
+        mBackIconOnInitialRoute = backIconOnInitialRoute;
     }
 
     public void setMenuItemClick(Toolbar.OnMenuItemClickListener listener) {

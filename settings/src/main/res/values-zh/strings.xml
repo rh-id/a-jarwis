@@ -17,4 +17,26 @@
     <string name="donation_other_apps">开发者的其他应用：%s</string>
     <string name="donation_thank_you">感谢您的支持</string>
     <string name="title_no_record">暂无记录</string>
+    <string name="storage_title">存储</string>
+    <string name="storage_total_downloaded">已下载总量：%1$s</string>
+    <string name="storage_free_space">可用空间：%1$s</string>
+    <string name="storage_incomplete_downloads">未完成的下载（%1$s）</string>
+    <string name="storage_app_cache">应用缓存（%1$s）</string>
+    <string name="storage_not_downloaded">未下载</string>
+    <string name="storage_downloading">正在下载…</string>
+    <string name="storage_never_used">从未使用</string>
+    <string name="button_delete">删除</string>
+    <string name="button_delete_all">全部删除</string>
+    <string name="button_clear">清除</string>
+    <string name="title_storage_delete_confirm">删除%1$s？</string>
+    <string name="msg_storage_delete_confirm">这将释放%1$s的空间。下次使用%2$s时，该模型将重新下载。</string>
+    <string name="msg_storage_delete_confirm_downloading">正在进行的下载将被取消。</string>
+    <string name="title_storage_delete_all_confirm">删除所有已下载的模型？</string>
+    <string name="msg_storage_delete_all_confirm">这将释放%1$s的空间。下次使用相应功能时，每个模型都将重新下载。</string>
+    <string name="msg_storage_delete_failed">删除模型失败</string>
+    <string name="storage_button_download">下载</string>
+    <string name="title_storage_download_confirm">下载%1$s？</string>
+    <string name="msg_storage_download_confirm">将通过互联网下载约%1$s。进度将显示在此列表中。</string>
+    <string name="msg_storage_download_failed">下载模型失败</string>
+    <string name="storage_download_progress">正在下载… %1$d%%</string>
 </resources>

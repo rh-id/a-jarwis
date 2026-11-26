@@ -6,6 +6,8 @@ import m.co.rh.id.a_jarwis.ml_engine.provider.component.FaceEngine;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.MLEngineInstance;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.MagicEraserEngine;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.ModelDownloader;
+import m.co.rh.id.a_jarwis.ml_engine.provider.component.ModelStorageManager;
+import m.co.rh.id.a_jarwis.ml_engine.provider.component.ModelUsageStore;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.PersonSegEngine;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.QREngine;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.PhotoRestoreEngine;
@@ -37,6 +39,10 @@ public class MLEngineProviderModule implements ProviderModule {
                 () -> new PhotoRestoreEngine(provider));
         providerRegistry.registerLazy(ModelDownloader.class,
                 () -> new ModelDownloader(provider));
+        providerRegistry.registerLazy(ModelUsageStore.class,
+                () -> new ModelUsageStore(provider));
+        providerRegistry.registerLazy(ModelStorageManager.class,
+                () -> new ModelStorageManager(provider));
         providerRegistry.registerLazy(ModelChangeNotifier.class,
                 ModelChangeNotifier::new);
     }

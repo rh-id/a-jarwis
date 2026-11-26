@@ -17,4 +17,26 @@
     <string name="donation_other_apps">Önnur forrit eftir forritarann: %s</string>
     <string name="donation_thank_you">Takk fyrir stuðninginn</string>
     <string name="title_no_record">Engar skráningar</string>
+    <string name="storage_title">Geymsla</string>
+    <string name="storage_total_downloaded">Niðursett samtals: %1$s</string>
+    <string name="storage_free_space">Laust pláss: %1$s</string>
+    <string name="storage_incomplete_downloads">Ókláruð niðurhöld (%1$s)</string>
+    <string name="storage_app_cache">Skyndiminni forrits (%1$s)</string>
+    <string name="storage_not_downloaded">Ekki niðursett</string>
+    <string name="storage_downloading">Niðurhleður…</string>
+    <string name="storage_never_used">Aldrei notað</string>
+    <string name="button_delete">Eyða</string>
+    <string name="button_delete_all">Eyða öllu</string>
+    <string name="button_clear">Hreinsa</string>
+    <string name="title_storage_delete_confirm">Eyða %1$s?</string>
+    <string name="msg_storage_delete_confirm">Þetta losar %1$s. Líkanið verður niðurhalað aftur í næsta skipti sem þú notar %2$s.</string>
+    <string name="msg_storage_delete_confirm_downloading">Niðurhalið sem er í gangi verður hætt við.</string>
+    <string name="title_storage_delete_all_confirm">Eyða öllum niðursettum líknum?</string>
+    <string name="msg_storage_delete_all_confirm">Þetta losar %1$s. Hvert líkan verður niðurhalað aftur í næsta skipti sem þú notar viðkomandi eiginleika.</string>
+    <string name="msg_storage_delete_failed">Mistókst að eyða líkaninu</string>
+    <string name="storage_button_download">Niðurhala</string>
+    <string name="title_storage_download_confirm">Niðurhala %1$s?</string>
+    <string name="msg_storage_download_confirm">Um %1$s verðu niðursett af internetinu. Framvindan birtist í þessum lista.</string>
+    <string name="msg_storage_download_failed">Mistókst að niðurhala líkaninu</string>
+    <string name="storage_download_progress">Niðurhleður… %1$d%%</string>
 </resources>

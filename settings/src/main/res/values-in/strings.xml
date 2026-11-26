@@ -17,4 +17,26 @@
     <string name="donation_other_apps">Aplikasi lain dari pengembang: %s</string>
     <string name="donation_thank_you">Terima kasih atas dukungan Anda</string>
     <string name="title_no_record">Tidak Ada Catatan</string>
+    <string name="storage_title">Penyimpanan</string>
+    <string name="storage_total_downloaded">Total diunduh: %1$s</string>
+    <string name="storage_free_space">Ruang kosong: %1$s</string>
+    <string name="storage_incomplete_downloads">Unduhan tidak lengkap (%1$s)</string>
+    <string name="storage_app_cache">Cache aplikasi (%1$s)</string>
+    <string name="storage_not_downloaded">Belum diunduh</string>
+    <string name="storage_downloading">Mengunduh…</string>
+    <string name="storage_never_used">Belum pernah digunakan</string>
+    <string name="button_delete">Hapus</string>
+    <string name="button_delete_all">Hapus semua</string>
+    <string name="button_clear">Bersihkan</string>
+    <string name="title_storage_delete_confirm">Hapus %1$s?</string>
+    <string name="msg_storage_delete_confirm">Ini akan membebaskan %1$s. Model akan diunduh lagi saat Anda menggunakan %2$s berikutnya.</string>
+    <string name="msg_storage_delete_confirm_downloading">Unduhan yang sedang berjalan akan dibatalkan.</string>
+    <string name="title_storage_delete_all_confirm">Hapus semua model yang diunduh?</string>
+    <string name="msg_storage_delete_all_confirm">Ini akan membebaskan %1$s. Setiap model akan diunduh lagi saat Anda menggunakan fiturnya berikutnya.</string>
+    <string name="msg_storage_delete_failed">Gagal menghapus model</string>
+    <string name="storage_button_download">Unduh</string>
+    <string name="title_storage_download_confirm">Unduh %1$s?</string>
+    <string name="msg_storage_download_confirm">Ini akan mengunduh sekitar %1$s melalui internet. Progresnya ditampilkan di daftar ini.</string>
+    <string name="msg_storage_download_failed">Gagal mengunduh model</string>
+    <string name="storage_download_progress">Mengunduh… %1$d%%</string>
 </resources>

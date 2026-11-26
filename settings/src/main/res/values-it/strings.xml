@@ -17,4 +17,26 @@
     <string name="donation_other_apps">Altre app dello sviluppatore: %s</string>
     <string name="donation_thank_you">Grazie per il tuo supporto</string>
     <string name="title_no_record">Nessun record</string>
+    <string name="storage_title">Archiviazione</string>
+    <string name="storage_total_downloaded">Totale scaricato: %1$s</string>
+    <string name="storage_free_space">Spazio libero: %1$s</string>
+    <string name="storage_incomplete_downloads">Download incompleti (%1$s)</string>
+    <string name="storage_app_cache">Cache dell\'app (%1$s)</string>
+    <string name="storage_not_downloaded">Non scaricato</string>
+    <string name="storage_downloading">Download in corso…</string>
+    <string name="storage_never_used">Mai utilizzato</string>
+    <string name="button_delete">Elimina</string>
+    <string name="button_delete_all">Elimina tutto</string>
+    <string name="button_clear">Svuota</string>
+    <string name="title_storage_delete_confirm">Eliminare %1$s?</string>
+    <string name="msg_storage_delete_confirm">Libera %1$s. Il modello verrà scaricato di nuovo al prossimo utilizzo di %2$s.</string>
+    <string name="msg_storage_delete_confirm_downloading">Il download in corso verrà annullato.</string>
+    <string name="title_storage_delete_all_confirm">Eliminare tutti i modelli scaricati?</string>
+    <string name="msg_storage_delete_all_confirm">Libera %1$s. Ogni modello verrà scaricato di nuovo al prossimo utilizzo della sua funzionalità.</string>
+    <string name="msg_storage_delete_failed">Eliminazione del modello non riuscita</string>
+    <string name="storage_button_download">Scarica</string>
+    <string name="title_storage_download_confirm">Scaricare %1$s?</string>
+    <string name="msg_storage_download_confirm">Verranno scaricati da Internet circa %1$s. L\'avanzamento viene mostrato in questo elenco.</string>
+    <string name="msg_storage_download_failed">Scaricamento del modello non riuscito</string>
+    <string name="storage_download_progress">Download in corso… %1$d%%</string>
 </resources>

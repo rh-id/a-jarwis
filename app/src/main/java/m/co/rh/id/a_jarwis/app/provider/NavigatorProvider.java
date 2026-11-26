@@ -14,6 +14,7 @@ import java.util.Map;
 
 import m.co.rh.id.a_jarwis.R;
 import m.co.rh.id.a_jarwis.app.MainActivity;
+import m.co.rh.id.a_jarwis.app.ManageSpaceActivity;
 import m.co.rh.id.a_jarwis.app.ui.page.AiDetectPage;
 import m.co.rh.id.a_jarwis.settings.ui.page.DonationsPage;
 import m.co.rh.id.a_jarwis.app.ui.page.HomePage;
@@ -30,6 +31,7 @@ import m.co.rh.id.a_jarwis.app.ui.page.editor.PhotoRestoreEditorPage;
 import m.co.rh.id.a_jarwis.app.ui.page.editor.StyleEditorPage;
 import m.co.rh.id.a_jarwis.base.constants.Routes;
 import m.co.rh.id.a_jarwis.settings.ui.page.SettingsPage;
+import m.co.rh.id.a_jarwis.settings.ui.page.StoragePage;
 import m.co.rh.id.anavigator.NavConfiguration;
 import m.co.rh.id.anavigator.Navigator;
 import m.co.rh.id.anavigator.StatefulView;
@@ -52,6 +54,7 @@ public class NavigatorProvider implements ProviderDisposable {
         mActivityNavigatorMap = new LinkedHashMap<>();
         mNavExtDialogConfig = mProvider.get(NavExtDialogConfig.class);
         setupMainActivityNavigator();
+        setupManageSpaceNavigator();
     }
 
     public INavigator getNavigator(Activity activity) {
@@ -88,6 +91,34 @@ public class NavigatorProvider implements ProviderDisposable {
         NavConfiguration<Activity, StatefulView> navConfiguration = navBuilder.build();
         Navigator navigator = new Navigator(MainActivity.class, navConfiguration);
         mActivityNavigatorMap.put(MainActivity.class, navigator);
+        mApplication.registerActivityLifecycleCallbacks(navigator);
+        mApplication.registerComponentCallbacks(navigator);
+    }
+
+    /**
+     * Dedicated navigator of the standalone OS manage-space entry point
+     * (ManageSpaceActivity, declared through android:manageSpaceActivity):
+     * its ONLY route is the storage page ({@code standalone = true}).
+     * IMPORTANT: the NavConfiguration must NOT be shared with the main
+     * activity navigator — a Navigator instance collides on the save-state
+     * file of a shared configuration — and the navMap must contain the
+     * route NAME because the initial route of a navigator is resolved by
+     * name (an anonymous factory push only works for later routes, a
+     * missing name throws NavigationRouteNotFound)
+     */
+    @SuppressLint("InflateParams")
+    private void setupManageSpaceNavigator() {
+        Map<String, StatefulViewFactory> navMap = new ArrayMap<>();
+        navMap.put(Routes.STORAGE_PAGE, (args, activity) -> new StoragePage(true));
+        NavConfiguration.Builder<Activity, StatefulView> navBuilder =
+                new NavConfiguration.Builder(Routes.STORAGE_PAGE, navMap);
+        navBuilder.setRequiredComponent(mProvider);
+        navBuilder.setMainHandler(mProvider.get(Handler.class));
+        navBuilder.setLoadingView(LayoutInflater.from(mProvider.getContext())
+                .inflate(R.layout.page_splash, null));
+        NavConfiguration<Activity, StatefulView> navConfiguration = navBuilder.build();
+        Navigator navigator = new Navigator(ManageSpaceActivity.class, navConfiguration);
+        mActivityNavigatorMap.put(ManageSpaceActivity.class, navigator);
         mApplication.registerActivityLifecycleCallbacks(navigator);
         mApplication.registerComponentCallbacks(navigator);
     }

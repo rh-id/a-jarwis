@@ -17,6 +17,7 @@ public class Routes {
     public static final String MODEL_DOWNLOAD_PAGE = "/common/modelDownload";
     public static final String SETTINGS_PAGE = "/settings";
     public static final String DONATIONS_PAGE = "/donations";
+    public static final String STORAGE_PAGE = "/storage";
 
     private Routes() {
     }

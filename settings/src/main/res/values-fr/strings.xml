@@ -17,4 +17,26 @@
     <string name="donation_other_apps">Autres applications du développeur : %s</string>
     <string name="donation_thank_you">Merci pour votre soutien</string>
     <string name="title_no_record">Aucun enregistrement</string>
+    <string name="storage_title">Stockage</string>
+    <string name="storage_total_downloaded">Total téléchargé : %1$s</string>
+    <string name="storage_free_space">Espace libre : %1$s</string>
+    <string name="storage_incomplete_downloads">Téléchargements incomplets (%1$s)</string>
+    <string name="storage_app_cache">Cache de l\'application (%1$s)</string>
+    <string name="storage_not_downloaded">Non téléchargé</string>
+    <string name="storage_downloading">Téléchargement…</string>
+    <string name="storage_never_used">Jamais utilisé</string>
+    <string name="button_delete">Supprimer</string>
+    <string name="button_delete_all">Tout supprimer</string>
+    <string name="button_clear">Effacer</string>
+    <string name="title_storage_delete_confirm">Supprimer %1$s ?</string>
+    <string name="msg_storage_delete_confirm">Cela libérera %1$s. Le modèle sera retéléchargé la prochaine fois que vous utiliserez %2$s.</string>
+    <string name="msg_storage_delete_confirm_downloading">Le téléchargement en cours sera annulé.</string>
+    <string name="title_storage_delete_all_confirm">Supprimer tous les modèles téléchargés ?</string>
+    <string name="msg_storage_delete_all_confirm">Cela libérera %1$s. Chaque modèle sera retéléchargé la prochaine fois que vous utiliserez sa fonctionnalité.</string>
+    <string name="msg_storage_delete_failed">Échec de la suppression du modèle</string>
+    <string name="storage_button_download">Télécharger</string>
+    <string name="title_storage_download_confirm">Télécharger %1$s ?</string>
+    <string name="msg_storage_download_confirm">Environ %1$s seront téléchargés via Internet. La progression s\'affiche dans cette liste.</string>
+    <string name="msg_storage_download_failed">Échec du téléchargement du modèle</string>
+    <string name="storage_download_progress">Téléchargement… %1$d%%</string>
 </resources>

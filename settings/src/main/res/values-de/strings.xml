@@ -17,4 +17,26 @@
     <string name="donation_other_apps">Weitere Apps des Entwicklers: %s</string>
     <string name="donation_thank_you">Danke für Ihre Unterstützung</string>
     <string name="title_no_record">Kein Eintrag</string>
+    <string name="storage_title">Speicher</string>
+    <string name="storage_total_downloaded">Gesamt heruntergeladen: %1$s</string>
+    <string name="storage_free_space">Freier Speicher: %1$s</string>
+    <string name="storage_incomplete_downloads">Unvollständige Downloads (%1$s)</string>
+    <string name="storage_app_cache">App-Cache (%1$s)</string>
+    <string name="storage_not_downloaded">Nicht heruntergeladen</string>
+    <string name="storage_downloading">Wird heruntergeladen…</string>
+    <string name="storage_never_used">Nie verwendet</string>
+    <string name="button_delete">Löschen</string>
+    <string name="button_delete_all">Alle löschen</string>
+    <string name="button_clear">Leeren</string>
+    <string name="title_storage_delete_confirm">%1$s löschen?</string>
+    <string name="msg_storage_delete_confirm">Das gibt %1$s frei. Das Modell wird neu heruntergeladen, wenn Sie %2$s das nächste Mal verwenden.</string>
+    <string name="msg_storage_delete_confirm_downloading">Der laufende Download wird abgebrochen.</string>
+    <string name="title_storage_delete_all_confirm">Alle heruntergeladenen Modelle löschen?</string>
+    <string name="msg_storage_delete_all_confirm">Das gibt %1$s frei. Jedes Modell wird neu heruntergeladen, wenn Sie seine Funktion das nächste Mal verwenden.</string>
+    <string name="msg_storage_delete_failed">Löschen des Modells fehlgeschlagen</string>
+    <string name="storage_button_download">Herunterladen</string>
+    <string name="title_storage_download_confirm">%1$s herunterladen?</string>
+    <string name="msg_storage_download_confirm">Es werden etwa %1$s über das Internet heruntergeladen. Der Fortschritt wird in dieser Liste angezeigt.</string>
+    <string name="msg_storage_download_failed">Herunterladen des Modells fehlgeschlagen</string>
+    <string name="storage_download_progress">Wird heruntergeladen… %1$d%%</string>
 </resources>

@@ -11,6 +11,7 @@ import m.co.rh.id.a_jarwis.base.ui.component.AppBarSV;
 import m.co.rh.id.a_jarwis.settings.R;
 import m.co.rh.id.a_jarwis.settings.ui.component.LicensesMenuSV;
 import m.co.rh.id.a_jarwis.settings.ui.component.LogMenuSV;
+import m.co.rh.id.a_jarwis.settings.ui.component.StorageMenuSV;
 import m.co.rh.id.a_jarwis.settings.ui.component.ThemeMenuSV;
 import m.co.rh.id.a_jarwis.settings.ui.component.VersionMenuSV;
 import m.co.rh.id.anavigator.StatefulView;
@@ -31,6 +32,8 @@ public class SettingsPage extends StatefulView<Activity> {
         mStatefulViews.add(themeMenuSV);
         LogMenuSV logMenuSV = new LogMenuSV();
         mStatefulViews.add(logMenuSV);
+        StorageMenuSV storageMenuSV = new StorageMenuSV();
+        mStatefulViews.add(storageMenuSV);
         LicensesMenuSV licensesMenuSV = new LicensesMenuSV();
         mStatefulViews.add(licensesMenuSV);
         VersionMenuSV versionMenuSV = new VersionMenuSV();

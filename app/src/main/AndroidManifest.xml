@@ -24,6 +24,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
+        android:manageSpaceActivity=".app.ManageSpaceActivity"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Asnapblur">
@@ -39,6 +40,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- exported=false is intentional: the system Settings app launches the
+             manage-space activity itself, no other caller may start it directly -->
+        <activity
+            android:name=".app.ManageSpaceActivity"
+            android:configChanges="uiMode|locale|layoutDirection|orientation|screenSize|screenLayout|density|colorMode|fontScale|fontWeightAdjustment|keyboard|keyboardHidden|smallestScreenSize"
+            android:exported="false"
+            android:label="@string/storage_title"
+            android:theme="@style/Theme.Asnapblur.NoActionBar" />
 
         <provider
             android:name="androidx.startup.InitializationProvider"

@@ -17,4 +17,26 @@
     <string name="donation_other_apps">Arendaja teised rakendused: %s</string>
     <string name="donation_thank_you">Aitäh toetuse eest</string>
     <string name="title_no_record">Kirjeid pole</string>
+    <string name="storage_title">Salvestusruum</string>
+    <string name="storage_total_downloaded">Kokku allalaaditud: %1$s</string>
+    <string name="storage_free_space">Vaba ruumi: %1$s</string>
+    <string name="storage_incomplete_downloads">Lõpetamata allalaadimised (%1$s)</string>
+    <string name="storage_app_cache">Rakenduse vahemälu (%1$s)</string>
+    <string name="storage_not_downloaded">Pole allalaaditud</string>
+    <string name="storage_downloading">Laaditakse alla…</string>
+    <string name="storage_never_used">Kasutamata</string>
+    <string name="button_delete">Kustuta</string>
+    <string name="button_delete_all">Kustuta kõik</string>
+    <string name="button_clear">Tühjenda</string>
+    <string name="title_storage_delete_confirm">Kustuta %1$s?</string>
+    <string name="msg_storage_delete_confirm">See vabastab %1$s. Mudel laaditakse funktsiooni %2$s järgmisel kasutamisel uuesti alla.</string>
+    <string name="msg_storage_delete_confirm_downloading">Käimasolev allalaadimine katkestatakse.</string>
+    <string name="title_storage_delete_all_confirm">Kustuta kõik allalaaditud mudelid?</string>
+    <string name="msg_storage_delete_all_confirm">See vabastab %1$s. Iga mudel laaditakse selle funktsiooni järgmisel kasutamisel uuesti alla.</string>
+    <string name="msg_storage_delete_failed">Mudeli kustutamine ebaõnnestus</string>
+    <string name="storage_button_download">Laadi alla</string>
+    <string name="title_storage_download_confirm">Laadi %1$s alla?</string>
+    <string name="msg_storage_download_confirm">Internetist laaditakse alla umbes %1$s. Edenemine kuvatakse selles loendis.</string>
+    <string name="msg_storage_download_failed">Mudeli allalaadimine ebaõnnestus</string>
+    <string name="storage_download_progress">Laaditakse alla… %1$d%%</string>
 </resources>

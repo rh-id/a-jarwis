@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 import m.co.rh.id.a_jarwis.base.BaseApplication;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.ModelChecksumException;
+import m.co.rh.id.a_jarwis.ml_engine.provider.component.ModelDownloadCancelledException;
 import m.co.rh.id.a_jarwis.ml_engine.provider.component.ModelDownloader;
 import m.co.rh.id.a_jarwis.ml_engine.provider.notifier.ModelChangeNotifier;
 import m.co.rh.id.alogger.ILogger;
@@ -33,6 +34,16 @@ import m.co.rh.id.aprovider.Provider;
  * only emits a failed event with a null model id when the work input is missing
  * (invalid input never reaches the downloader), and maps exceptions to WorkManager
  * Results (success/failure/retry).
+ * CANCELLATION CONTRACT: the download runs with {@code this::isStopped} as the
+ * downloader's {@link CancelledCheck} — WorkManager's cancelUniqueWork /
+ * stop policies do NOT interrupt the (non-interruptible) HttpURLConnection
+ * transfer, the polled check is the only effective stop. Every catch block
+ * consults {@link #isStopped()} FIRST: a stopped run returns
+ * {@link Result#failure()} without retry and without an error log (a
+ * cancelled download is a withdrawal of interest, not a failure), and the
+ * downloader's {@link ModelDownloadCancelledException} is mapped the same
+ * way. It must never come back as {@link Result#retry()}. The partial tmp
+ * of a cancelled run is KEPT by the downloader (see its class javadoc).
  */
 public class ModelDownloadWorker extends Worker {
     private static final String TAG = "ModelDownloadWorker";
@@ -59,10 +70,19 @@ public class ModelDownloadWorker extends Worker {
         }
         ModelDownloader modelDownloader = provider.get(ModelDownloader.class);
         try {
-            modelDownloader.download(getApplicationContext(), modelId);
+            modelDownloader.download(getApplicationContext(), modelId, this::isStopped);
             logger.i(TAG, "Model downloaded: " + modelId);
             return Result.success();
+        } catch (ModelDownloadCancelledException e) {
+            logger.d(TAG, "Download of model " + modelId + " was cancelled");
+            return cancelledResult();
         } catch (ModelChecksumException e) {
+            if (isStopped()) {
+                // a stopped run must not be misreported as a model failure
+                logger.d(TAG, "Download of model " + modelId
+                        + " cancelled (worker stopped)");
+                return cancelledResult();
+            }
             // permanent failure, downloading again from the same url will not help,
             // the failed event is emitted by ModelDownloader
             logger.e(TAG, "Model " + modelId + " failed checksum validation", e);
@@ -70,17 +90,43 @@ public class ModelDownloadWorker extends Worker {
                     .putString(Params.ERROR_MESSAGE, e.getMessage())
                     .build());
         } catch (IllegalArgumentException e) {
+            if (isStopped()) {
+                // a stopped run must not be misreported as a model failure
+                logger.d(TAG, "Download of model " + modelId
+                        + " cancelled (worker stopped)");
+                return cancelledResult();
+            }
             logger.e(TAG, "Unknown model id: " + modelId);
             modelChangeNotifier.downloadFailed(modelId, e.getMessage());
             return Result.failure(new Data.Builder()
                     .putString(Params.ERROR_MESSAGE, e.getMessage())
                     .build());
         } catch (Exception e) {
+            if (isStopped()) {
+                // a stopped run must NEVER retry: the generic transient path
+                // below would resurrect a download the user just cancelled
+                // (e.g. through ModelStorageManager.deleteModel)
+                logger.d(TAG, "Download of model " + modelId
+                        + " cancelled (worker stopped)");
+                return cancelledResult();
+            }
             logger.e(TAG, "Failed downloading model " + modelId
                     + ": " + e.getMessage(), e);
             // transient failure, the work continues via backoff, no notifier event
             return Result.retry();
         }
+    }
+
+    /**
+     * Failure output of a cancelled (stopped) run: terminal on purpose, with
+     * the cancellation noted in the output data so a caller inspecting the
+     * WorkInfo can tell it apart from a real failure
+     */
+    @NonNull
+    private static Result cancelledResult() {
+        return Result.failure(new Data.Builder()
+                .putString(Params.ERROR_MESSAGE, "Download cancelled")
+                .build());
     }
 
     /**

@@ -9,11 +9,17 @@
         <include .../>
         <exclude .../>
         -->
+        <!-- the on-demand AI models (~600 MB) are re-downloadable, backing
+             them up would bloat the quota and a restore would resurrect
+             deleted models (see ModelStorageManager) -->
+        <exclude domain="file" path="ml-engine/"/>
+        <!-- the last-used timestamps of the models: restoring them after a
+             model was deleted would resurrect stale "last used" hints -->
+        <exclude domain="sharedpref" path="ml-engine-model-usage.xml"/>
     </cloud-backup>
-    <!--
     <device-transfer>
-        <include .../>
-        <exclude .../>
+        <!-- same excludes as the cloud backup, for the device-to-device transfer -->
+        <exclude domain="file" path="ml-engine/"/>
+        <exclude domain="sharedpref" path="ml-engine-model-usage.xml"/>
     </device-transfer>
-    -->
 </data-extraction-rules>
