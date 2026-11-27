@@ -1,0 +1,11 @@
+Release 2.3.0+15
+
+Nýjar aðgerðir:
+* Nýr ritill fyrir Photo Restore: gera myndir skarpar á tækinu með NAFNet og stækka síðan allt að 4x með Swin2SR — aðgerðir staflast með afturkallahnappi og eru gerðar aftur í fullri upplausn við vistun (krefst 64-bita tækis)
+* Nýr ritill fyrir Lens Blur sem byggir á dýptarmati með Depth Anything V2 Small á tækinu: bætir náttúrulegu dýptarbokeh við hverja mynd með stillanlegum styrk
+* Nýr ritill fyrir Remove Background með IS-Net aðgreiningu á viðfangsefnum: fjarlægir bakgrunninn á hvaða viðfangsefni sem er, ekki aðeins fólk
+* Ný Storage-síða í stillingum til að stjórna niðurhöluðum gervigreindarmódelum: hvert módel er flokkað eftir aðgerð með stærð og tíma síðustu notkunar, módel er hægt að eyða hvort fyrir sig eða öllum í einu, og sækja aftur með beinni framvindu
+
+Breytingar:
+* Stuðningur við spáförun Android (predictive back) með forskoðun
+* Ný sérsniðin tákn í heimavalmynd fyrir Galdraeyðara og gervigreindarmyndaskynjara

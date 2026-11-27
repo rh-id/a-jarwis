@@ -1,0 +1,11 @@
+Release 2.3.0+15
+
+Novità:
+* Nuovo editor Photo Restore: riduce la sfocatura delle foto sul dispositivo con NAFNet, poi ingrandisce fino a 4x con Swin2SR — le azioni si accumulano con un pulsante di annullamento e vengono rieseguite a piena risoluzione al salvataggio (richiede un dispositivo a 64 bit)
+* Nuovo editor Lens Blur basato sulla stima della profondità con Depth Anything V2 Small sul dispositivo: aggiunge un bokeh naturale di profondità di campo a qualsiasi foto con un cursore di intensità regolabile
+* Nuovo editor Remove Background con segmentazione del soggetto IS-Net: rimuove lo sfondo su qualsiasi soggetto, non solo sulle persone
+* Nuova pagina Storage nelle impostazioni per gestire i modelli IA scaricati: ogni modello è raggruppato per funzionalità con dimensione e data dell'ultimo utilizzo, i modelli possono essere eliminati singolarmente o tutti in una volta e riscaricati con avanzamento in tempo reale
+
+Modifiche:
+* Supporto per il gesto di ritorno predittivo di Android con anteprime
+* Nuove icone personalizzate del menu home per Gomma magica e Rilevatore di immagini IA

@@ -1,0 +1,11 @@
+Release 2.3.0+15
+
+Fitur:
+* Editor Photo Restore baru: deblur foto di perangkat dengan NAFNet, lalu upscale hingga 4x dengan Swin2SR — aksi dapat ditumpuk dengan tombol urungkan dan diputar ulang pada resolusi penuh saat menyimpan (memerlukan perangkat 64-bit)
+* Editor Lens Blur baru yang didukung estimasi kedalaman Depth Anything V2 Small di perangkat: menambahkan bokeh kedalaman ruang fokus yang natural ke foto apa pun dengan slider kekuatan yang dapat disesuaikan
+* Editor Remove Background baru dengan segmentasi subjek IS-Net: menghapus latar belakang pada subjek apa pun, bukan hanya orang
+* Halaman Storage baru di Pengaturan untuk mengelola model AI yang diunduh: setiap model dikelompokkan berdasarkan fitur dengan ukuran dan waktu terakhir digunakan, model dapat dihapus satu per satu atau sekaligus, dan diunduh ulang dengan progres langsung
+
+Perubahan:
+* Dukungan untuk gestur kembali prediktif Android dengan pratinjau intip
+* Ikon menu beranda kustom baru untuk Penghapus Ajaib dan Detektor Gambar AI

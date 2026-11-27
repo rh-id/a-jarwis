@@ -1,0 +1,11 @@
+Release 2.3.0+15
+
+Uued funktsioonid:
+* Uus Photo Restore redaktor: teravda fotosid seadmesiseselt NAFNetiga ja suurenda seejärel Swin2SR-iga kuni 4x — toimingud kuhjuvad koos tagasivõtu nupuga ja salvestamisel rakendatakse need täielahutuses uuesti (vajalik on 64-bitine seade)
+* Uus Lens Blur redaktor, mis põhineb seadmesisesel Depth Anything V2 Small sügavushinnangul: lisab igale fotole loomuliku bokeh-sügavuse efekti tugevuse liuguriga reguleeritavana
+* Uus Remove Background redaktor IS-Net objektide segmenteerimisega: eemaldab tausta mis tahes objektilt, mitte ainult inimestelt
+* Uus Storage leht seadetes allalaaditud AI-mudelite haldamiseks: iga mudel on grupeeritud funktsiooni järgi koos suuruse ja viimase kasutamise ajaga, mudelid saab kustutada ükshaaval või korraga kõik ning uuesti alla laadida, näidates edenemist reaalajas
+
+Muudatused:
+* Tugi Androidi ennustava tagasiliikumise jaoks koos eelvaadetega
+* Uued kohandatud avamenüü ikoonid Võlukustutaja ja AI-pildituvastaja jaoks

@@ -1,0 +1,11 @@
+Release 2.3.0+15
+
+Novitads:
+* Il nov editor Photo Restore: render fotografias nîtgelas sin l'apparat cun NAFNet, alura ingrandir fin a 4x cun Swin2SR — las acziuns s'empilan cun in buttun per revocar e vegnan reproducidas en la resolutziun cumpleina cur ch'ina copia vegn memorisada (basegn d'in apparat da 64 bits)
+* Il nov editor Lens Blur sustegnì da la stimaziun da la profunditad cun Depth Anything V2 Small sin l'apparat: agiunta in bokeh natiral da la profunditad da champ a cada fotografia cun in slider da la fermezza regulabel
+* Il nov editor Remove Background cun la segmentaziun dal subiect cun IS-Net: removescha il fund tar cada subiect, betg mo tar persunas
+* La nova pagina Storage en las opziuns per administrar ils models IA telechargiads: cada model vegn gruppuà tenor funcziun cun sia grondezza e il temp da l'ultima utilisaziun, ils models pon vegnir stizzads in sulet u tuts ensemen, e telechargiads da nov cun progress en direct
+
+Midadas:
+* Sustegn per il gest da return predictiv dad Android cun previstas
+* Novas iconas persunalisadas dal menu da l'ensaina per Radiera magica e detector da maletgs IA

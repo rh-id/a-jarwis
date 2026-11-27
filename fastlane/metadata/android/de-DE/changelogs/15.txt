@@ -1,0 +1,11 @@
+Release 2.3.0+15
+
+Neue Funktionen:
+* Neuer Photo-Restore-Editor: Fotos direkt auf dem Gerät mit NAFNet entschärfen und danach mit Swin2SR um bis zu 4x hochskalieren — Aktionen stapeln sich mit einer Rückgängig-Schaltfläche und werden beim Speichern in voller Auflösung erneut angewendet (erfordert ein 64-Bit-Gerät)
+* Neuer Lens-Blur-Editor mit Tiefenschätzung durch Depth Anything V2 Small direkt auf dem Gerät: fügt jedem Foto mit einem einstellbaren Stärkeregler natürliches Tiefenschärfe-Bokeh hinzu
+* Neuer Remove-Background-Editor mit IS-Net-Motivsegmentierung: entfernt den Hintergrund bei jedem Motiv, nicht nur bei Personen
+* Neue Storage-Seite in den Einstellungen zur Verwaltung heruntergeladener KI-Modelle: jedes Modell wird nach Funktion gruppiert mit Größe und Zeitpunkt der letzten Verwendung angezeigt, Modelle können einzeln oder alle auf einmal gelöscht und mit Live-Fortschritt erneut heruntergeladen werden
+
+Änderungen:
+* Unterstützung für die predictive-back-Geste von Android mit Vorschau
+* Neue eigene Startbildschirm-Symbole für Magischer Radierer und KI-Bilderkennung

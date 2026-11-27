@@ -1,0 +1,11 @@
+Release 2.3.0+15
+
+Feature:
+* New Photo Restore editor: deblur photos on-device with NAFNet, then upscale up to 4x with Swin2SR — actions stack with an undo button and are replayed at full resolution on save (requires a 64-bit device)
+* New Lens Blur editor powered by on-device Depth Anything V2 Small depth estimation: adds natural depth-of-field bokeh to any photo with an adjustable strength slider
+* New Remove Background editor with IS-Net subject segmentation: removes the background on any subject, not just people
+* New Storage page in Settings to manage downloaded AI models: every model is grouped by feature with its size and last-used time, models can be deleted individually or all at once, and re-downloaded with live progress
+
+Changes:
+* Support for Android's predictive back gesture with peek previews
+* New custom home menu icons for Magic Eraser and AI Image Detector

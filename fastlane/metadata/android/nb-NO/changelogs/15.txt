@@ -1,0 +1,11 @@
+Release 2.3.0+15
+
+Nye funksjoner:
+* Ny Photo Restore-redigerer: deblur bilder på enheten med NAFNet, og skaler deretter opp til 4x med Swin2SR — handlinger stables med en angre-knapp og gjentas i full oppløsning ved lagring (krever en 64-bits enhet)
+* Ny Lens Blur-redigerer drevet av dybdeestimering med Depth Anything V2 Small på enheten: legger til naturlig dybdeskarphets-bokeh i alle bilder med en justerbar styrkeglider
+* Ny Remove Background-redigerer med IS-Net-motivsegmentering: fjerner bakgrunnen på ethvert motiv, ikke bare personer
+* Ny Storage-side i innstillingene for å administrere nedlastede AI-modeller: hver modell er gruppert etter funksjon med størrelse og tidspunkt for siste bruk, modeller kan slettes enkeltvis eller alle på én gang, og lastes ned på nytt med live fremdrift
+
+Endringer:
+* Støtte for Androids forutsigbare tilbakebevegelse med forhåndsvisninger
+* Nye egendefinerte hjemmemeny-ikoner for Magisk viskelær og AI-bilddetektor
