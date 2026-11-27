@@ -28,9 +28,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-    testOptions {
-        execution 'ANDROIDX_TEST_ORCHESTRATOR'
-    }
 }
 
 dependencies {
@@ -41,7 +38,6 @@ dependencies {
 
     testImplementation libs.junit
     androidTestImplementation libs.androidx.test.junit
-    androidTestUtil libs.androidx.test.orchestrator
     androidTestImplementation libs.espresso.core
     androidTestImplementation libs.mockito.core
     androidTestImplementation libs.work.testing
